@@ -45,7 +45,7 @@ export default function Page() {
     const submit = async (values: RegisterData) => {
         setTransition(async () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
-            router.push("/login");
+            router.push("/dashboard");
         });
         console.log("register", values);
     };
