@@ -18,4 +18,4 @@ export const registerSchema = z.object({
     message: "Passwords donot match",
 });
 
-export type ReisterData = z.infer<typeof registerSchema>;
+export type RegisterData = z.infer<typeof registerSchema>;
