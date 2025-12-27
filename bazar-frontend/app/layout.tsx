@@ -1,38 +1,63 @@
-"use client";
-
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem} from "@heroui/navbar";
-import Link from "next/link";
-import Image from "next/image";
-import { HeroUIProvider } from "@heroui/react";
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const poppins = localFont({
+  src: [
+    {
+      path: "../public/fonts/Poppins-Thin.ttf",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Poppins-ExtraLight.ttf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Poppins-Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Poppins-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Poppins-Medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Poppins-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Poppins-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Poppins-ExtraBold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Poppins-Black.ttf",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+  variable: "--font-poppins",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-
-
-
-export const BazarLogo = () => {
-  return (
-    <Image 
-      src="/bazarlogo.svg" 
-      alt="Bazar Logo" 
-      width={70} 
-      height={70}
-      priority
-    />  
-  );
+export const metadata: Metadata = {
+  title: "Bazar - Discover Local Shops",
+  description: "Join Bazar to discover local shops and connect with your community",
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,47 +66,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`} 
+        className={`${poppins.variable} font-sans antialiased`}
       >
-        <HeroUIProvider>
-          <Navbar>
-            <NavbarBrand>
-              <BazarLogo />
-              <p className="font-bold text-inherit">BAZAR</p>
-            </NavbarBrand>
-            <NavbarContent className="hidden sm:flex gap-4" justify="center">
-              <NavbarItem>
-                <Link color="foreground" href="#">
-                  Home
-                </Link>
-              </NavbarItem>
-              <NavbarItem isActive>
-                <Link aria-current="page" href="#">
-                  Saved
-                </Link>
-              </NavbarItem>
-              <NavbarItem>
-                <Link color="foreground" href="#">
-                  Profile
-                </Link>
-              </NavbarItem>
-            </NavbarContent>
-            <NavbarContent justify="end">
-              <NavbarItem className="hidden lg:flex">
-                <Link href="#">Login</Link>
-              </NavbarItem>
-              <NavbarItem>
-                {/* <Button as={Link} color="primary" href="#" variant="flat">
-                  Sign Up
-                </Button> */}
-              </NavbarItem>
-            </NavbarContent>
-          </Navbar>
-          {children}
-          <footer className="p-4 text-center">
-            Footer
-          </footer>
-        </HeroUIProvider>
+        {children}
       </body>
     </html>
   );
