@@ -56,6 +56,9 @@ const poppins = localFont({
 export const metadata: Metadata = {
   title: "Bazar - Discover Local Shops",
   description: "Join Bazar to discover local shops and connect with your community",
+  icons: {
+    icon: "/images/logo.svg",
+  },
 };
 
 export default function RootLayout({
