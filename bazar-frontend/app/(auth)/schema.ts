@@ -10,7 +10,8 @@ export type LoginData = z.infer<typeof loginSchema>;
 export const registerSchema = z.object({
     fullName: z.string().min(2, { message: "Enter your full name"}),
     email: z.email({message: "Enter a valid email"}),
-    phoneNumber: z.number().min(10,{ message: "Invalid phone number"}),
+    phoneNumber: z.string()
+        .regex(/^\d{10}$/, { message: "Phone number must be exactly 10 digits"}),
     password: z.string().min(8, { message: "Minimum 8 characters"}),
     confirmPassword: z.string().min(6, { message: "Minimum 8 characters"}),
 }).refine((v)  => v.password === v.confirmPassword, {
