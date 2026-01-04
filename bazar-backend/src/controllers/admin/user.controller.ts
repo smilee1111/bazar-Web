@@ -25,8 +25,18 @@ export class AdminUserController{
         }
     }
 
-      async getAllUsers(req: Request, res: Response){
-        //to be implemented
+    async getAllUsers(req: Request, res: Response){
+        try{
+            const users = await userService.getAllUsers();
+            return res.status(200).json(
+                {success: true, data: users, message: "Users retrieved successfully."}
+            )
+        }catch(error: Error | any){
+            return res.status(error.statusCode || 500).json(
+                    {success: false, message: error.message || "Internal Server Error."}
+            )
+        }
+        
     }
 
     async getUserById(req: Request, res: Response){
