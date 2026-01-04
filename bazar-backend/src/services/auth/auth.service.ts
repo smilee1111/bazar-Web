@@ -1,4 +1,4 @@
-import { UserRepository } from "../../repositories/auth.repository";
+import { UserRepository } from "../../repositories/user.repository";
 import { CreateUserDto, LoginUserDto } from "../../dtos/user.dto";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../../errors/http-error";

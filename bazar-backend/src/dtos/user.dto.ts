@@ -29,3 +29,7 @@ export const LoginUserDto = z.object({
 })
 
 export type LoginUserDto = z.infer<typeof LoginUserDto>;
+
+// export const UpdateUserDto = z.object({
+    
+// })
