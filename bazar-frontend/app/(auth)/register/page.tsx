@@ -205,6 +205,28 @@ export default function Page() {
 
                                     <div className="flex flex-col gap-2">
                                         <Label
+                                            htmlFor="username"
+                                            className="font-normal text-[#524632] text-base"
+                                        >
+                                            Username<span className="text-[#8f7e4f]">*</span>
+                                        </Label>
+                                        <div className="relative">
+                                            <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980]" />
+                                            <Input
+                                                id="username"
+                                                type="text"
+                                                placeholder="johndoe123"
+                                                {...register("username")}
+                                                className="h-[50px] pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-base placeholder:text-[#1a191980]"
+                                            />
+                                        </div>
+                                        {errors.username?.message && (
+                                            <p className="text-xs text-red-600">{errors.username.message}</p>
+                                        )}
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <Label
                                             htmlFor="password"
                                             className="font-normal text-[#524632] text-base"
                                         >

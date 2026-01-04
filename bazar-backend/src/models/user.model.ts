@@ -4,11 +4,12 @@ import { UserType } from "../types/user.type";
 
 const UserSchema: Schema = new Schema(
     {
-        firstName: { type: String},
-        LastName: { type: String},
+        fullName: { type: String,required: true},
         email : { type: String, required: true, unique: true},
+        phoneNumber: { type: Number, required: true, unique: true },
         username : { type: String, required: true, unique: true},
-        password : { type: String, required: true}
+        password : { type: String, required: true},
+        role: {type: String, enum: ['user','admin',"seller"], default: 'user'}
     },
     {
         timestamps: true, //auto createdAt and updatedAt
@@ -22,6 +23,6 @@ export interface IUser extends UserType, Document{// combined type
 
 }
 
-export const UserModdel = mongoose.model<IUser>('User', UserSchema);
+export const UserModel = mongoose.model<IUser>('User', UserSchema);
 //collection name 'users' (plural of 'User')
 //UserModel -> db.users

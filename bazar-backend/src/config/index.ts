@@ -7,7 +7,9 @@ export const PORT: number =
 //avoid exception if env is missing
 
 export const MONGO_URI: string =
-    process.env.MONGO_URI || 'mongodb://localhost:27017/db_35c';
+    process.env.MONGO_URI || 'mongodb://localhost:27017/bazar';
 //fallback to local mongo db if env is missing 
 
+export const JWT_SECRET: string = 
+process.env.JWT_SECRET || "bazarkosecrert";
 //Application level CONSTANTS
