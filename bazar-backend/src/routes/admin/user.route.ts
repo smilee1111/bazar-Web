@@ -10,7 +10,7 @@ const adminUserController = new AdminUserController();
 router.post('/register-admin', authorizedMiddleware,adminMiddleware, adminUserController.createUser);
 
 //route for admin to get all the users 
-router.get('/', adminMiddleware,adminUserController.getAllUsers);
+router.get('/', authorizedMiddleware, adminMiddleware, adminUserController.getAllUsers);
 
 //route for admin to get a user by their id
 router.get('/:id', authorizedMiddleware,adminMiddleware,adminUserController.getUserById);

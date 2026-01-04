@@ -31,7 +31,7 @@ app.use('/api/auth',authRoutes);
 //importing the routes for admin 
 import adminRoutes from './routes/admin/user.route';
 //defining the path for usage of admin routes
-app.use('/api/auth', adminRoutes);
+app.use('/api/admin/users', adminRoutes);
 
 
 //starting the mongodb server

@@ -38,8 +38,8 @@ export async function authorizedMiddleware(req: Request, res: Response,next: Nex
         if(!user)
             throw new HttpError( 401, "Unauthorized, User Not Found");
 
-        req. user = user;
-        return next;
+        req.user = user;
+        return next();
     }catch(err: Error | any){
         return res.status(err.statusCode || 500 ).json(
             { success: false, message: err.message || "Unauthorized" }
