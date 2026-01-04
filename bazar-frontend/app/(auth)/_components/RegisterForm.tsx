@@ -38,6 +38,14 @@ const formFields = [
         autoComplete: "tel",
     },
     {
+        id: "username",
+        label: "Username",
+        placeholder: "johndoe123",
+        icon: UserIcon,
+        type: "text" as const,
+        autoComplete: "username",
+    },
+    {
         id: "password",
         label: "Password",
         placeholder: "Create a password",

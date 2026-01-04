@@ -1,5 +1,4 @@
 import express, {Application, Request, Response} from 'express';
-import bookRoutes from './routes/book.route';
 import { conectDB } from './database/mongodb';
 
 import dotenv from 'dotenv';
@@ -14,8 +13,6 @@ const PORT: number = 3000;
 app.get('/',(req:Request,res:Response) => {
     res.send("Hello World!");
 });
-
-app.use('api/books', bookRoutes);
 
 
 async function startServer(){
