@@ -2,6 +2,7 @@ import express, {Application, Request, Response} from 'express';
 import { conectDB } from './database/mongodb';
 import bodyParser from 'body-parser';
 import { PORT } from './config';
+import cors from 'cors';
 
 //importing and initializing the env file 
 import dotenv from 'dotenv';
@@ -12,9 +13,16 @@ console.log(process.env.PORT);
 // .env -> PORT=5050
 
 const app: Application = express();
-
+let corsOptions = {
+    origin: ["http://localhost:3000","http://localhost:3003"],
+    //list of domains allowed to access the server
+    //frontend domain/url
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//origin: "*", //allow all domains
+app.use(cors(corsOptions));
 
 //test api
 app.get('/',(req:Request,res:Response) => {
