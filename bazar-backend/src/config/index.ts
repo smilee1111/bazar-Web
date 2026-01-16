@@ -21,5 +21,5 @@ export const MONGO_URI: string =
 //fallback to local mongo db if env is missing 
 
 export const JWT_SECRET: string = 
-process.env.JWT_SECRET || "bazarkosecrert";
+process.env.JWT_SECRET || "";
 //Application level CONSTANTS
