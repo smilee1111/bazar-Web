@@ -43,7 +43,7 @@ export class UserRepository implements IUserRepository{
     }
 
     async getUserById(id: string): Promise<IUser | null> {
-        const user = await UserModel.findById(id);
+        const user = await UserModel.findById(id).populate('roleId');
         return user;
     }
 
