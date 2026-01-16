@@ -44,7 +44,7 @@ export class AuthController{
             //logging the user in with the jwt token 
             const {token, user} = await authService.loginUser(parsedData.data);
             return res.status(200).json(
-                    {success: false, data: user, token, message: "Login Successful"}
+                    {success: true, data: user, token, message: "Login Successful"}
             )
         }catch(error: Error | any){
             return res.status(error.statusCode || 500).json(

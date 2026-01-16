@@ -19,3 +19,19 @@ export const register = async (registerData: any) => {
         );
     }
 }
+
+export const login = async (loginData: any) => {
+        try{
+        const response = await axios.post(
+            API.AUTH.LOGIN,//API path '/api/auth/login
+            loginData//body data
+        );
+        return response.data;//what the backend-controller returns
+    }catch(err: Error | any){
+        throw new Error(
+            err.response?.data?.message || err.message//message from backend 
+            || "Login failed"//fallback messae 
+
+        );
+    }
+}
