@@ -17,7 +17,7 @@ console.log(process.env.PORT);
 const app: Application = express();
 let corsOptions = {
     origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",")
-      : [],
+      : ['http://localhost:3000'],
     //list of domains allowed to access the server
     //frontend domain/url
 }
