@@ -4,7 +4,7 @@ import { JWT_SECRET} from "../config";
 import { IUser, IUserPopulated } from "../models/user.model";
 import { UserRepository } from "../repositories/user.repository";
 import { HttpError } from "../errors/http-error";
-import { ROLE_NAMES } from "../constants/roles";
+import { isUserAdmin } from "../utils/role.utils";
 
 let userRepository = new UserRepository();
 
@@ -57,10 +57,8 @@ export async function adminMiddleware(req: Request, res: Response, next: NextFun
             if(!req.user)
                 throw new HttpError( 401, " Unauthorized, User not found");
             
-            // Check if roleId is populated and has roleName property
-            const user = req.user as IUserPopulated;
-            // Ensure roleId is populated (not just an ObjectId)
-            if(!user.roleId || typeof user.roleId === 'string' || !('roleName' in user.roleId) || user.roleId.roleName !== ROLE_NAMES.ADMIN)
+            // Check if user is admin using utility function
+            if(!isUserAdmin(req.user as IUserPopulated))
                 throw new HttpError( 403, "Forbidden Admins only");
 
             return next();

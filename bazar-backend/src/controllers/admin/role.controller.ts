@@ -5,6 +5,7 @@ import { CreateRoleDto, UpdateRoleDto } from "../../dtos/role.dto";
 import mongoose from 'mongoose';
 import { IUserPopulated } from '../../models/user.model';
 import { ROLE_NAMES } from '../../constants/roles';
+import { isUserAdmin } from '../../utils/role.utils';
 
 let roleService = new AdminRoleService();
 
@@ -38,10 +39,8 @@ export class AdminRoleController {
         console.log('Database:', mongoose.connection.name);
         console.log('Collection:', mongoose.connection.collections.roles?.collectionName);
     
-            // Check if user is authenticated and is admin
-            const user = req.user as IUserPopulated;
-            // Ensure roleId is populated (not just an ObjectId)
-            const isAdmin = user && user.roleId && typeof user.roleId !== 'string' && 'roleName' in user.roleId && user.roleId.roleName === ROLE_NAMES.ADMIN;
+            // Check if user is authenticated and is admin using utility function
+            const isAdmin = isUserAdmin(req.user as IUserPopulated);
             
             const allRoles = await roleService.getAllRoles();
              console.log('Roles count:', allRoles?.length);
