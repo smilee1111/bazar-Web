@@ -46,7 +46,7 @@ export default function LoginForm() {
     const [error , setError] = useState("");
     
      const submit = async (values: LoginData) => {
-         setError((""));
+         setError("");
          try{
              const result = await handleLogin(values);
              if(!result.success){
