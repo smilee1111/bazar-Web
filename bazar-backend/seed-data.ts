@@ -184,7 +184,7 @@ const importData = async () => {
     });
 
     await mongoose.connection.close();
-    process.exit();
+    process.exit(0);
   } catch (error) {
     console.error(`Error: ${error}`);
     await mongoose.connection.close();
@@ -202,7 +202,7 @@ const deleteData = async () => {
 
     console.log("Data Destroyed...");
     await mongoose.connection.close();
-    process.exit();
+    process.exit(0);
   } catch (error) {
     console.error(`Error: ${error}`);
     await mongoose.connection.close();
