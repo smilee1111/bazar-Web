@@ -40,7 +40,8 @@ export class AdminRoleController {
     
             // Check if user is authenticated and is admin
             const user = req.user as IUserPopulated;
-            const isAdmin = user && user.roleId && user.roleId.roleName === ROLE_NAMES.ADMIN;
+            // Ensure roleId is populated (not just an ObjectId)
+            const isAdmin = user && user.roleId && typeof user.roleId !== 'string' && 'roleName' in user.roleId && user.roleId.roleName === ROLE_NAMES.ADMIN;
             
             const allRoles = await roleService.getAllRoles();
              console.log('Roles count:', allRoles?.length);

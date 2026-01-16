@@ -53,13 +53,14 @@ export async function authorizedMiddleware(req: Request, res: Response,next: Nex
 export async function adminMiddleware(req: Request, res: Response, next: NextFunction){
         try{
             //req.user is set in authorizedMiddleware
-            //omly use role/admin middleware after user is authorized
+            //only use role/admin middleware after user is authorized
             if(!req.user)
                 throw new HttpError( 401, " Unauthorized, User not found");
             
             // Check if roleId is populated and has roleName property
             const user = req.user as IUserPopulated;
-            if(!user.roleId || user.roleId.roleName !== ROLE_NAMES.ADMIN)
+            // Ensure roleId is populated (not just an ObjectId)
+            if(!user.roleId || typeof user.roleId === 'string' || !('roleName' in user.roleId) || user.roleId.roleName !== ROLE_NAMES.ADMIN)
                 throw new HttpError( 403, "Forbidden Admins only");
 
             return next();
