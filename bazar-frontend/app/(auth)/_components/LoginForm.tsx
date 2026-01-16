@@ -43,10 +43,10 @@ export default function LoginForm() {
         mode: "onSubmit",
     });
     const [pending, setTransition] = useTransition();
-    const [error , setError] = useState("");
+    const [error, setError] = useState("");
     
      const submit = async (values: LoginData) => {
-         setError((""));
+         setError("");
          try{
              const result = await handleLogin(values);
              if(!result.success){
@@ -128,7 +128,7 @@ export default function LoginForm() {
                 </Button>
 
                 {error && (
-                    <div className="mt-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                    <div role="alert" aria-live="polite" className="mt-4 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
                         <p className="text-sm text-red-600 dark:text-red-400 font-medium">
                             {error}
                         </p>
