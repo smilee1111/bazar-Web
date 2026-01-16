@@ -8,7 +8,7 @@ dotenv.config();
 dotenv.config({ path: path.join(__dirname, 'config.env') });
 
 export const PORT: number = 
-    process.env.PORT ? parseInt(process.env.PORT) : 5050;
+    process.env.PORT ? parseInt(process.env.PORT) : 3000;
 //ensure PORT is a number, and fallback if not found 
 //avoid exception if env is missing
 
