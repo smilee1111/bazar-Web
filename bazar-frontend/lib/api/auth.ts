@@ -14,7 +14,7 @@ export const register = async (registerData: any) => {
     }catch(err: Error | any){
         throw new Error(
             err.response?.data?.message || err.message//message from backend 
-            || "Registration failed"//fallback messae 
+            || "Registration failed"//fallback message 
 
         );
     }
@@ -30,7 +30,7 @@ export const login = async (loginData: any) => {
     }catch(err: Error | any){
         throw new Error(
             err.response?.data?.message || err.message//message from backend 
-            || "Login failed"//fallback messae 
+            || "Login failed"//fallback message 
 
         );
     }
