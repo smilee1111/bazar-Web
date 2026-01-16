@@ -3,7 +3,7 @@ import z from 'zod';
 import { Request, Response } from 'express';
 import { CreateRoleDto, UpdateRoleDto } from "../../dtos/role.dto";
 import mongoose from 'mongoose';
-import { IUser, isRolePopulated } from '../../models/user.model';
+import { IUser, isRolePopulated, isIUser } from '../../models/user.model';
 
 let roleService = new AdminRoleService();
 
@@ -38,8 +38,7 @@ export class AdminRoleController {
         console.log('Collection:', mongoose.connection.collections.roles?.collectionName);
     
             // Check if user is authenticated and is admin
-            const user = req.user as IUser;
-            const isAdmin = user && isRolePopulated(user) && user.roleId.roleName === 'admin';
+            const isAdmin = req.user && isIUser(req.user) && isRolePopulated(req.user) && req.user.roleId.roleName === 'admin';
             
             const allRoles = await roleService.getAllRoles();
              console.log('Roles count:', allRoles?.length);

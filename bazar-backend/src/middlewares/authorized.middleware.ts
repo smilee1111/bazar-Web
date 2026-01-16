@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET} from "../config";
-import { IUser, isRolePopulated } from "../models/user.model";
+import { IUser, isRolePopulated, isIUser } from "../models/user.model";
 import { UserRepository } from "../repositories/user.repository";
 import { HttpError } from "../errors/http-error";
 
@@ -53,12 +53,11 @@ export async function adminMiddleware(req: Request, res: Response, next: NextFun
         try{
             //req.user is set in authorizedMiddleware
             //omly use role/admin middleware after user is authorized
-            if(!req.user)
+            if(!req.user || !isIUser(req.user))
                 throw new HttpError( 401, " Unauthorized, User not found");
             
             // Check if roleId is populated and has roleName property
-            const user = req.user as IUser;
-            if(!isRolePopulated(user) || user.roleId.roleName !== 'admin')
+            if(!isRolePopulated(req.user) || req.user.roleId.roleName !== 'admin')
                 throw new HttpError( 403, "Forbidden Admins only");
 
             return next();

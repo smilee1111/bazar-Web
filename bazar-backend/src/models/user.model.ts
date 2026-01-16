@@ -27,7 +27,20 @@ export interface IUser extends UserType, Document{// combined type
 
 // Type guard to check if roleId is populated
 export function isRolePopulated(user: IUser): user is IUser & { roleId: IRole } {
-    return user.roleId != null && typeof user.roleId === 'object' && 'roleName' in user.roleId;
+    return user.roleId != null && 
+           typeof user.roleId === 'object' && 
+           !Array.isArray(user.roleId) &&
+           'roleName' in user.roleId &&
+           '_id' in user.roleId;
+}
+
+// Type guard to check if req.user is an IUser
+export function isIUser(user: any): user is IUser {
+    return user != null && 
+           typeof user === 'object' &&
+           '_id' in user &&
+           'email' in user &&
+           'username' in user;
 }
 
 export const UserModel = mongoose.model<IUser>('User', UserSchema);
