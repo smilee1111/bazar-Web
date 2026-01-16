@@ -55,7 +55,7 @@ export async function adminMiddleware(req: Request, res: Response, next: NextFun
             //omly use role/admin middleware after user is authorized
             if(!req.user)
                 throw new HttpError( 401, " Unauthorized, User not found");
-            if(req.user.role !== 'admin')
+            if(req.user.roleId?.toString() !== 'role_admin_001')
                 throw new HttpError( 403, "Forbidden Admins only");
 
             return next();
@@ -66,4 +66,32 @@ export async function adminMiddleware(req: Request, res: Response, next: NextFun
         )
         }
 
+}
+
+// Optional authentication - doesn't fail if no token, just sets req.user if authenticated
+export async function optionalAuthMiddleware(req: Request, res: Response, next: NextFunction) {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            // No token, continue without user
+            return next();
+        }
+
+        const token = authHeader.split(" ")[1];
+        if (!token) {
+            return next();
+        }
+
+        const decoded = jwt.verify(token, JWT_SECRET) as Record<string, any>;
+        if (decoded && decoded.id) {
+            const user = await userRepository.getUserById(decoded.id);
+            if (user) {
+                req.user = user;
+            }
+        }
+        return next();
+    } catch (err) {
+        // Ignore errors in optional auth, just continue
+        return next();
+    }
 }

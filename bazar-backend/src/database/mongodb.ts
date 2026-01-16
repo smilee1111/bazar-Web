@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { MONGO_URI } from "../config";
+import { LOCAL_DATABASE_URI } from "../config";
 
 export const conectDB = async () => {
     try{
-        await mongoose.connect(MONGO_URI);
+        await mongoose.connect(LOCAL_DATABASE_URI);
         console.log("MongoDB connected!");
     }catch(error){
         console.error("MongoDB connection error:", error);

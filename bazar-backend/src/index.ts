@@ -6,7 +6,9 @@ import cors from 'cors';
 
 //importing and initializing the env file 
 import dotenv from 'dotenv';
-dotenv.config();
+// Load environment variables
+dotenv.config({ path: "./config/config.env" });
+
 
 //can use env variables below this 
 console.log(process.env.PORT);
@@ -14,7 +16,8 @@ console.log(process.env.PORT);
 
 const app: Application = express();
 let corsOptions = {
-    origin: ["http://localhost:3000","http://localhost:3003"],
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",")
+      : [],
     //list of domains allowed to access the server
     //frontend domain/url
 }
@@ -35,6 +38,12 @@ import authRoutes from './routes/auth/auth.route';
 //defining the path for usage of auth routes 
 app.use('/api/auth',authRoutes);
 
+//ROLE
+//importing the routes for role
+import roleRoutes from './routes/role/role.route';
+//defining the path for usage of role routes
+app.use('/api/roles', roleRoutes);
+
 //ADMIN
 //importing the routes for admin 
 import adminRoutes from './routes/admin/user.route';
@@ -45,11 +54,8 @@ app.use('/api/admin/users', adminRoutes);
 //starting the mongodb server
 async function startServer(){
     await conectDB();
-    app.listen(
-    PORT,
-    () => {
-        console.log(`Server on http://localhost:${PORT}`);
-    }
-);
+ app.listen(PORT, '0.0.0.0', () => {  // Add '0.0.0.0' to bind to all interfaces
+    console.log(`Server on http://localhost:${PORT}`);
+});
 }
 startServer();
