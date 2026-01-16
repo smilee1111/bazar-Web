@@ -13,7 +13,11 @@ export function isUserAdmin(user: IUserPopulated | undefined): boolean {
     }
     
     // Ensure roleId is populated (not just an ObjectId)
-    if (user.roleId instanceof mongoose.Types.ObjectId || !('roleName' in user.roleId)) {
+    if (user.roleId instanceof mongoose.Types.ObjectId) {
+        return false;
+    }
+    
+    if (!('roleName' in user.roleId)) {
         return false;
     }
     
