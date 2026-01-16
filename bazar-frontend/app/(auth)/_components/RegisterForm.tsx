@@ -4,13 +4,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { RegisterData, registerSchema } from "../schema";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { LockIcon, MailIcon, UserIcon, PhoneIcon } from "lucide-react";
+import { handleRegister } from "@/lib/actions/auth-action";
 
 const formFields = [
     {
@@ -75,14 +76,27 @@ export default function RegisterForm() {
     });
 
     const [pending, setTransition] = useTransition();
-
-    const submit = async (values: RegisterData) => {
+    const [error , setError] = useState("");
+    
+   const submit = async (values: RegisterData) => {
+        setError((""));
+        try{
+            const result = await handleRegister(values);
+            if(!result.success){
+                throw new Error(result.message);
+        }
+        //success, redirect(optional)
         setTransition(async () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
-            router.push("/login");
+            router.push("/dashboard");
         });
         console.log("register", values);
+    }catch(err: Error | any){
+        setError(err.message || "Registration failed");
+      
     };
+}
+
 
     return (
         <div className="w-full max-w-[576px] mx-auto flex flex-col bg-white dark:bg-gray-900 rounded-3xl border-[1.2px] border-solid border-[#efefef] dark:border-gray-800 p-8 md:p-[49.2px]">

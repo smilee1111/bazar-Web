@@ -10,8 +10,9 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginData, loginSchema } from "../schema";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { handleLogin } from "@/lib/actions/auth-action";
 
 const features = [
     {
@@ -40,14 +41,28 @@ export default function Page() {
     });
 
     const [pending, setTransition] = useTransition();
-
-    const submit = async (values: LoginData) => {
-        setTransition(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            router.push("/dashboard");
-        });
-        console.log("login", values);
-    };
+    const [error , setError] = useState("");
+    
+     const submit = async (values: LoginData) => {
+         setError((""));
+         try{
+             const result = await handleLogin(values);
+             if(!result.success){
+                 console.error(result.message);
+                 throw new Error(result.message);
+                 
+         }
+         // success, redirect(optional)
+         setTransition(async () => {
+             await new Promise((resolve) => setTimeout(resolve, 1000));
+             router.push("/dashboard");
+         });
+         console.log("login", values);
+     }catch(err: Error | any){
+         setError(err.message || "Login failed");
+       
+     };
+ }
 
     return (
         <div className="relative w-full min-h-screen bg-neutral-50 flex">

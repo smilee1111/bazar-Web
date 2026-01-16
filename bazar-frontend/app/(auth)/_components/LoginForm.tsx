@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { startTransition, useTransition } from "react";
+import { startTransition, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LoginData, loginSchema } from "../schema";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { LockIcon, MailIcon } from "lucide-react";
+import { handleLogin } from "@/lib/actions/auth-action";
 
 const formFields = [
     {
@@ -42,15 +43,29 @@ export default function LoginForm() {
         mode: "onSubmit",
     });
     const [pending, setTransition] = useTransition();
-
-    const submit = async (values: LoginData) => {
-        setTransition(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            // router.push("/");
-        });
-        console.log("login", values);
-    };
-
+    const [error , setError] = useState("");
+    
+     const submit = async (values: LoginData) => {
+         setError((""));
+         try{
+             const result = await handleLogin(values);
+             if(!result.success){
+                 console.error(result.message);
+                 throw new Error(result.message);
+                 
+                 
+         }
+         // success, redirect(optional)
+         setTransition(async () => {
+             await new Promise((resolve) => setTimeout(resolve, 1000));
+             router.push("/dashboard");
+         });
+         console.log("login", values);
+     }catch(err: Error | any){
+         setError(err.message || "Login failed");
+       
+     };
+ }
     return (
         <div className="w-full max-w-[576px] mx-auto flex flex-col bg-white dark:bg-gray-900 rounded-3xl border-[1.2px] border-solid border-[#efefef] dark:border-gray-800 p-8 md:p-[49.2px]">
             <header className="flex flex-col gap-3">
