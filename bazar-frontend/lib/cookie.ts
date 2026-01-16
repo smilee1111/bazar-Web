@@ -1,5 +1,6 @@
 "use server";
 import { cookies } from "next/headers";
+import { UserData } from "./types/user.types";
 
 export const setAuthToken = async (token: string) => {
     const cookieStore = await cookies();
@@ -10,18 +11,18 @@ export const getAuthToken = async () => {
     const token = cookieStore.get("auth_token")?.value;
     return token;
 }
-export const setUserData = async (userData: any) => {
+export const setUserData = async (userData: UserData) => {
     const cookieStore = await cookies();
     // cookie can only store string values
     // convert object to string -> JSON.stringify
     cookieStore.set({ name: "user_data", value: JSON.stringify(userData) })
 }
-export const getUserData = async () => {
+export const getUserData = async (): Promise<UserData | null> => {
     const cookieStore = await cookies();
     const userDataStr = cookieStore.get("user_data")?.value;
     // convert string back to object -> JSON.parse
     if(userDataStr){
-        return JSON.parse(userDataStr);
+        return JSON.parse(userDataStr) as UserData;
     }
     return null;
 }
