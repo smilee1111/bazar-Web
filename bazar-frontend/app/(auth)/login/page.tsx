@@ -149,6 +149,12 @@ export default function Page() {
                                 </div>
 
                                 <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-6">
+                                    {error && (
+                                        <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+                                            <p className="text-sm text-red-600">{error}</p>
+                                        </div>
+                                    )}
+                                    
                                     <div className="flex flex-col gap-2">
                                         <Label
                                             htmlFor="email"
