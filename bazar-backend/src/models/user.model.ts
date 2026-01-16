@@ -1,5 +1,6 @@
 import mongoose,{ Document, Schema} from "mongoose";
 import { UserType } from "../types/user.type";
+import { IRole } from "./role.model";
 
 
 const UserSchema: Schema = new Schema(
@@ -22,6 +23,11 @@ export interface IUser extends UserType, Document{// combined type
     createdAt: Date;
     updatedAt: Date;
 
+}
+
+// Interface for user with populated roleId
+export interface IUserPopulated extends Omit<IUser, 'roleId'> {
+    roleId?: IRole;
 }
 
 export const UserModel = mongoose.model<IUser>('User', UserSchema);
