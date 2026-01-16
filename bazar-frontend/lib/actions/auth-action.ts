@@ -35,7 +35,7 @@ export const handleLogin = async (formData: any) =>{
         //how to send back to component
         if(result.success){
             await setAuthToken(result.token);
-            await setUserData(result.user);
+            await setUserData(result.data);
             return{
                 success: true,
                 message: "Login successful",
