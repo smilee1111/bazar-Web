@@ -183,9 +183,11 @@ const importData = async () => {
       console.log(`   Email: ${user.email} | Username: ${user.username} | Phone: ${user.phoneNumber} | Role: ${roleName}`);
     });
 
+    await mongoose.connection.close();
     process.exit();
   } catch (error) {
     console.error(`Error: ${error}`);
+    await mongoose.connection.close();
     process.exit(1);
   }
 };
@@ -199,9 +201,11 @@ const deleteData = async () => {
     await UserModel.deleteMany();
 
     console.log("Data Destroyed...");
+    await mongoose.connection.close();
     process.exit();
   } catch (error) {
     console.error(`Error: ${error}`);
+    await mongoose.connection.close();
     process.exit(1);
   }
 };
@@ -213,5 +217,5 @@ if (process.argv[2] === "-i") {
   deleteData();
 } else {
   console.log("Please use -i to import or -d to delete data");
-  process.exit();
+  process.exit(0);
 }
