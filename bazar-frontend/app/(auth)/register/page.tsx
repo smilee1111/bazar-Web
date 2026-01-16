@@ -6,7 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, Lock, Mail, User, Phone } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ChevronLeft, Lock, Mail, User, Phone, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -151,6 +152,15 @@ export default function Page() {
                                         Join Bazar to discover local shops
                                     </p>
                                 </div>
+
+                                {error && (
+                                    <Alert variant="destructive">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <AlertDescription>
+                                            {error}
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
 
                                 <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-6">
                                     <div className="flex flex-col gap-2">
