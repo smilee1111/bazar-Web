@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { IUserPopulated } from '../models/user.model';
 import { ROLE_NAMES } from '../constants/roles';
 
@@ -11,8 +12,8 @@ export function isUserAdmin(user: IUserPopulated | undefined): boolean {
         return false;
     }
     
-    // Ensure roleId is populated (not just an ObjectId string)
-    if (typeof user.roleId === 'string' || !('roleName' in user.roleId)) {
+    // Ensure roleId is populated (not just an ObjectId)
+    if (user.roleId instanceof mongoose.Types.ObjectId || !('roleName' in user.roleId)) {
         return false;
     }
     
