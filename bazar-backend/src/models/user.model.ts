@@ -30,8 +30,9 @@ export function isRolePopulated(user: IUser): user is IUser & { roleId: IRole } 
     return user.roleId != null && 
            typeof user.roleId === 'object' && 
            !Array.isArray(user.roleId) &&
+           '_id' in user.roleId &&
            'roleName' in user.roleId &&
-           '_id' in user.roleId;
+           typeof (user.roleId as any).roleName === 'string';
 }
 
 // Type guard to check if req.user is an IUser
