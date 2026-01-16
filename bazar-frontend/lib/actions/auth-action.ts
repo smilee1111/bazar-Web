@@ -2,10 +2,10 @@
 
 //server side processing of auth actions 
 import { setAuthToken, setUserData } from "../cookie";
-
+import { LoginData, RegisterData } from "../../app/(auth)/schema";
 
 import { register, login } from "../api/auth";
-export const handleRegister = async (formData: any) =>{
+export const handleRegister = async (formData: RegisterData) =>{
     try{
         //how to get data from component
         const result = await register(formData);
@@ -28,7 +28,7 @@ export const handleRegister = async (formData: any) =>{
     }
 }
 
-export const handleLogin = async (formData: any) =>{
+export const handleLogin = async (formData: LoginData) =>{
     try{
         //how to get data from component
         const result = await login(formData);

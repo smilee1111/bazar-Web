@@ -3,8 +3,9 @@
 
 import axios from './axios';//IMPORTANT: "./axios" not "axios"
 import { API } from "./endpoints";
+import { LoginData, RegisterData } from "../../app/(auth)/schema";
 
-export const register = async (registerData: any) => {
+export const register = async (registerData: RegisterData) => {
     try{
         const response = await axios.post(
             API.AUTH.REGISTER,//API path '/api/auth/register
@@ -20,7 +21,7 @@ export const register = async (registerData: any) => {
     }
 }
 
-export const login = async (loginData: any) => {
+export const login = async (loginData: LoginData) => {
         try{
         const response = await axios.post(
             API.AUTH.LOGIN,//API path '/api/auth/login
