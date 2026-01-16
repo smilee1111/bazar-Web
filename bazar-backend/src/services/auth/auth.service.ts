@@ -1,4 +1,5 @@
 import { UserRepository } from "../../repositories/user.repository";
+import { RoleRepository } from "../../repositories/role.repository";
 import { CreateUserDto, LoginUserDto } from "../../dtos/user.dto";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../../errors/http-error";
@@ -6,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from "../../config";
 
 let userRepository = new UserRepository();
+let roleRepository = new RoleRepository();
 
 export class AuthService{
     async registerUser(data: CreateUserDto){
@@ -22,12 +24,24 @@ export class AuthService{
             throw new HttpError(400, "Username already registered.");
         }
 
+        // Find the role by roleName (either 'user' or 'seller')
+        const role = await roleRepository.getRoleByRoleName(data.role);
+        if(!role){
+            throw new HttpError(400, "Invalid role selected.");
+        }
+
         //hash the password before saving to database
         const hashedPassword = await bcryptjs.hash(data.password, 15);
-        data.password = hashedPassword;
         
-        //create the user finally 
-        const newUser = await userRepository.createUser(data);
+        //create the user with roleId
+        const newUser = await userRepository.createUser({
+            fullName: data.fullName,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            username: data.username,
+            password: hashedPassword,
+            roleId: role._id
+        });
         return newUser;
     }
 
@@ -50,7 +64,7 @@ export class AuthService{
             id: user._id,
             email: user.email,
             username: user.username,
-            role: user.role
+            role: user.roleId
         }//data to be stored in token 
         
         const token = jwt.sign(payload,JWT_SECRET, {expiresIn: '30d'});

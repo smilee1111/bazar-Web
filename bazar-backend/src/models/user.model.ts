@@ -9,7 +9,7 @@ const UserSchema: Schema = new Schema(
         phoneNumber: { type: Number, required: true, unique: true },
         username : { type: String, required: true, unique: true},
         password : { type: String, required: true},
-        role: {type: String, enum: ['user','admin',"seller"], default: 'user'}
+        roleId: { type: Schema.Types.ObjectId, ref: 'Role', required: false }
     },
     {
         timestamps: true, //auto createdAt and updatedAt
@@ -18,6 +18,7 @@ const UserSchema: Schema = new Schema(
 
 export interface IUser extends UserType, Document{// combined type
     _id: mongoose.Types.ObjectId; //mogo realted attribute
+    roleId?: mongoose.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
 

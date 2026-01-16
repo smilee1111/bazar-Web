@@ -1,25 +1,19 @@
 import z from 'zod';
 import { userSchema } from "../types/user.type";
-export const CreateUserDto = userSchema.pick(
-    {
-        fullName: true,
-        email: true,
-        phoneNumber: true,
-        username: true,
-        password: true,
-        role: true,
-    }
-).extend(//add new attribute to schema
-    {
-        confirmPassword: z.string().min(6)
-    }
-).refine(//extra validation from existing attributes
+
+// Register DTO - allows users to choose between 'user' or 'seller' role
+export const CreateUserDto = userSchema.extend({
+    role: z.enum(['user', 'seller'], {
+        message: "Role must be either 'user' or 'seller'"
+    }),
+    confirmPassword: z.string().min(6)
+}).refine(
     (data) => data.password === data.confirmPassword,
     {
         message: "Password and Confirm Password must match",
-        path: ["ConfirmPassword"] //throws error on confirmPassword field
+        path: ["ConfirmPassword"]
     }
-)
+);
 
 export type CreateUserDto = z.infer<typeof CreateUserDto>;
 

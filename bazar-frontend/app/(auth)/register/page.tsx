@@ -11,8 +11,9 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterData, registerSchema } from "../schema";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { handleRegister } from "@/lib/actions/auth-action";
 
 const features = [
     {
@@ -41,14 +42,29 @@ export default function Page() {
     });
 
     const [pending, setTransition] = useTransition();
+    const [error , setError] = useState("");
 
     const submit = async (values: RegisterData) => {
+        setError((""));
+        try{
+            const result = await handleRegister(values);
+            if(!result.success){
+                console.error(result.message);
+                throw new Error(result.message);
+                
+                
+        }
+        // success, redirect(optional)
         setTransition(async () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
             router.push("/dashboard");
         });
         console.log("register", values);
+    }catch(err: Error | any){
+        setError(err.message || "Registration failed");
+      
     };
+}
 
     return (
         <div className="relative w-full min-h-screen bg-neutral-50 flex">
