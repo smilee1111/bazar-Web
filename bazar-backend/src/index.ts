@@ -20,7 +20,7 @@ let corsOptions = {
       : ['http://localhost:3000'],
     //list of domains allowed to access the server
     //frontend domain/url
-}
+};
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
