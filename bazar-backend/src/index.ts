@@ -54,7 +54,7 @@ app.use('/api/admin/users', adminRoutes);
 //starting the mongodb server
 async function startServer(){
     await conectDB();
- app.listen(PORT, '0.0.0.0', () => {  // Add '0.0.0.0' to bind to all interfaces
+ app.listen(PORT, '0.0.0.0', () => {  // Bind to all network interfaces so the server is reachable from containers or other hosts during development
     console.log(`Server on http://localhost:${PORT}`);
 });
 }
