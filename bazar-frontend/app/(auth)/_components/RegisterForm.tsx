@@ -1,24 +1,28 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { RegisterData, registerSchema } from "../schema";
-import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Lock, Mail, Phone, User } from "lucide-react";
+import { RegisterData, registerSchema } from "../schema";
+import { handleRegister } from "@/lib/actions/auth-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { LockIcon, MailIcon, UserIcon, PhoneIcon } from "lucide-react";
-import { handleRegister } from "@/lib/actions/auth-action";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import { RoleSelect, type RoleOption } from "@/components/auth/RoleSelect";
+import { getRolesAction } from "@/lib/actions/role-action";
 
 const formFields = [
     {
         id: "fullName",
         label: "Full Name",
         placeholder: "John Doe",
-        icon: UserIcon,
+        icon: User,
         type: "text" as const,
         autoComplete: "name",
     },
@@ -26,7 +30,7 @@ const formFields = [
         id: "email",
         label: "Email",
         placeholder: "your.email@example.com",
-        icon: MailIcon,
+        icon: Mail,
         type: "email" as const,
         autoComplete: "email",
     },
@@ -34,7 +38,7 @@ const formFields = [
         id: "phoneNumber",
         label: "Phone Number",
         placeholder: "+1 (555) 000-0000",
-        icon: PhoneIcon,
+        icon: Phone,
         type: "tel" as const,
         autoComplete: "tel",
     },
@@ -42,7 +46,7 @@ const formFields = [
         id: "username",
         label: "Username",
         placeholder: "johndoe123",
-        icon: UserIcon,
+        icon: User,
         type: "text" as const,
         autoComplete: "username",
     },
@@ -50,7 +54,7 @@ const formFields = [
         id: "password",
         label: "Password",
         placeholder: "Create a password",
-        icon: LockIcon,
+        icon: Lock,
         type: "password" as const,
         autoComplete: "new-password",
     },
@@ -58,7 +62,7 @@ const formFields = [
         id: "confirmPassword",
         label: "Confirm Password",
         placeholder: "Re-enter your password",
-        icon: LockIcon,
+        icon: Lock,
         type: "password" as const,
         autoComplete: "new-password",
     },
@@ -69,162 +73,203 @@ export default function RegisterForm() {
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors, isSubmitting },
     } = useForm<RegisterData>({
         resolver: zodResolver(registerSchema),
         mode: "onSubmit",
     });
 
-    const [pending, setTransition] = useTransition();
-    const [error , setError] = useState("");
-    
-   const submit = async (values: RegisterData) => {
-        setError((""));
-        try{
-            const result = await handleRegister(values);
-            if(!result.success){
-                throw new Error(result.message);
-        }
-        //success, redirect(optional)
-        setTransition(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            router.push("/dashboard");
-        });
-        console.log("register", values);
-    }catch(err: Error | any){
-        setError(err.message || "Registration failed");
-      
-    };
-}
+    const [pending, startTransition] = useTransition();
+    const [serverError, setServerError] = useState<string | null>(null);
+    const [acceptTerms, setAcceptTerms] = useState(false);
+    const [roles, setRoles] = useState<RoleOption[]>([]);
+    const [rolesLoading, setRolesLoading] = useState(true);
+    const [rolesError, setRolesError] = useState<string | null>(null);
 
+    useEffect(() => {
+        let active = true;
+
+        const loadRoles = async () => {
+            setRolesLoading(true);
+            const result = await getRolesAction();
+            if (!active) {
+                return;
+            }
+
+            if (result.success) {
+                setRoles(result.data);
+                setRolesError(null);
+            } else {
+                setRoles([]);
+                setRolesError(result.message || "Unable to load roles");
+            }
+            setRolesLoading(false);
+        };
+
+        loadRoles();
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    const onSubmit = async (values: RegisterData) => {
+        if (!acceptTerms) {
+            setServerError("Please review and accept the terms to continue.");
+            return;
+        }
+
+        setServerError(null);
+        try {
+            const result = await handleRegister(values);
+            if (!result.success) {
+                throw new Error(result.message);
+            }
+
+            startTransition(async () => {
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                router.push("/dashboard");
+            });
+        } catch (error: any) {
+            setServerError(error.message || "Registration failed");
+        }
+    };
+
+    const isBusy = isSubmitting || pending;
 
     return (
-        <div className="w-full max-w-[576px] mx-auto flex flex-col bg-white dark:bg-gray-900 rounded-3xl border-[1.2px] border-solid border-[#efefef] dark:border-gray-800 p-8 md:p-[49.2px]">
-            <header className="flex flex-col gap-3">
-                <h1 className="font-light text-[#1a1a1a] dark:text-white text-4xl md:text-5xl tracking-[-0.96px] leading-tight">
-                    Create Account
-                </h1>
-                <p className="font-normal text-[#4a4a4a] dark:text-gray-400 text-base leading-[27.2px]">
-                    Join Bazar to discover local shops
-                </p>
-            </header>
-
-            <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-6 mt-10">
-                {formFields.map((field) => {
-                    const IconComponent = field.icon;
-                    const fieldError = errors[field.id as keyof RegisterData];
-                    return (
-                        <div key={field.id} className="flex flex-col gap-2">
-                            <Label
-                                htmlFor={field.id}
-                                className="font-normal text-[#524632] dark:text-gray-300 text-base leading-6"
-                            >
-                                {field.label}
-                                <span className="font-normal text-[#8f7e4f] text-base ml-0.5">
-                                    *
-                                </span>
-                            </Label>
-                            <div className="relative">
-                                <IconComponent className="absolute left-4 top-[15px] w-5 h-5 text-[#1a191980] dark:text-gray-500" />
-                                <Input
-                                    id={field.id}
-                                    type={field.type}
-                                    placeholder={field.placeholder}
-                                    autoComplete={field.autoComplete}
-                                    {...register(field.id as keyof RegisterData)}
-                                    className="h-[50px] pl-12 pr-4 py-3 rounded-[10px] border-[1.2px] font-normal text-base placeholder:text-[#1a191980] dark:placeholder:text-gray-500"
-                                />
-                            </div>
-                            {fieldError?.message && (
-                                <p className="text-xs text-red-600">{String(fieldError.message)}</p>
-                            )}
-                        </div>
-                    );
-                })}
-
-                <div className="flex items-start gap-2 mt-2">
-                    <p className="font-normal text-black dark:text-white text-base leading-[26px]">
-                        I agree to the{" "}
-                        <a
-                            href="#"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            className="text-[#8f7e4f] underline hover:text-[#8f7e4f]/80"
-                        >
-                            Terms of Service
-                        </a>{" "}
-                        and{" "}
-                        <a
-                            href="#"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            className="text-[#8f7e4f] underline hover:text-[#8f7e4f]/80"
-                        >
-                            Privacy Policy
-                        </a>
+        <Card className="w-full bg-white rounded-3xl border-[1.2px] border-[#efefef] shadow-[0px_4px_6px_-4px_#0000001a,0px_10px_15px_-3px_#0000001a]">
+            <CardContent className="p-8 md:p-[42px]">
+                <div className="flex flex-col gap-3">
+                    <h2 className="font-light text-[#1a1a1a] text-3xl md:text-4xl tracking-[-0.72px] leading-tight md:leading-[48px]">
+                        Create Account
+                    </h2>
+                    <p className="font-normal text-[#4a4a4a] text-sm md:text-base leading-relaxed">
+                        Join Bazar to discover local shops
                     </p>
                 </div>
 
-                <Button
-                    type="submit"
-                    disabled={isSubmitting || pending}
-                    className="h-14 bg-[#8f7e4f] hover:bg-[#8f7e4f]/90 rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-white text-base mt-4 disabled:opacity-60"
-                >
-                    {isSubmitting || pending ? "Creating account..." : "Create Account"}
-                </Button>
-            </form>
+                {serverError && (
+                    <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {serverError}
+                    </div>
+                )}
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 mt-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {formFields.map((field) => {
+                            const IconComponent = field.icon;
+                            const fieldError = errors[field.id as keyof RegisterData];
+                            return (
+                                <div key={field.id} className="flex flex-col gap-1.5">
+                                    <Label htmlFor={field.id} className="font-normal text-[#524632] text-sm md:text-base">
+                                        {field.label}
+                                        <span className="text-[#8f7e4f] ml-1">*</span>
+                                    </Label>
+                                    <div className="relative">
+                                        <IconComponent className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980]" />
+                                        <Input
+                                            id={field.id}
+                                            type={field.type}
+                                            placeholder={field.placeholder}
+                                            autoComplete={field.autoComplete}
+                                            {...register(field.id as keyof RegisterData)}
+                                            className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980]"
+                                        />
+                                    </div>
+                                    {fieldError?.message && (
+                                        <p className="text-xs text-red-600">{String(fieldError.message)}</p>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
 
-            <div className="relative flex items-center justify-center mt-8">
-                <Separator className="absolute w-full border-t-[1.2px] border-[#efefef] dark:border-gray-700" />
-                <div className="relative bg-white dark:bg-gray-900 px-4">
-                    <span className="font-normal text-[#4a4a4a] dark:text-gray-400 text-base leading-6">
-                        Or continue with
-                    </span>
+                    <Controller
+                        name="role"
+                        control={control}
+                        render={({ field }) => (
+                            <RoleSelect
+                                value={field.value}
+                                onValueChange={(value) => field.onChange(value)}
+                                roles={roles}
+                                loading={rolesLoading}
+                                required
+                                error={errors.role?.message || rolesError || undefined}
+                                className="mt-2"
+                                placeholder="Select a role"
+                            />
+                        )}
+                    />
+
+                    <div className="flex items-start gap-3 rounded-2xl border border-[#f0e8d0] bg-[#fdfbf6] px-4 py-3">
+                        <Checkbox
+                            id="terms"
+                            checked={acceptTerms}
+                            onCheckedChange={(checked) => setAcceptTerms(checked === true)}
+                            className="mt-1 w-[17px] h-[17px] border-[#8f7e4f] data-[state=checked]:bg-[#8f7e4f] data-[state=checked]:border-[#8f7e4f]"
+                        />
+                        <Label htmlFor="terms" className="font-normal text-black text-sm md:text-base leading-relaxed">
+                            I agree to the {" "}
+                            <a href="#" className="text-[#8f7e4f] underline">
+                                Terms of Service
+                            </a>{" "}
+                            and {" "}
+                            <a href="#" className="text-[#8f7e4f] underline">
+                                Privacy Policy
+                            </a>
+                        </Label>
+                    </div>
+
+                    <Button
+                        type="submit"
+                        disabled={isBusy || !acceptTerms}
+                        className="w-full h-12 md:h-14 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60"
+                    >
+                        {isBusy ? "Creating account..." : "Create Account"}
+                    </Button>
+                </form>
+
+                <div className="relative mt-8">
+                    <Separator className="bg-[#efefef]" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4">
+                        <span className="font-normal text-[#4a4a4a] text-sm md:text-base">Or continue with</span>
+                    </div>
                 </div>
-            </div>
 
-            <Button
-                variant="outline"
-                type="button"
-                className="h-[58px] mt-8 bg-white dark:bg-gray-900 rounded-full border-[1.2px] border-[#efefef] dark:border-gray-700 shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-[#1a1a1a] dark:text-white text-base hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-                <svg
-                    className="w-5 h-5 mr-2"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full h-12 md:h-[52px] mt-8 bg-white rounded-full border-[1.2px] border-[#efefef] shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-[#1a1a1a] text-sm md:text-base hover:bg-neutral-50"
                 >
-                    <path
-                        d="M18.1713 8.36788H17.5001V8.33329H10.0001V11.6666H14.7096C14.0225 13.6069 12.1763 15 10.0001 15C7.23882 15 5.00007 12.7612 5.00007 9.99996C5.00007 7.23871 7.23882 4.99996 10.0001 4.99996C11.2746 4.99996 12.4342 5.48079 13.3171 6.26621L15.6742 3.90913C14.1859 2.52204 12.1951 1.66663 10.0001 1.66663C5.39799 1.66663 1.66675 5.39788 1.66675 9.99996C1.66675 14.602 5.39799 18.3333 10.0001 18.3333C14.6022 18.3333 18.3334 14.602 18.3334 9.99996C18.3334 9.44121 18.2759 8.89579 18.1713 8.36788Z"
-                        fill="#FFC107"
-                    />
-                    <path
-                        d="M2.62756 6.12121L5.36548 8.12913C6.10631 6.29496 7.90048 5 10.0001 5C11.2746 5 12.4342 5.48083 13.3171 6.26625L15.6742 3.90917C14.1859 2.52208 12.1951 1.66667 10.0001 1.66667C6.79923 1.66667 4.02339 3.47371 2.62756 6.12121Z"
-                        fill="#FF3D00"
-                    />
-                    <path
-                        d="M10.0001 18.3333C12.1526 18.3333 14.1092 17.5095 15.5876 16.17L13.0084 13.9875C12.1434 14.6452 11.0801 15.0008 10.0001 15C7.83259 15 5.99176 13.6179 5.29843 11.6891L2.58093 13.7829C3.96009 16.4816 6.76176 18.3333 10.0001 18.3333Z"
-                        fill="#4CAF50"
-                    />
-                    <path
-                        d="M18.1713 8.36796H17.5V8.33337H10V11.6667H14.7096C14.3809 12.5902 13.7889 13.3972 13.0067 13.9879L13.0079 13.9871L15.5871 16.1696C15.4046 16.3355 18.3333 14.1667 18.3333 10C18.3333 9.44129 18.2758 8.89587 18.1713 8.36796Z"
-                        fill="#1976D2"
-                    />
-                </svg>
-                Sign up with Google
-            </Button>
+                    <svg className="w-5 h-5 mr-2" viewBox="0 0 20 20" fill="none">
+                        <path
+                            d="M18.1713 8.36788H17.5001V8.33329H10.0001V11.6666H14.7096C14.0225 13.6069 12.1763 15 10.0001 15C7.23882 15 5.00007 12.7612 5.00007 9.99996C5.00007 7.23871 7.23882 4.99996 10.0001 4.99996C11.2746 4.99996 12.4342 5.48079 13.3171 6.26621L15.6742 3.90913C14.1859 2.52204 12.1951 1.66663 10.0001 1.66663C5.39799 1.66663 1.66675 5.39788 1.66675 9.99996C1.66675 14.602 5.39799 18.3333 10.0001 18.3333C14.6022 18.3333 18.3334 14.602 18.3334 9.99996C18.3334 9.44121 18.2759 8.89579 18.1713 8.36788Z"
+                            fill="#FFC107"
+                        />
+                        <path
+                            d="M2.62756 6.12121L5.36548 8.12913C6.10631 6.29496 7.90048 5 10.0001 5C11.2746 5 12.4342 5.48083 13.3171 6.26625L15.6742 3.90917C14.1859 2.52208 12.1951 1.66667 10.0001 1.66667C6.79923 1.66667 4.02339 3.47371 2.62756 6.12121Z"
+                            fill="#FF3D00"
+                        />
+                        <path
+                            d="M10.0001 18.3333C12.1526 18.3333 14.1092 17.5095 15.5876 16.17L13.0084 13.9875C12.1434 14.6452 11.0801 15.0008 10.0001 15C7.83259 15 5.99176 13.6179 5.29843 11.6891L2.58093 13.7829C3.96009 16.4816 6.76176 18.3333 10.0001 18.3333Z"
+                            fill="#4CAF50"
+                        />
+                        <path
+                            d="M18.1713 8.36796H17.5V8.33337H10V11.6667H14.7096C14.3809 12.5902 13.7889 13.3972 13.0067 13.9879L13.0079 13.9871L15.5871 16.1696C15.4046 16.3355 18.3333 14.1667 18.3333 10C18.3333 9.44129 18.2758 8.89587 18.1713 8.36796Z"
+                            fill="#1976D2"
+                        />
+                    </svg>
+                    Sign up with Google
+                </Button>
 
-            <footer className="flex items-center justify-center gap-2 mt-8">
-                <p className="font-normal text-[#4a4a4a] dark:text-gray-400 text-base text-center leading-[27.2px]">
-                    Already have an account?
+                <p className="text-center font-normal text-[#4a4a4a] text-sm md:text-base mt-8">
+                    Already have an account? {" "}
+                    <Link href="/login" className="text-[#8f7e4f]">
+                        Sign in
+                    </Link>
                 </p>
-                <Link
-                    href="/login"
-                    className="font-normal text-[#8f7e4f] text-base text-center leading-[27.2px] hover:underline"
-                >
-                    Sign in
-                </Link>
-            </footer>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
