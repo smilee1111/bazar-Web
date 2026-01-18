@@ -5,5 +5,8 @@ export const API = {
     AUTH:{
         LOGIN: 'api/auth/login',
         REGISTER: 'api/auth/register',
-    }
+    },
+    ROLES: {
+        GET_ALL: 'api/roles',
+    },
 }
