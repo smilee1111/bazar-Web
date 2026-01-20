@@ -40,6 +40,7 @@ export class AuthService{
             phoneNumber: data.phoneNumber,
             username: data.username,
             password: hashedPassword,
+            profilePic: data.profilePic,
             roleId: role._id
         });
         return newUser;
