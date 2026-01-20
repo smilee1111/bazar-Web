@@ -9,6 +9,7 @@ const UserSchema: Schema = new Schema(
         phoneNumber: { type: String, required: true, unique: true },
         username : { type: String, required: true, unique: true},
         password : { type: String, required: true},
+        profilePic: { type: String, required: false },
         roleId: { type: Schema.Types.ObjectId, ref: 'Role', required: false }
     },
     {
