@@ -1,7 +1,7 @@
 import { AuthService } from "../../services/auth/auth.service";
 import z, { success } from 'zod';
 import { Request, Response} from 'express';
-import { CreateUserDto, LoginUserDto } from "../../dtos/user.dto";
+import { CreateUserDto, LoginUserDto,UpdateUserDto } from "../../dtos/user.dto";
 
 
 //initialize the auth service
@@ -53,4 +53,50 @@ export class AuthController{
         }
     }
 
+async getUserProfile(req: Request, res: Response){
+        try{
+            const userId = req.user?._id;
+            if(!userId){
+                return res.status(401).json(
+                    { success: false, message: "Unauthorized" }
+                )
+            }
+            const user = await authService.getUserById(userId);
+            return res.status(200).json(
+                { success: true, data: user, message: "User profile fetched successfully" }
+            )
+        }catch(error: Error | any){
+            return res.status(error.statusCode || 500).json(
+                { success: false, message: error.message || "Internal Server Error" }
+            )
+        }
+    }
+
+    async updateUser(req: Request, res: Response){
+        try{    
+            const userId = req.user?._id;
+            if(!userId){
+                return res.status(401).json(
+                    { success: false, message: "Unauthorized" }
+                )
+            }
+            const parsedData = UpdateUserDto.safeParse(req.body);
+            if(!parsedData.success){
+                return res.status(400).json(
+                    { success: false, message: z.prettifyError(parsedData.error) }
+                )
+            }
+            if(req.file){
+                parsedData.data.profilePic = `/uploads/${req.file.filename}`;
+            }
+            const updatedUser = await authService.updateUser(userId, parsedData.data);
+            return res.status(200).json(
+                { success: true, data: updatedUser, message: "User updated successfully" }
+            )
+        }catch(error: Error | any){
+            return res.status(error.statusCode || 500).json(
+                { success: false, message: error.message || "Internal Server Error" }
+            )   
+        }
+    }
 }

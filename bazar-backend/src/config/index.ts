@@ -16,6 +16,12 @@ export const LOCAL_DATABASE_URI: string =
     process.env.LOCAL_DATABASE_URI || 'mongodb://localhost:27017/bazar';
 //local MongoDB URI
 
+
+
+export const REMOTE_DATABASE_URI: string =
+    process.env.REMOTE_DATABASE_URI || 'mongodb+srv://Muskan:tgHWNPkjpnE5tZlP@cluster0.1ckzbas.mongodb.net/bazar';
+//remote MongoDB URI
+
 export const MONGO_URI: string =
     process.env.MONGO_URI || 'mongodb://localhost:27017/bazar';
 //fallback to local mongo db if env is missing 

@@ -24,6 +24,8 @@ export const LoginUserDto = z.object({
 
 export type LoginUserDto = z.infer<typeof LoginUserDto>;
 
-// export const UpdateUserDto = z.object({
-    
-// })
+
+export const UpdateUserDto = userSchema.partial();//all optional
+
+export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
+
