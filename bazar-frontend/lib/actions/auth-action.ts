@@ -2,9 +2,9 @@
 
 //server side processing of auth actions 
 import { setAuthToken, setUserData } from "../cookie";
+import { register, login, whoami,updateProfile} from "../api/auth";
+import { revalidatePath } from "next/cache";
 
-
-import { register, login } from "../api/auth";
 export const handleRegister = async (formData: any) =>{
     try{
         //how to get data from component
@@ -50,5 +50,48 @@ export const handleLogin = async (formData: any) =>{
             success: false,
             message: err.message || "Login failed"
         };
+    }
+}
+
+export const handleWhoAmI = async () => {
+    try{
+        const result = await whoami();
+        if(result.success){
+            return {
+                success: true,
+                data: result.data
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to fetch user data"
+        };
+    }catch(err: Error | any){
+        return {
+            success: false,
+            message: err.message || "Failed to fetch user data"
+        };
+    }   
+}
+
+export const handleUpdateProfile = async (formData: any) => {
+    try{
+        const result = await updateProfile(formData);
+        if(result.success){
+            // update cookie data
+            await setUserData(result.data);
+            // optionally revalidate path(s)
+            revalidatePath("/user/profile");
+            return {
+                success: true,
+                message: "Profile updated successfully",
+                data: result.data 
+            };
+        }
+        return {
+            success: false, message: result.message || "Failed to update profile"
+        }
+    }catch(err: Error | any){
+        return { success: false, message: err.message || "Failed to update profile"};
     }
 }

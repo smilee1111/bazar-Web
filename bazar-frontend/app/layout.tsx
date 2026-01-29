@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-
+import { AuthProvider } from "./context/AuthContext";
+import { toast, ToastContainer} from "react-toastify";
 const poppins = localFont({
   src: [
     {
@@ -71,7 +72,9 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} font-sans antialiased`}
       >
-        {children}
+        <AuthProvider>{children}
+        <ToastContainer position ="top-right" />
+        </AuthProvider>
       </body>
     </html>
   );

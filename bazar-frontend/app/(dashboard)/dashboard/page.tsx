@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, Store, Users, TrendingUp, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
+import { useAuth } from "../../context/AuthContext";
 const stats = [
     {
         title: "Total Shops",
@@ -35,9 +35,12 @@ const stats = [
 
 export default function DashboardPage() {
     const router = useRouter();
-
+    const { user, logout} = useAuth();
+    //{user && <div> Welcome {user.email} </div>}
+    //{user && <button onClick={logout}>Logout</button>}
     const handleLogout = () => {
         // Add logout logic here
+        logout();
         router.push("/login");
     };
 

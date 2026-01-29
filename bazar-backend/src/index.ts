@@ -3,6 +3,7 @@ import { conectDB } from './database/mongodb';
 import bodyParser from 'body-parser';
 import { PORT } from './config';
 import cors from 'cors';
+import path from 'path';
 
 //importing and initializing the env file 
 import dotenv from 'dotenv';
@@ -27,6 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //origin: "*", //allow all domains
 app.use(cors(corsOptions));
 
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 //test api
 app.get('/',(req:Request,res:Response) => {
     res.send("Hello World!");
