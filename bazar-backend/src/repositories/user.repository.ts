@@ -30,30 +30,31 @@ export class UserRepository implements IUserRepository{
     async createUser(data: Partial<IUser>): Promise<IUser> {
         const newUser = new UserModel(data);
         await newUser.save();
+        await newUser.populate({ path: 'roleId', select: 'roleId roleName status' });
         return newUser;
     }
     async getUserByEmail(email: string): Promise<IUser | null> {
-        const user = await UserModel.findOne({"email": email});
+        const user = await UserModel.findOne({"email": email}).populate({ path: 'roleId', select: 'roleId roleName status' });
         return user;
     }
 
     async getUserByUsername(username: string): Promise<IUser | null> {
-        const user = await UserModel.findOne({"username" : username});
+        const user = await UserModel.findOne({"username" : username}).populate({ path: 'roleId', select: 'roleId roleName status' });
         return user;
     }
 
     async getUserById(id: string): Promise<IUser | null> {
-        const user = await UserModel.findById(id);
+        const user = await UserModel.findById(id).populate({ path: 'roleId', select: 'roleId roleName status' });
         return user;
     }
 
     async getAllUsers(): Promise<IUser[]> {
-        const users = await UserModel.find();
+        const users = await UserModel.find().populate({ path: 'roleId', select: 'roleId roleName status' });
         return users;
     }
 
     async updateUser(id: string, data: Partial<IUser>): Promise<IUser | null> {
-        const updatedUser = await UserModel.findByIdAndUpdate(id, data, { new : true});
+        const updatedUser = await UserModel.findByIdAndUpdate(id, data, { new : true }).populate({ path: 'roleId', select: 'roleId roleName status' });
         return updatedUser;
     }
 

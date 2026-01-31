@@ -13,5 +13,6 @@ router.post('/register', authController.registerUser);
 router.post('/login', authController.loginUser);
 
 router.put('/update-profile',authorizedMiddleware,uploads.single('image'),authController.updateUser)
+router.put('/:id', authorizedMiddleware, uploads.single('image'), authController.updateUser);
 router.get('/whoami', authorizedMiddleware, authController.getUserProfile);
 export default router;

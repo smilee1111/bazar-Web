@@ -1,5 +1,6 @@
 import mongoose,{ Document, Schema} from "mongoose";
 import { UserType } from "../types/user.type";
+import { IRole } from "./role.model";
 
 
 const UserSchema: Schema = new Schema(
@@ -18,8 +19,8 @@ const UserSchema: Schema = new Schema(
 )
 
 export interface IUser extends UserType, Document{// combined type
-    _id: mongoose.Types.ObjectId; //mogo realted attribute
-    roleId?: mongoose.Types.ObjectId;
+    _id: mongoose.Types.ObjectId; //mogo related attribute
+    roleId?: mongoose.Types.ObjectId | IRole;
     createdAt: Date;
     updatedAt: Date;
 

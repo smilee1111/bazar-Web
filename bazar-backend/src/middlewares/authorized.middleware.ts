@@ -4,13 +4,14 @@ import { JWT_SECRET} from "../config";
 import { IUser } from "../models/user.model";
 import { UserRepository } from "../repositories/user.repository";
 import { HttpError } from "../errors/http-error";
+import { isAdminUser } from "../utils/user.util";
 
 let userRepository = new UserRepository();
 
 declare global { 
     namespace Express {
         interface Request{
-            user?: Record<string, any> | IUser
+            user?: IUser
         }
     }
 }
@@ -55,7 +56,7 @@ export async function adminMiddleware(req: Request, res: Response, next: NextFun
             //omly use role/admin middleware after user is authorized
             if(!req.user)
                 throw new HttpError( 401, " Unauthorized, User not found");
-            if(req.user.roleId?.toString() !== 'role_admin_001')
+            if(!isAdminUser(req.user))
                 throw new HttpError( 403, "Forbidden Admins only");
 
             return next();

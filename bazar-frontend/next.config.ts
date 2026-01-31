@@ -5,12 +5,19 @@ const nextConfig: NextConfig = {
 
   images: {
     dangerouslyAllowLocalIP: true,
+    domains: ['localhost', '127.0.0.1'],
     remotePatterns: [
       {
         protocol: "http",
         hostname: 'localhost',
         port: '5050',
-        pathname: 'uploads/**',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: "http",
+        hostname: '127.0.0.1',
+        port: '5050',
+        pathname: '/uploads/**',
       },
       {
         protocol: 'https',

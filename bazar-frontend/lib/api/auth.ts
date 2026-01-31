@@ -51,10 +51,10 @@ export const whoami = async () => {
     }
 }
 
-export const updateProfile = async (updateData: any) => {
+export const updateProfile = async (userId: string, updateData: FormData) => {
     try{
         const response = await axios.put(
-            API.AUTH.UPDATEPROFILE,
+            typeof API.AUTH.UPDATE_BY_ID === 'function' ? API.AUTH.UPDATE_BY_ID(userId) : `${API.AUTH.UPDATEPROFILE}/${userId}`,
             updateData,
             {
                 headers: {

@@ -1,7 +1,7 @@
 "use server";   
 
 //server side processing of auth actions 
-import { setAuthToken, setUserData } from "../cookie";
+import { setAuthToken, setUserData, getUserData } from "../cookie";
 import { register, login, whoami,updateProfile} from "../api/auth";
 import { revalidatePath } from "next/cache";
 
@@ -74,14 +74,19 @@ export const handleWhoAmI = async () => {
     }   
 }
 
-export const handleUpdateProfile = async (formData: any) => {
+export const handleUpdateProfile = async (formData: FormData) => {
     try{
-        const result = await updateProfile(formData);
+        const user = await getUserData();
+        if(!user?._id){
+            throw new Error("Unauthorized");
+        }
+        const result = await updateProfile(user._id, formData);
         if(result.success){
             // update cookie data
             await setUserData(result.data);
             // optionally revalidate path(s)
             revalidatePath("/user/profile");
+            revalidatePath("/admin/users");
             return {
                 success: true,
                 message: "Profile updated successfully",

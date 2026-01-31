@@ -1,53 +1,109 @@
 import { UserRepository } from "../../repositories/user.repository";
-import { Request, Response} from "express";
-import { CreateUserDto } from "../../dtos/user.dto";
-import z from 'zod';
+import type { CreateUserDto as CreateUserInput, UpdateUserDto as UpdateUserInput } from "../../dtos/user.dto";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../../errors/http-error";
+import { RoleRepository } from "../../repositories/role.repository";
+import { sanitizeUser, SafeUser } from "../../utils/user.util";
+import { IUser } from "../../models/user.model";
 
 //initializing user repository
 let userRepository = new UserRepository();
+let roleRepository = new RoleRepository();
 
 export class AdminUserService{
-    async adminCreateUser(data: CreateUserDto){
-        //logic to register user, duplicate check, hash
-        const emailExists = await userRepository.getUserByEmail(data.email);
-        if(emailExists){//if instance found, duplicate
-            throw new HttpError(400, "Email already exists");
+    private async resolveRole(roleName?: string) {
+        const normalizedRole = roleName?.toLowerCase() || 'user';
+        const role = await roleRepository.getRoleByRoleName(normalizedRole);
+        if(!role){
+            throw new HttpError(400, "Invalid role selected");
         }
-        const usernameExists = await userRepository.getUserByUsername(data.username);
-        if(usernameExists){
-            throw new HttpError(400, "Username already exists");
+        if(role.status !== 'active'){
+            throw new HttpError(403, "Selected role is inactive");
         }
-        //donot save plan text password, hash the password
+        return role;
+    }
+
+    private async ensureUniqueFields(data: Partial<IUser>, userIdToExclude?: string) {
+        if(data.email){
+            const emailExists = await userRepository.getUserByEmail(data.email);
+            if(emailExists && emailExists._id.toString() !== userIdToExclude){
+                throw new HttpError(400, "Email already exists");
+            }
+        }
+
+        if(data.username){
+            const usernameExists = await userRepository.getUserByUsername(data.username);
+            if(usernameExists && usernameExists._id.toString() !== userIdToExclude){
+                throw new HttpError(400, "Username already exists");
+            }
+        }
+    }
+
+    async adminCreateUser(data: CreateUserInput): Promise<SafeUser>{
+        await this.ensureUniqueFields({ email: data.email, username: data.username });
+        const role = await this.resolveRole(data.role);
+
         const hashedPassword = await bcryptjs.hash(data.password,10); //10 - complexity
-        data.password=hashedPassword; //replacce plain text with hashed password
-        const newUser = await userRepository.createUser(data);
-        return newUser;
+        const newUser = await userRepository.createUser({
+            fullName: data.fullName,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            username: data.username,
+            password: hashedPassword,
+            profilePic: data.profilePic,
+            roleId: role._id
+        });
+        return sanitizeUser(newUser);
     }
 
-     async getAllUsers() {
-        //logic to get all users
-        let users = await userRepository.getAllUsers();
-        //transform data if needed
-        return users;
+     async getAllUsers(): Promise<SafeUser[]> {
+        const users = await userRepository.getAllUsers();
+        return users.map(user => sanitizeUser(user));
     }
 
-    async getUserById(userId: string){
-        //logic to get user by id
-        let user = await userRepository.getUserById(userId);
+    async getUserById(userId: string): Promise<SafeUser>{
+        const user = await userRepository.getUserById(userId);
         if(!user){
             throw new HttpError(404,"User not found");
         }
-        return user;
+        return sanitizeUser(user);
     }
-    async updateUser(userId: string){
-        //logic to update the user 
-       await this.updateUser; 
+    async updateUser(userId: string, data: UpdateUserInput): Promise<SafeUser>{
+        const existingUser = await userRepository.getUserById(userId);
+        if(!existingUser){
+            throw new HttpError(404,"User not found");
+        }
+
+        await this.ensureUniqueFields({
+            email: data.email,
+            username: data.username,
+        }, userId);
+
+        const updatePayload: Partial<IUser> = { ...data };
+        if(data.password){
+            updatePayload.password = await bcryptjs.hash(data.password, 10);
+        }
+
+        if(data.role){
+            const role = await this.resolveRole(data.role);
+            updatePayload.roleId = role._id;
+        }
+
+        delete (updatePayload as any).role;
+
+        const updatedUser = await userRepository.updateUser(userId, updatePayload);
+        if(!updatedUser){
+            throw new HttpError(404, "User not found");
+        }
+        return sanitizeUser(updatedUser);
     }
 
     async deleteUser(userId: string){
-        await this.deleteUser;
+        const deleted = await userRepository.deleteUser(userId);
+        if(!deleted){
+            throw new HttpError(404, "User not found");
+        }
+        return true;
     }
 
 }

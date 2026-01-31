@@ -1,7 +1,8 @@
 import { AuthService } from "../../services/auth/auth.service";
-import z, { success } from 'zod';
+import z from 'zod';
 import { Request, Response} from 'express';
 import { CreateUserDto, LoginUserDto,UpdateUserDto } from "../../dtos/user.dto";
+import { isAdminUser } from "../../utils/user.util";
 
 
 //initialize the auth service
@@ -61,7 +62,7 @@ async getUserProfile(req: Request, res: Response){
                     { success: false, message: "Unauthorized" }
                 )
             }
-            const user = await authService.getUserById(userId);
+            const user = await authService.getUserById(userId.toString());
             return res.status(200).json(
                 { success: true, data: user, message: "User profile fetched successfully" }
             )
@@ -74,22 +75,39 @@ async getUserProfile(req: Request, res: Response){
 
     async updateUser(req: Request, res: Response){
         try{    
-            const userId = req.user?._id;
-            if(!userId){
+            const authUserId = req.user?._id?.toString();
+            const targetUserId = req.params.id || authUserId;
+
+            if(!authUserId || !targetUserId){
                 return res.status(401).json(
                     { success: false, message: "Unauthorized" }
                 )
             }
-            const parsedData = UpdateUserDto.safeParse(req.body);
+
+            const isSelfUpdate = authUserId === targetUserId;
+            const isAdmin = isAdminUser(req.user);
+
+            if(!isSelfUpdate && !isAdmin){
+                return res.status(403).json({ success: false, message: "Forbidden" });
+            }
+
+            const payload = { ...req.body };
+            const parsedData = UpdateUserDto.safeParse(payload);
             if(!parsedData.success){
                 return res.status(400).json(
                     { success: false, message: z.prettifyError(parsedData.error) }
                 )
             }
+
             if(req.file){
                 parsedData.data.profilePic = `/uploads/${req.file.filename}`;
             }
-            const updatedUser = await authService.updateUser(userId, parsedData.data);
+
+            if(!isAdmin){
+                delete parsedData.data.role;
+            }
+
+            const updatedUser = await authService.updateUser(targetUserId, parsedData.data, { allowRoleUpdate: isAdmin });
             return res.status(200).json(
                 { success: true, data: updatedUser, message: "User updated successfully" }
             )

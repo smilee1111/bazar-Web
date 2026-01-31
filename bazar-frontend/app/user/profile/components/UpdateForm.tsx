@@ -41,6 +41,10 @@ export default function UpdateForm(
         }
     });
 
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
+    const persistedImage = user?.profilePic
+        ? (user.profilePic.startsWith("http") ? user.profilePic : `${apiBaseUrl}${user.profilePic}`)
+        : null;
 
     const [error, setError] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -121,9 +125,9 @@ export default function UpdateForm(
                                 )}
                             />
                         </div>
-                    ) : user?.imageUrl ? (
+                    ) : persistedImage ? (
                         <Image
-                            src={process.env.NEXT_PUBLIC_API_BASE_URL + user.imageUrl}
+                            src={persistedImage}
                             alt="Profile Image"
                             width={100}
                             height={100}
