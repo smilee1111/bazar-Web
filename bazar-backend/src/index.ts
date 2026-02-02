@@ -53,6 +53,8 @@ import adminRoutes from './routes/admin/user.route';
 app.use('/api/admin/users', adminRoutes);
 
 
+import userSelfRoutes from './routes/user/user_self.route';
+app.use('/api/user', userSelfRoutes);
 //starting the mongodb server
 async function startServer(){
     await conectDB();

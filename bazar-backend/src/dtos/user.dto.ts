@@ -1,11 +1,13 @@
 import z from 'zod';
 import { userSchema } from "../types/user.type";
 
+
+const allowedRoles = z.enum(['user', 'seller', 'admin'], {
+    message: "Role must be either 'user', 'seller' or 'admin'"
+});
 // Register DTO - allows users to choose between 'user' or 'seller' role
 export const CreateUserDto = userSchema.extend({
-    role: z.enum(['user', 'seller'], {
-        message: "Role must be either 'user' or 'seller'"
-    }),
+    role: allowedRoles,
     confirmPassword: z.string().min(6)
 }).refine(
     (data) => data.password === data.confirmPassword,
@@ -25,7 +27,9 @@ export const LoginUserDto = z.object({
 export type LoginUserDto = z.infer<typeof LoginUserDto>;
 
 
-export const UpdateUserDto = userSchema.partial();//all optional
+export const UpdateUserDto = userSchema.partial().extend({
+    role: allowedRoles.optional()
+});
 
 export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
 

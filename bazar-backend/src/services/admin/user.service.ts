@@ -1,6 +1,6 @@
 import { UserRepository } from "../../repositories/user.repository";
 import { Request, Response} from "express";
-import { CreateUserDto } from "../../dtos/user.dto";
+import { CreateUserDto, UpdateUserDto } from "../../dtos/user.dto";
 import z from 'zod';
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../../errors/http-error";
@@ -41,13 +41,37 @@ export class AdminUserService{
         }
         return user;
     }
-    async updateUser(userId: string){
-        //logic to update the user 
-       await this.updateUser; 
-    }
+   async AdminUpdateUser(userId: string, data: UpdateUserDto){
+          const user = await userRepository.getUserById(userId);
+          if(!user){
+              throw new HttpError(404, "User not found");
+          }
+          if(user.email !== data.email){
+              const emailExists = await userRepository.getUserByEmail(data.email!);
+              if(emailExists){
+                  throw new HttpError(409, "Email already exists");
+              }
+          }
+          if(user.username !== data.username){
+              const usernameExists = await userRepository.getUserByUsername(data.username!);
+              if(usernameExists){
+                  throw new HttpError(409, "Username already exists");
+              }
+          }
+          if(data.password){
+              const hashedPassword = await bcryptjs.hash(data.password, 10);
+              data.password = hashedPassword;
+          }
+          const updatedUser = await userRepository.updateUser(userId, data);
+          return updatedUser;
+      }
 
-    async deleteUser(userId: string){
-        await this.deleteUser;
+      
+    async deleteUser(userId: string) {
+        const user = await userRepository.getUserById(userId);
+        if (!user) throw new HttpError(404, "User not found");
+        await userRepository.deleteUser(userId);
+        return true;
     }
 
 }
