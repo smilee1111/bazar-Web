@@ -43,8 +43,7 @@ export class UserRepository implements IUserRepository{
     }
 
     async getUserById(id: string): Promise<IUser | null> {
-        const user = await UserModel.findById(id);
-        return user;
+        return UserModel.findById(id).populate({ path: 'roleId', select: 'roleId roleName status' });
     }
 
     async getAllUsers(): Promise<IUser[]> {
@@ -53,7 +52,8 @@ export class UserRepository implements IUserRepository{
     }
 
     async updateUser(id: string, data: Partial<IUser>): Promise<IUser | null> {
-        const updatedUser = await UserModel.findByIdAndUpdate(id, data, { new : true});
+        const updatedUser = await UserModel.findByIdAndUpdate(id, data, { new : true })
+        .populate({ path: 'roleId', select: 'roleId roleName status' });
         return updatedUser;
     }
 

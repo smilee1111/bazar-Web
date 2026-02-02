@@ -55,8 +55,13 @@ export async function adminMiddleware(req: Request, res: Response, next: NextFun
             //omly use role/admin middleware after user is authorized
             if(!req.user)
                 throw new HttpError( 401, " Unauthorized, User not found");
-            if(req.user.roleId?.toString() !== 'role_admin_001')
-                throw new HttpError( 403, "Forbidden Admins only");
+            const role = req.user.roleId as any;
+            const isAdmin =
+              typeof role === 'string'
+                ? role === 'role_admin_001'
+                : role?.roleId === 'role_admin_001' || role?.roleName === 'admin';
+
+            if (!isAdmin) throw new HttpError(403, 'Forbidden Admins only');
 
             return next();
             
