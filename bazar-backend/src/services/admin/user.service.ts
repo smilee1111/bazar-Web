@@ -1,4 +1,5 @@
 import { UserRepository } from "../../repositories/user.repository";
+import { RoleRepository } from "../../repositories/role.repository";
 import { Request, Response} from "express";
 import { CreateUserDto, UpdateUserDto } from "../../dtos/user.dto";
 import z from 'zod';
@@ -7,6 +8,7 @@ import { HttpError } from "../../errors/http-error";
 
 //initializing user repository
 let userRepository = new UserRepository();
+let roleRepository = new RoleRepository();
 
 export class AdminUserService{
     async adminCreateUser(data: CreateUserDto){
@@ -19,10 +21,20 @@ export class AdminUserService{
         if(usernameExists){
             throw new HttpError(400, "Username already exists");
         }
+        // resolve role -> roleId
+        const roleDoc = data.role ? await roleRepository.getRoleByRoleName(data.role) : null;
+        if (data.role && !roleDoc) {
+            throw new HttpError(400, "Invalid role");
+        }
+
         //donot save plan text password, hash the password
         const hashedPassword = await bcryptjs.hash(data.password,10); //10 - complexity
         data.password=hashedPassword; //replacce plain text with hashed password
-        const newUser = await userRepository.createUser(data);
+
+        const newUser = await userRepository.createUser({
+            ...data,
+            roleId: roleDoc?._id
+        });
         return newUser;
     }
 
@@ -62,6 +74,15 @@ export class AdminUserService{
               const hashedPassword = await bcryptjs.hash(data.password, 10);
               data.password = hashedPassword;
           }
+
+          if (data.role) {
+              const roleDoc = await roleRepository.getRoleByRoleName(data.role);
+              if (!roleDoc) {
+                  throw new HttpError(400, "Invalid role");
+              }
+              (data as any).roleId = roleDoc._id;
+          }
+
           const updatedUser = await userRepository.updateUser(userId, data);
           return updatedUser;
       }
