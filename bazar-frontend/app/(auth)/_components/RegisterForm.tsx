@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail, Phone, User } from "lucide-react";
 import { RegisterData, registerSchema } from "../schema";
-import { handleRegister } from "@/lib/actions/auth-action";
+import { handleLogin, handleRegister } from "@/lib/actions/auth-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { RoleSelect, type RoleOption } from "@/components/auth/RoleSelect";
 import { getRolesAction } from "@/lib/actions/role-action";
+import { useAuth } from "../../context/AuthContext";
+import { getRoleHomePath } from "@/lib/utils";
 
 const formFields = [
     {
@@ -70,6 +72,7 @@ const formFields = [
 
 export default function RegisterForm() {
     const router = useRouter();
+    const { checkAuth } = useAuth();
     const {
         register,
         handleSubmit,
@@ -127,10 +130,18 @@ export default function RegisterForm() {
                 throw new Error(result.message);
             }
 
-            startTransition(async () => {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                router.push("/dashboard");
-            });
+            const loginResult = await handleLogin({ email: values.email, password: values.password });
+            if (loginResult.success) {
+                const destination = getRoleHomePath(loginResult.data?.role ?? loginResult.data?.roleId);
+                await checkAuth();
+                startTransition(async () => {
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    router.push(destination);
+                });
+                return;
+            }
+
+            router.push("/login");
         } catch (error: any) {
             setServerError(error.message || "Registration failed");
         }

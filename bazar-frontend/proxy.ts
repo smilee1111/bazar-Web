@@ -2,48 +2,53 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthToken, getUserData } from "./lib/cookie";
 
 const publicPaths = ["/login", "/register", "/forget-password"];
-const adminPaths = ["/admin"];
-const userPaths = ["/profile"];
-const sellerPaths =["/seller"]
+
+// Admin-only routes
+const adminOnlyPaths = ["/admin", "/users"];
 
 export async function proxy(req: NextRequest) {
-    const { pathname } = req.nextUrl;
+  const { pathname } = req.nextUrl;
 
-    const token = await getAuthToken();
-    const user = token ? await getUserData() : null;
+  const token = await getAuthToken();
+  const user = token ? await getUserData() : null;
+const roleName =
+  typeof user?.role === "string"
+    ? user.role
+    : user?.role?.name || user?.roleId?.roleName || user?.role?.roleName;
 
-    const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
-    
-    const isAdminPath = adminPaths.some((path) => pathname.startsWith(path));
-    const isUserPath = userPaths.some((path) => pathname.startsWith(path));
+const isAdmin = roleName?.toLowerCase() === "admin";
+  const isPublicPath = publicPaths.some((path) =>
+    pathname.startsWith(path)
+  );
 
-    if (!user && !isPublicPath){
-        return NextResponse.redirect(new URL("/login", req.url));
-    }
-    if(user && token){
-        if(isAdminPath && user.role !== 'admin'){
-            return NextResponse.redirect(new URL("/", req.url));
-        }
-        if(isUserPath && user.role !== 'user' && user.role !== 'admin' && user.role !== 'seller'){
-            return NextResponse.redirect(new URL("/", req.url));
-    }
-}
+  const isAdminOnlyPath = adminOnlyPaths.some((path) =>
+    pathname.startsWith(path)
+  );
 
+  // Not logged in → redirect to login
+  if (!user && !isPublicPath) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
 
-    if (isPublicPath && user) {
-        return NextResponse.redirect(new URL("/", req.url));
-    }
+  // Logged in but trying to access admin-only route
+  if (user && isAdminOnlyPath && !isAdmin) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
 
-    return NextResponse.next(); // continue/granted
+  //Logged in user should not access login/register pages
+  if (user && isPublicPath) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-    matcher: [
-        "/admin/:path*",
-        "/user/:path*",
-        "/seller/:path*",
-        "/login",
-        "/register"
-    ]
-}
-// matcher - which path to apply proxy logic
+  matcher: [
+    "/admin/:path*",
+    "/users/:path*", 
+    "/dashboard/:path*",
+    "/login",
+    "/register",
+  ],
+};
