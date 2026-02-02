@@ -3,7 +3,7 @@ import { getAuthToken, getUserData } from "./lib/cookie";
 
 const publicPaths = ["/login", "/register", "/forget-password"];
 const adminPaths = ["/admin"];
-const userPaths = ["/user"];
+const userPaths = ["/profile"];
 const sellerPaths =["/seller"]
 
 export async function proxy(req: NextRequest) {
