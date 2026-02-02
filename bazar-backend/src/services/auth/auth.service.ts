@@ -60,6 +60,12 @@ export class AuthService{
             throw new HttpError(401, "Invalid credentials");
         }
 
+        // fetch populated user so role details are included for clients
+        const userWithRole = await userRepository.getUserById(user._id.toString());
+        if (!userWithRole) {
+            throw new HttpError(404, "User not found");
+        }
+
         //generate the JWT token 
         const payload = {
             id: user._id,
@@ -69,7 +75,7 @@ export class AuthService{
         }//data to be stored in token 
         
         const token = jwt.sign(payload,JWT_SECRET, {expiresIn: '30d'});
-        return{ token, user}
+        return{ token, user: userWithRole}
     }
 
     async getUserById(userId: string){

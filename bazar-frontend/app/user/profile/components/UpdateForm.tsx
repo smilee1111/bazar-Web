@@ -82,7 +82,11 @@ export default function UpdateForm(
                 throw new Error(response.message || 'Update profile failed');
             }
 
-            handleDismissImage();
+            if (response.data?.profilePic) {
+                setPreviewImage(process.env.NEXT_PUBLIC_API_BASE_URL + response.data.profilePic);
+            } else {
+                handleDismissImage();
+            }
             toast.success('Profile updated successfully');
         } catch (error: Error | any) {
             toast.error(error.message || 'Profile update failed');
@@ -121,9 +125,9 @@ export default function UpdateForm(
                                 )}
                             />
                         </div>
-                    ) : user?.imageUrl ? (
+                    ) : user?.profilePic ? (
                         <Image
-                            src={process.env.NEXT_PUBLIC_API_BASE_URL + user.imageUrl}
+                            src={process.env.NEXT_PUBLIC_API_BASE_URL + user.profilePic}
                             alt="Profile Image"
                             width={100}
                             height={100}
