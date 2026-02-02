@@ -15,6 +15,11 @@ const updateSchema = z.object({
     fullName: z.string().min(2, "2 characters"),
     username: z.string().min(2, "2 characters"),
     email: z.string(),
+    phoneNumber: z
+    .string()
+    .refine((val) => /^\d{10}$/.test(val), {
+    message: "Phone number must be exactly 10 digits",
+    }),
     image: z
         .instanceof(File)
         .optional()
@@ -38,6 +43,7 @@ export default function UpdateForm(
             fullName: user.fullName || "",
             username: user.username || "",
             email: user?.email || '',        
+            phoneNumber: user?.phoneNumber || '',
         }
     });
 
@@ -74,6 +80,7 @@ export default function UpdateForm(
             formData.append("fullName", data.fullName);
             formData.append("username",data.username);
             formData.append('email', data.email);
+            formData.append('phoneNumber', data.phoneNumber);
              if (data.image) {
                 formData.append('image', data.image);
             }   
@@ -188,7 +195,17 @@ export default function UpdateForm(
                     />
                     {errors.fullName && <p className="text-sm text-red-600">{errors.fullName.message}</p>}
                 </div>
-
+                         {/* Phone Number Input */}
+                <div>
+                    <label className="block text-sm font-medium mb-1" htmlFor="phoneNumber">Phone Number</label>
+                    <input
+                        id="phoneNumber"
+                        type="text"
+                        {...register("phoneNumber")}
+                        className="w-full border border-gray-300 rounded px-3 py-2"
+                    />
+                    {errors.phoneNumber && <p className="text-sm text-red-600">{errors.phoneNumber.message}</p>}
+                </div>
 
                 {/* Submit Button */}
                 <button
