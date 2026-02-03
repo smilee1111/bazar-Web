@@ -7,7 +7,7 @@ const allowedRoles = z.enum(['user', 'seller', 'admin'], {
 });
 // Register DTO - allows users to choose between 'user' or 'seller' role
 export const CreateUserDto = userSchema.extend({
-    role: allowedRoles,
+    role: allowedRoles.default('user'),
     confirmPassword: z.string().min(6)
 }).refine(
     (data) => data.password === data.confirmPassword,
