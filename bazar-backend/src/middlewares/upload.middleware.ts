@@ -1,5 +1,5 @@
 import multer from "multer";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import path from "path";
 import fs from "fs";
 import { HttpError } from "../errors/http-error";
@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = uuid.v4();
+        const uniqueSuffix = uuid();
         const extension = path.extname(file.originalname);
         cb(null, uniqueSuffix + extension);
     }
