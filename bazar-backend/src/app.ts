@@ -1,0 +1,63 @@
+import express, {Application, Request, Response} from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import path from 'path';
+
+
+//importing and initializing the env file 
+import dotenv from 'dotenv';
+// Load environment variables
+dotenv.config({ path: "./config/config.env" });
+
+
+//can use env variables below this 
+console.log(process.env.PORT);
+// .env -> PORT=5050
+
+const app: Application = express();
+let corsOptions = {
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",")
+      : ['http://localhost:3000'],
+    //list of domains allowed to access the server
+    //frontend domain/url
+
+}
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+//origin: "*", //allow all domains
+app.use(cors(corsOptions));
+
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+//test api
+app.get('/',(req:Request,res:Response) => {
+    res.send("Hello World!");
+});
+
+//AUTH
+//importing the routes for auth
+import authRoutes from './routes/auth/auth.route';
+//defining the path for usage of auth routes 
+app.use('/api/auth',authRoutes);
+
+
+//ROLE
+//importing the routes for role
+import roleRoutes from './routes/role/role.route';
+//defining the path for usage of role routes
+app.use('/api/roles', roleRoutes);
+
+
+//ADMIN
+//importing the routes for admin 
+import adminRoutes from './routes/admin/user.route';
+//defining the path for usage of admin routes
+app.use('/api/admin/users', adminRoutes);
+
+//USER SELF ROUTES 
+//For user to edit their own details and view themselves
+import userSelfRoutes from './routes/user/user_self.route';
+app.use('/api/user', userSelfRoutes);
+
+export default app;
