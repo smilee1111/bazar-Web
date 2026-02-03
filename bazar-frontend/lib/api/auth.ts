@@ -35,3 +35,39 @@ export const login = async (loginData: any) => {
         );
     }
 }
+
+export const whoami = async () => {
+    try{
+        const response = await axios.get(
+            API.AUTH.WHOAMI,//API path '/api/auth/whoami
+        );
+        return response.data;//what the backend-controller returns
+    }catch(err: Error | any){
+        throw new Error(
+            err.response?.data?.message || err.message//message from backend 
+            || "Failed to fetch user data"//fallback messae 
+
+        );
+    }
+}
+
+export const updateProfile = async (updateData: any) => {
+    try{
+        const response = await axios.put(
+            API.AUTH.UPDATEPROFILE,
+            updateData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data' // IMPORTANT: multer
+                }
+            }
+        );
+        return response.data;
+    }catch(err: Error | any){
+        throw new Error(
+            err.response?.data?.message 
+            || err.message  
+            || "Failed to update profile" 
+        );
+    }
+}

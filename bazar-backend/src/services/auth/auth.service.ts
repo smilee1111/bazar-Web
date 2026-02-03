@@ -1,6 +1,6 @@
 import { UserRepository } from "../../repositories/user.repository";
 import { RoleRepository } from "../../repositories/role.repository";
-import { CreateUserDto, LoginUserDto } from "../../dtos/user.dto";
+import { CreateUserDto, LoginUserDto, UpdateUserDto} from "../../dtos/user.dto";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../../errors/http-error";
 import jwt from 'jsonwebtoken';
@@ -40,6 +40,7 @@ export class AuthService{
             phoneNumber: data.phoneNumber,
             username: data.username,
             password: hashedPassword,
+            profilePic: data.profilePic,
             roleId: role._id
         });
         return newUser;
@@ -59,6 +60,12 @@ export class AuthService{
             throw new HttpError(401, "Invalid credentials");
         }
 
+        // fetch populated user so role details are included for clients
+        const userWithRole = await userRepository.getUserById(user._id.toString());
+        if (!userWithRole) {
+            throw new HttpError(404, "User not found");
+        }
+
         //generate the JWT token 
         const payload = {
             id: user._id,
@@ -68,7 +75,45 @@ export class AuthService{
         }//data to be stored in token 
         
         const token = jwt.sign(payload,JWT_SECRET, {expiresIn: '30d'});
-        return{ token, user}
-
+        return{ token, user: userWithRole}
     }
+
+    async getUserById(userId: string){
+        if(!userId){
+            throw new HttpError(400, "User ID is required");
+        }
+        const user = await userRepository.getUserById(userId);
+        if(!user){
+            throw new HttpError(404, "User not found");
+        }
+        return user;
+    }
+
+   async updateUser(userId: string, data: UpdateUserDto){
+        const user = await userRepository.getUserById(userId);
+        if(!user){
+            throw new HttpError(404, "User not found");
+        }
+        if(user.email !== data.email){
+            const emailExists = await userRepository.getUserByEmail(data.email!);
+            if(emailExists){
+                throw new HttpError(409, "Email already exists");
+            }
+        }
+        if(user.username !== data.username){
+            const usernameExists = await userRepository.getUserByUsername(data.username!);
+            if(usernameExists){
+                throw new HttpError(409, "Username already exists");
+            }
+        }
+        if(data.password){
+            const hashedPassword = await bcryptjs.hash(data.password, 10);
+            data.password = hashedPassword;
+        }
+        const updatedUser = await userRepository.updateUser(userId, data);
+        return updatedUser;
+    }
+
+
+
 }

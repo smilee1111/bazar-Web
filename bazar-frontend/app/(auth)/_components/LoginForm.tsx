@@ -13,9 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Lock, Mail } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { getRoleHomePath } from "@/lib/utils";
 
 export default function LoginForm() {
     const router = useRouter();
+    const { checkAuth } = useAuth();
     const {
         register,
         handleSubmit,
@@ -35,10 +38,11 @@ export default function LoginForm() {
             if (!result.success) {
                 throw new Error(result.message);
             }
-
+            const destination = getRoleHomePath(result.data?.role ?? result.data?.roleId);
+            await checkAuth();   
             startTransition(async () => {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
-                router.push("/dashboard");
+                router.push(destination);
             });
         } catch (err: Error | any) {
             setError(err.message || "Login failed");
