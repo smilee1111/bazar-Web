@@ -19,7 +19,7 @@ export const LOCAL_DATABASE_URI: string =
 
 
 export const REMOTE_DATABASE_URI: string =
-    process.env.REMOTE_DATABASE_URI || 'mongodb+srv://Muskan:tgHWNPkjpnE5tZlP@cluster0.1ckzbas.mongodb.net/bazar';
+    process.env.REMOTE_DATABASE_URI || '';
 //remote MongoDB URI
 
 export const MONGO_URI: string =
