@@ -60,7 +60,7 @@ export class UserRepository implements IUserRepository{
     }
 
     async getAllUsers(): Promise<IUser[]> {
-        const users = await UserModel.find();
+        const users = await UserModel.find().populate({ path: 'roleId', select: 'roleId roleName status' });
         return users;
     }
 

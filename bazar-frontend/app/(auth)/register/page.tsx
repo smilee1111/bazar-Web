@@ -22,11 +22,10 @@ export default function Page() {
     return (
         <div className="relative w-full min-h-screen bg-neutral-50 flex">
             {/* Left Panel */}
-            <section className="relative w-full lg:w-[57%] min-h-screen overflow-hidden">
-                <img
-                    className="absolute inset-0 w-full h-full object-cover"
-                    alt="Background"
-                    src="/images/auth-background.svg"
+            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#8f7e4f] via-[#7a6b45] to-[#6b5d3c] overflow-hidden">
+                <div
+                    className="absolute inset-0 w-full h-full bg-cover bg-center"
+                    style={{ backgroundImage: "url('/images/auth-background.svg')" }}
                 />
 
                 <div className="relative z-10 flex min-h-screen flex-col w-full max-w-[520px] px-4 lg:px-[60px] pt-[23px] pb-12">
@@ -43,7 +42,7 @@ export default function Page() {
                         </h1>
                     </header>
 
-                    <div className="mt-12 flex flex-col gap-10">
+                    <div className="mt-12 flex flex-col gap-10 animate-fade-up">
                         <div className="flex flex-col gap-4">
                             <p className="text-sm uppercase tracking-[0.4em] text-white/70">Sign up</p>
                             <h2 className="font-semibold text-white text-3xl lg:text-[40px] tracking-[-0.6px] leading-snug">
@@ -57,8 +56,8 @@ export default function Page() {
 
                         <ul className="flex flex-col gap-3">
                             {features.map((feature, index) => (
-                                <li key={index} className="flex items-start gap-3">
-                                    <div className="flex w-7 h-7 items-center justify-center bg-white/20 rounded-full flex-shrink-0">
+                                <li key={index} className="flex items-start gap-3 animate-fade-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                                    <div className="flex w-7 h-7 items-center justify-center bg-white/20 rounded-full flex-shrink-0 hover:bg-white/30 transition-colors">
                                         <span className="font-normal text-white text-sm">✓</span>
                                     </div>
                                     <div className="flex flex-col gap-0.5">
@@ -77,15 +76,15 @@ export default function Page() {
             </section>
 
             {/* Right Panel */}
-            <section className="relative w-[43%] flex items-start justify-center pt-[23px] px-8">
+            <section className="relative w-[43%] flex items-start justify-center pt-[23px] px-8 bg-white">
                 <div className="w-full max-w-[576px]">
                     <Link href="/">
                         <Button
                             variant="ghost"
-                            className="flex items-center gap-2 mb-12 h-auto p-0 hover:bg-transparent"
+                            className="flex items-center gap-2 mb-12 h-auto p-0 hover:bg-transparent text-[#4a4a4a] hover:text-[#8f7e4f] transition-colors"
                         >
-                            <ChevronLeft className="w-5 h-5 text-[#4a4a4a]" />
-                            <span className="font-normal text-[#4a4a4a] text-base">
+                            <ChevronLeft className="w-5 h-5" />
+                            <span className="font-normal text-base">
                                 Back to Home
                             </span>
                         </Button>

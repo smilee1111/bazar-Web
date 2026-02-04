@@ -67,7 +67,7 @@ export function RoleSelect({
         <SelectTrigger
           id={id}
           disabled={disabled || loading || !roles.length}
-          className={cn("h-[50px] rounded-[10px] border-[1.2px]", triggerClassName)}
+          className={cn("h-[50px] rounded-[10px] border-[1.2px] focus:border-[#8f7e4f] focus:ring-2 focus:ring-[#8f7e4f]/20 transition-all", triggerClassName)}
         >
           <SelectValue placeholder={loading ? "Loading roles..." : placeholder} />
         </SelectTrigger>
