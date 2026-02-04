@@ -1,4 +1,5 @@
 import { IUser, UserModel } from "../models/user.model";
+import { RoleModel } from "../models/role.model";
 
 export interface IUserRepository{
 
@@ -22,9 +23,21 @@ export interface IUserRepository{
 
     //delete a user
     deleteUser(id: string): Promise<boolean |null>;
+    
+    getUserByRoleName(roleName: string): Promise<IUser[]>;
 }
 
 export class UserRepository implements IUserRepository{
+    
+    async getUserByRoleName(roleName: string): Promise<IUser[]> {
+        const role = await RoleModel.findOne({ roleName });
+        if (!role) {
+            return [];
+        }
+        const users = await UserModel.find({ roleId: role._id })
+            .populate({ path: 'roleId', select: 'roleId roleName status' });
+        return users;
+    }
 
 
     async createUser(data: Partial<IUser>): Promise<IUser> {

@@ -54,5 +54,3 @@ export class UserSelfController {
             }
         }
 }
-
-    export const userSelfController = new UserSelfController();

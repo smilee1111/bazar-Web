@@ -9,6 +9,7 @@ config.env.*
 
 # Dependencies
 /node_modules
+/uploads
 
 # TypeScript build output
 /dist
@@ -18,3 +19,4 @@ config.env.*
 
 # Test coverage
 /coverage
+

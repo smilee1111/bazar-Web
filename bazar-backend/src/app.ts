@@ -50,10 +50,12 @@ app.use('/api/roles', roleRoutes);
 
 
 //ADMIN
+//ADMIN-USER-ROUTES
+
 //importing the routes for admin 
-import adminRoutes from './routes/admin/user.route';
+import adminUserRoutes from './routes/admin/user/user.route';
 //defining the path for usage of admin routes
-app.use('/api/admin/users', adminRoutes);
+app.use('/api/admin/users', adminUserRoutes);
 
 //USER SELF ROUTES 
 //For user to edit their own details and view themselves

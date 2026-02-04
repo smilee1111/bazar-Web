@@ -1,4 +1,5 @@
 import axios from '../axios';//IMPORTANT: "./axios" not "axios"
+
 import { API } from "../endpoints";
 
 export const register = async (registerData: any) => {
