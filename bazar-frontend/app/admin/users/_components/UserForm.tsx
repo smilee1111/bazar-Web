@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
@@ -14,14 +14,28 @@ import { RoleSelect, RoleOption } from "@/components/auth/RoleSelect";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { API_CONFIG } from "@/lib/api/config";
 import { Camera, Upload } from "lucide-react";
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const baseSchema = {
-  fullName: z.string().min(2, "Full name is required"),
-  username: z.string().min(2, "Username is required"),
-  email: z.string().email("Invalid email"),
-  phoneNumber: z.string().optional(),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+      username: z.string().min(2, "Username must be at least 2 characters"),
+      email: z.string().email("Please enter a valid email address"),
+      phoneNumber: z
+          .string()
+          .refine((val) => /^\d{10}$/.test(val), {
+              message: "Phone number must be exactly 10 digits",
+          }),
+      image: z
+          .instanceof(File)
+          .optional()
+          .refine((file) => !file || file.size <= MAX_FILE_SIZE, {
+              message: "Max file size is 5MB",
+          })
+          .refine((file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), {
+              message: "Only .jpg, .jpeg, .png and .webp formats are supported",
+          }),
   role: z.string().min(1, "Role is required"),
-  profilePic: z.instanceof(File).optional(),
 };
 
 const createSchema = z.object({
@@ -62,6 +76,12 @@ export default function UserForm({ defaultValues, mode, onSubmit, ctaLabel, role
   const [submitting, setSubmitting] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (typeof defaultValues?.image === 'string') {
+      setPreviewImage(API_CONFIG.getImageUrl(defaultValues.image));
+    }
+  }, [defaultValues?.image]);
+
   const form = useForm<UserFormValues>({
     resolver: zodResolver(mode === "create" ? createSchema : updateSchema),
     defaultValues: {
@@ -80,7 +100,7 @@ export default function UserForm({ defaultValues, mode, onSubmit, ctaLabel, role
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      form.setValue("profilePic", file, { shouldValidate: true, shouldDirty: true });
+      form.setValue("image", file, { shouldValidate: true, shouldDirty: true });
       const reader = new FileReader();
       reader.onload = (e) => {
         setPreviewImage(e.target?.result as string);
@@ -89,39 +109,40 @@ export default function UserForm({ defaultValues, mode, onSubmit, ctaLabel, role
     }
   };
 
-  const handleSubmit = async (values: UserFormValues) => {
-    try {
-      setSubmitting(true);
+const handleSubmit = async (values: UserFormValues) => {
+  try {
+    setSubmitting(true);
 
-      // If there's a profile picture file, use FormData
-      if (values.profilePic) {
-        const formData = new FormData();
+    const formData = new FormData();
 
-        // Add all form values except profilePic (which is handled separately)
-        Object.entries(values).forEach(([key, value]) => {
-          if (key !== 'profilePic' && value !== undefined && value !== '') {
-            formData.append(key, value as string);
-          }
-        });
-
-        // Add the profile picture file
-        formData.append('profilePic', values.profilePic);
-
-        await onSubmit(formData as any);
-      } else {
-        // No profile picture, send as regular object
-        const payload = { ...values };
-        delete payload.profilePic; // Remove undefined profilePic
-        await onSubmit(payload);
-      }
-
-      router.push("/admin/users");
-    } catch (err: any) {
-      form.setError("fullName", { message: err?.message || "Something went wrong" });
-    } finally {
-      setSubmitting(false);
+    Object.entries(values).forEach(([key, value]) => {
+        if (
+      (key === "password" || key === "confirmPassword") &&
+      (!value || value === "")
+    ) {
+      return;
     }
-  };
+    
+      if (value !== undefined && value !== null) {
+        if (key === "image" && value instanceof File) {
+          formData.append("image", value);
+        } else {
+          formData.append(key, value as string);
+        }
+      }
+    });
+
+    await onSubmit(formData as any);
+    router.push("/admin/users");
+  } catch (err: any) {
+    form.setError("fullName", {
+      message: err?.message || "Something went wrong",
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
+
 
   const { register, handleSubmit: rhfSubmit, formState: { errors } } = form;
 
@@ -164,7 +185,7 @@ export default function UserForm({ defaultValues, mode, onSubmit, ctaLabel, role
               <div className="relative">
                 <Avatar className="h-28 w-28">
                   <AvatarImage
-                    src={previewImage || (userId && typeof defaultValues?.profilePic === 'string' ? API_CONFIG.getImageUrl(defaultValues.profilePic) || undefined : undefined)}
+                    src={previewImage || (userId && typeof defaultValues?.image === 'string' ? API_CONFIG.getImageUrl(defaultValues.image) || undefined : undefined)}
                     alt="Profile"
                   />
                   <AvatarFallback className="bg-[#8f7e4f] text-white text-xl font-semibold">
@@ -172,12 +193,12 @@ export default function UserForm({ defaultValues, mode, onSubmit, ctaLabel, role
                   </AvatarFallback>
                 </Avatar>
                 <label
-                  htmlFor="profilePic"
+                  htmlFor="image-upload"
                   className="absolute -bottom-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#8f7e4f] text-white hover:bg-[#7a6b45] cursor-pointer transition-colors shadow-lg"
                 >
                   <Camera className="h-5 w-5" />
                   <input
-                    id="profilePic"
+                    id="image-upload"
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
@@ -194,7 +215,7 @@ export default function UserForm({ defaultValues, mode, onSubmit, ctaLabel, role
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => document.getElementById("profilePic")?.click()}
+                    onClick={() => document.getElementById("image-upload")?.click()}
                     className="gap-2 border-[#8f7e4f] text-[#8f7e4f] hover:bg-[#8f7e4f] hover:text-white"
                   >
                     <Upload className="h-4 w-4" />
@@ -207,7 +228,7 @@ export default function UserForm({ defaultValues, mode, onSubmit, ctaLabel, role
                       size="sm"
                       onClick={() => {
                         setPreviewImage(null);
-                        form.setValue("profilePic", undefined);
+                        form.setValue("image", undefined);
                       }}
                       className="text-red-600 border-red-200 hover:bg-red-50"
                     >

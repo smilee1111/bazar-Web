@@ -32,9 +32,10 @@ export default function CreateUserPage() {
     loadRoles();
   }, []);
 
-  const handleSubmit = async (values: UserFormValues) => {
+  const handleSubmit = async (values: any) => {
     try {
       setSubmitting(true);
+      console.log(values instanceof FormData);
       await register(values);
       toast.success("User created");
     } catch (err: any) {

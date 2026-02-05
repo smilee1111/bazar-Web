@@ -32,7 +32,7 @@ export default function EditUserPage() {
           username: data?.username || "",
           phoneNumber: data?.phoneNumber || "",
           role: typeof data?.roleId === "object" ? data?.roleId?.roleName : data?.roleId || "",
-          profilePic: data?.profilePic || undefined,
+          image: data?.profilePic || undefined,
         });
       } catch (err: any) {
         toast.error(err?.message || "Failed to load user");
@@ -62,14 +62,10 @@ export default function EditUserPage() {
     loadRoles();
   }, []);
 
-  const handleSubmit = async (values: UserFormValues) => {
+  const handleSubmit = async (data: any) => {
     if (!userId) return;
-    const payload = { ...values } as any;
-    if (!values.password) {
-      delete payload.password;
-    }
     try {
-      await updateUser(userId, payload);
+      await updateUser(userId, data);
       toast.success("User updated successfully");
     } catch (err: any) {
       toast.error(err?.message || "Failed to update user");
