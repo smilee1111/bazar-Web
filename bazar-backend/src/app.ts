@@ -1,4 +1,4 @@
-import express, {Application, Request, Response} from 'express';
+import express, {Application, Request, Response, NextFunction} from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
@@ -61,5 +61,25 @@ app.use('/api/admin/users', adminUserRoutes);
 //For user to edit their own details and view themselves
 import userSelfRoutes from './routes/user/user_self.route';
 app.use('/api/user', userSelfRoutes);
+
+// Global error handler - return JSON for known error types (HttpError, MulterError)
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
+
+  // Multer errors (file upload issues)
+  if (err && err.name === 'MulterError') {
+    return res.status(400).json({ status: 'error', statusCode: 400, message: err.message });
+  }
+
+  // Custom HttpError instances
+  if (err && err.statusCode && err.message) {
+    return res.status(err.statusCode).json({ status: 'error', statusCode: err.statusCode, message: err.message });
+  }
+
+  // Fallback
+  const status = (err && err.statusCode) ? err.statusCode : 500;
+  const message = (err && err.message) ? err.message : 'Internal Server Error';
+  res.status(status).json({ status: 'error', statusCode: status, message });
+});
 
 export default app;
