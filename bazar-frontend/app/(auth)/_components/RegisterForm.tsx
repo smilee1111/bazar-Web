@@ -150,9 +150,9 @@ export default function RegisterForm() {
     const isBusy = isSubmitting || pending;
 
     return (
-        <Card className="w-full bg-white rounded-3xl border-[1.2px] border-[#efefef] shadow-[0px_4px_6px_-4px_#0000001a,0px_10px_15px_-3px_#0000001a]">
+        <Card className="w-full bg-white rounded-3xl border-[1.2px] border-[#efefef] shadow-[0px_4px_6px_-4px_#0000001a,0px_10px_15px_-3px_#0000001a] hover:shadow-[0px_8px_25px_-5px_#0000001a] transition-shadow duration-300">
             <CardContent className="p-8 md:p-[42px]">
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 animate-fade-up">
                     <h2 className="font-light text-[#1a1a1a] text-3xl md:text-4xl tracking-[-0.72px] leading-tight md:leading-[48px]">
                         Create Account
                     </h2>
@@ -162,7 +162,7 @@ export default function RegisterForm() {
                 </div>
 
                 {serverError && (
-                    <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 animate-fade-in">
                         {serverError}
                     </div>
                 )}
@@ -177,19 +177,19 @@ export default function RegisterForm() {
                                         {field.label}
                                         <span className="text-[#8f7e4f] ml-1">*</span>
                                     </Label>
-                                    <div className="relative">
-                                        <IconComponent className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980]" />
+                                    <div className="relative group">
+                                        <IconComponent className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8f7e4f] transition-colors" />
                                         <Input
                                             id={field.id}
                                             type={field.type}
                                             placeholder={field.placeholder}
                                             autoComplete={field.autoComplete}
                                             {...register(field.id as keyof RegisterData)}
-                                            className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980]"
+                                            className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8f7e4f] focus:ring-2 focus:ring-[#8f7e4f]/20 transition-all"
                                         />
                                     </div>
                                     {fieldError?.message && (
-                                        <p className="text-xs text-red-600">{String(fieldError.message)}</p>
+                                        <p className="text-xs text-red-600 animate-fade-in">{String(fieldError.message)}</p>
                                     )}
                                 </div>
                             );
@@ -213,20 +213,20 @@ export default function RegisterForm() {
                         )}
                     />
 
-                    <div className="flex items-start gap-3 rounded-2xl border border-[#f0e8d0] bg-[#fdfbf6] px-4 py-3">
+                    <div className="flex items-start gap-3 rounded-2xl border border-[#f0e8d0] bg-[#fdfbf6] px-4 py-3 hover:bg-[#fefcf7] transition-colors">
                         <Checkbox
                             id="terms"
                             checked={acceptTerms}
                             onCheckedChange={(checked) => setAcceptTerms(checked === true)}
-                            className="mt-1 w-[17px] h-[17px] border-[#8f7e4f] data-[state=checked]:bg-[#8f7e4f] data-[state=checked]:border-[#8f7e4f]"
+                            className="mt-1 w-[17px] h-[17px] border-[#8f7e4f] data-[state=checked]:bg-[#8f7e4f] data-[state=checked]:border-[#8f7e4f] hover:border-[#7a6b45] transition-colors"
                         />
                         <Label htmlFor="terms" className="font-normal text-black text-sm md:text-base leading-relaxed">
                             I agree to the {" "}
-                            <a href="#" className="text-[#8f7e4f] underline">
+                            <a href="#" className="text-[#8f7e4f] underline hover:text-[#7a6b45] transition-colors">
                                 Terms of Service
                             </a>{" "}
                             and {" "}
-                            <a href="#" className="text-[#8f7e4f] underline">
+                            <a href="#" className="text-[#8f7e4f] underline hover:text-[#7a6b45] transition-colors">
                                 Privacy Policy
                             </a>
                         </Label>
@@ -235,7 +235,7 @@ export default function RegisterForm() {
                     <Button
                         type="submit"
                         disabled={isBusy || !acceptTerms}
-                        className="w-full h-12 md:h-14 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60"
+                        className="w-full h-12 md:h-14 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
                     >
                         {isBusy ? "Creating account..." : "Create Account"}
                     </Button>
@@ -251,7 +251,7 @@ export default function RegisterForm() {
                 <Button
                     variant="outline"
                     type="button"
-                    className="w-full h-12 md:h-[52px] mt-8 bg-white rounded-full border-[1.2px] border-[#efefef] shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-[#1a1a1a] text-sm md:text-base hover:bg-neutral-50"
+                    className="w-full h-12 md:h-[52px] mt-8 bg-white rounded-full border-[1.2px] border-[#efefef] shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-[#1a1a1a] text-sm md:text-base hover:bg-neutral-50 hover:shadow-md hover:scale-[1.01] transition-all duration-200"
                 >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 20 20" fill="none">
                         <path
@@ -276,7 +276,7 @@ export default function RegisterForm() {
 
                 <p className="text-center font-normal text-[#4a4a4a] text-sm md:text-base mt-8">
                     Already have an account? {" "}
-                    <Link href="/login" className="text-[#8f7e4f]">
+                    <Link href="/login" className="text-[#8f7e4f] hover:underline hover:text-[#7a6b45] transition-colors">
                         Sign in
                     </Link>
                 </p>

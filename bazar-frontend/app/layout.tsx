@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 import { toast, ToastContainer} from "react-toastify";
+import { HydrationProvider } from "@/components/HydrationProvider";
 const poppins = localFont({
   src: [
     {
@@ -68,12 +69,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body
         className={`${poppins.variable} font-sans antialiased`}
+        suppressHydrationWarning={true}
       >
-        <AuthProvider>{children}
-        <ToastContainer position ="top-right" />
+        <AuthProvider>
+          <HydrationProvider>
+            {children}
+          </HydrationProvider>
+          <ToastContainer position ="top-right" />
         </AuthProvider>
       </body>
     </html>

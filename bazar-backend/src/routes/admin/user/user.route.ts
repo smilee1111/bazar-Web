@@ -8,7 +8,7 @@ const router: Router = Router();
 const adminUserController = new AdminUserController();
 
 //route for admin to create the user 
-router.post('/register-admin', authorizedMiddleware,adminMiddleware, adminUserController.createUser);
+router.post('/register-admin', authorizedMiddleware,adminMiddleware, uploads.single('image'), adminUserController.createUser);
 
 //route for admin to get all the users 
 router.get('/', authorizedMiddleware, adminMiddleware, adminUserController.getAllUsers);
