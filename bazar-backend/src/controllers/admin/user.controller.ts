@@ -2,6 +2,7 @@ import { AdminUserService } from '../../services/admin/user.service';
 import z from 'zod';
 import { Request, Response } from 'express';
 import { CreateUserDto, UpdateUserDto } from "../../dtos/user.dto";
+import { QueryParams } from '../../types/query.type';
 
 let userService = new AdminUserService();
 
@@ -42,7 +43,10 @@ export class AdminUserController{
 
     async getAllUsers(req: Request, res: Response){
         try{
-            const users = await userService.getAllUsers();
+            const { page, size, search }: QueryParams = req.query;
+            const { users, pagination } = await userService.getAllUsers(
+                page, size, search
+            );
             return res.status(200).json(
                 {success: true, data: users, message: "Users retrieved successfully."}
             )

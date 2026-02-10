@@ -25,17 +25,19 @@ export const register = async (registerData: any) => {
 
 
 
-export const getAllUsers = async () => {
-    try{
+export const getAllUsers = async (page: number, size: number, search?: string
+) => {
+    try {
         const response = await axios.get(
             API.ADMIN_USERS.GET_ALL_USERS,//API path '/api/admin/users
+        {   
+             params: { page, size, search }
+        }
         );
-        return response.data;//what the backend-controller returns
-    }catch(err: Error | any){
-        throw new Error(
-            err.response?.data?.message || err.message//message from backend 
-            || "Failed to fetch users"//fallback messae
-        );
+        return response.data;
+    } catch (error: Error | any) {
+        throw new Error(error.response?.data?.message
+            || error.message || 'Get all users failed');
     }
 }
 

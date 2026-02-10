@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { getUserById } from "@/lib/api/admin/admin";
+import {handleGetOneUser } from "@/lib/actions/admin/user-action";
 import { normalizeRole } from "@/lib/utils";
 import { fetchRoles } from "@/lib/api/roles";
 import type { RoleOption } from "@/components/auth/RoleSelect";
@@ -28,7 +28,7 @@ export default function ViewUserPage() {
     const load = async () => {
       if (!userId) return;
       try {
-        const response = await getUserById(userId);
+        const response = await handleGetOneUser(userId);
         const data = response?.data || response?.data?.data || response;
         setUser(data);
       } catch (err: any) {

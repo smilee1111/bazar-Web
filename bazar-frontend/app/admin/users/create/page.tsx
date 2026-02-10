@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 import UserForm, { UserFormValues } from "../_components/UserForm";
-import { register } from "@/lib/api/admin/admin";
+import { handleCreateUser } from "@/lib/actions/admin/user-action";
 import { fetchRoles } from "@/lib/api/roles";
 import type { RoleOption } from "@/components/auth/RoleSelect";
 
@@ -36,7 +36,7 @@ export default function CreateUserPage() {
     try {
       setSubmitting(true);
       console.log(values instanceof FormData);
-      await register(values);
+      await handleCreateUser(values);
       toast.success("User created");
     } catch (err: any) {
       toast.error(err?.message || "Failed to create user");

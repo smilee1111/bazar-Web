@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { getAllUsers, deleteUser } from "@/lib/api/admin/admin";
+import { handleGetAllUsers,handleDeleteUser } from "@/lib/actions/admin/user-action";
 import { normalizeRole } from "@/lib/utils";
 import UsersTable from "./_components/UsersTable";
 import { fetchRoles } from "@/lib/api/roles";
@@ -60,10 +60,10 @@ export default function AdminUsersPage() {
 
 	const fetchUsers = async () => {
 		try {
-			setRefreshing(true);
-			const response = await getAllUsers();
-			const data = Array.isArray(response?.data) ? response.data : response?.data?.data;
-			setUsers(Array.isArray(data) ? data : []);
+			// setRefreshing(true);
+			// // const response = await handleGetAllUsers();
+			// const data = Array.isArray(response?.data) ? response.data : response?.data?.data;
+			// setUsers(Array.isArray(data) ? data : []);
 			setError(null);
 		} catch (err: any) {
 			setError(err?.message || "Failed to load users");
@@ -110,7 +110,7 @@ export default function AdminUsersPage() {
 
 	const handleDelete = async (id: string) => {
 		try {
-			await deleteUser(id);
+			await handleDeleteUser(id);
 			setUsers((prev) => prev.filter((u) => u._id !== id));
 			toast.success("User deleted");
 		} catch (err: any) {

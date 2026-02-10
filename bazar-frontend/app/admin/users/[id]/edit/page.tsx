@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 
 import UserForm, { UserFormValues } from "../../_components/UserForm";
-import { getUserById, updateUser } from "@/lib/api/admin/admin";
+import { handleGetOneUser,handleUpdateUser } from "@/lib/actions/admin/user-action";
 import { fetchRoles } from "@/lib/api/roles";
 import type { RoleOption } from "@/components/auth/RoleSelect";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ export default function EditUserPage() {
     const load = async () => {
       if (!userId) return;
       try {
-        const response = await getUserById(userId);
+        const response = await handleGetOneUser(userId);
         const data = response?.data || response?.data?.data || response;
         setInitialValues({
           fullName: data?.fullName || "",
@@ -65,7 +65,7 @@ export default function EditUserPage() {
   const handleSubmit = async (data: any) => {
     if (!userId) return;
     try {
-      await updateUser(userId, data);
+      await handleUpdateUser(userId, data);
       toast.success("User updated successfully");
     } catch (err: any) {
       toast.error(err?.message || "Failed to update user");
