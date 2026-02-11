@@ -14,7 +14,7 @@ const baseNavItems = [
     { label: "Home", href: "/dashboard", icon: Home },
     { label: "Saved Shops", href: "/dashboard/saved-shops", icon: Bookmark },
     { label: "Favourites", href: "/dashboard/favourites", icon: Heart },
-    { label: "Profile", href: "/user/profile", icon: UserRound },
+    { label: "Profile", href: "/profile", icon: UserRound },
 ];
 
 export default function Sidebar() {

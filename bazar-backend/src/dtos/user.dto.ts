@@ -13,7 +13,7 @@ export const CreateUserDto = userSchema.extend({
     (data) => data.password === data.confirmPassword,
     {
         message: "Password and Confirm Password must match",
-        path: ["ConfirmPassword"]
+        path: ["confirmPassword"]
     }
 );
 
