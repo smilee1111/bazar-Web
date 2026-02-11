@@ -48,6 +48,12 @@ import roleRoutes from './routes/role/role.route';
 //defining the path for usage of role routes
 app.use('/api/roles', roleRoutes);
 
+//CATEGORY
+//importing the routes for category
+import categoryRoutes from './routes/category/category.route';
+//defining the path for usage of category routes
+app.use('/api/categories', categoryRoutes);
+
 
 //ADMIN
 //ADMIN-USER-ROUTES
