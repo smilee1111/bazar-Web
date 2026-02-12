@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const categorySchema = z.object({
-    categoryId: z.string(),
-    categoryName: z.enum(['Furniture', 'Electronics', 'Clothing', 'Books', 'Groceries','Other']).default('Other'),
+    categoryId: z.string().optional(),
+    categoryName:z.string().min(2).max(50),
 });
 
 export type CategoryType = z.infer<typeof categorySchema>;

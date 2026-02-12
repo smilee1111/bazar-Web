@@ -7,10 +7,12 @@ let roleRepository = new RoleRepository();
 
 export class AdminRoleService {
     async adminCreateRole(data: CreateRoleDto) {
-        // Check if roleId already exists
-        const roleIdExists = await roleRepository.getRoleByRoleId(data.roleId);
-        if (roleIdExists) {
-            throw new HttpError(400, "Role ID already exists");
+        // Check provided roleId for duplicates only when supplied by client
+        if (data.roleId) {
+            const roleIdExists = await roleRepository.getRoleByRoleId(data.roleId);
+            if (roleIdExists) {
+                throw new HttpError(400, "Role ID already exists");
+            }
         }
 
         // Check if roleName already exists

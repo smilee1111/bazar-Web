@@ -9,13 +9,11 @@ export interface ICategory extends CategoryType, Document {
 
 const CategorySchema: Schema = new Schema(
     {
-        categoryId: { type: String, required: true, unique: true },
+        categoryId: { type: String, required: false, unique: true, default: () => new mongoose.Types.ObjectId().toHexString() },
         categoryName: {
             type: String,
             required: true,
             unique: true,
-            enum: ['Furniture', 'Electronics', 'Clothing', 'Books', 'Groceries', 'Other'],
-            default: 'Other'
         }
     },
     {

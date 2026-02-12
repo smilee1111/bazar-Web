@@ -6,9 +6,12 @@ let categoryRepository = new CategoryRepository();
 
 export class AdminCategoryService {
     async adminCreateCategory(data: CreateCategoryDto) {
-        const categoryIdExists = await categoryRepository.getCategoryByCategoryId(data.categoryId);
-        if (categoryIdExists) {
-            throw new HttpError(400, "Category ID already exists");
+        // Check provided categoryId for duplicates only when supplied by client
+        if (data.categoryId) {
+            const categoryIdExists = await categoryRepository.getCategoryByCategoryId(data.categoryId);
+            if (categoryIdExists) {
+                throw new HttpError(400, "Category ID already exists");
+            }
         }
 
         const categoryNameExists = await categoryRepository.getCategoryByCategoryName(data.categoryName);
