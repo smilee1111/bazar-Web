@@ -63,10 +63,19 @@ import adminUserRoutes from './routes/admin/user/user.route';
 //defining the path for usage of admin routes
 app.use('/api/admin/users', adminUserRoutes);
 
+//ADMIN-SELLER-APPLICATION-ROUTES
+import adminSellerApplicationRoutes from './routes/admin/sellerApplication';
+//defining the path for usage of admin seller application routes
+app.use('/api/admin/seller-applications', adminSellerApplicationRoutes);
+
 //USER SELF ROUTES 
 //For user to edit their own details and view themselves
 import userSelfRoutes from './routes/user/user_self.route';
 app.use('/api/user', userSelfRoutes);
+
+//SELLER ROUTES
+import sellerShopRoutes from './routes/seller/shop';
+app.use('/api/seller/shops', sellerShopRoutes);
 
 // Global error handler - return JSON for known error types (HttpError, MulterError)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

@@ -43,14 +43,14 @@ describe(
             }
         )
         const testUser2 = {
-            email: "muskan@gmail.com",
-            password: "password",
+            email: "testuser11@example.com",
+            password: "Test@1234",
         }
         describe(
             "POST /api/auth/login", // nested test suite/group
             () => {
                 test(
-                    "should register a new user", // name of individual test
+                    "should login a user", // name of individual test
                     async () => { // what to do in test
                         const response = await request(app)
                             .post("/api/auth/login")

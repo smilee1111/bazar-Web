@@ -15,6 +15,7 @@ export const userSchema = z.object({
     .string()
     .nullable()
     .optional(),
+    sellerStatus: z.enum(['none','pending','approved','rejected']).default('none')
 });
 
 export type UserType = z.infer<typeof userSchema>;
