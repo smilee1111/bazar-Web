@@ -8,6 +8,8 @@ export const CreateSellerApplicationDto = sellerApplicationSchema.pick({
     businessAddress: true,
     description: true,
     documentUrl: true,
+}).extend({
+    userId: z.string().refine(val => /^[a-f\d]{24}$/i.test(val), "Invalid ObjectId"),
 });
 
 export type CreateSellerApplicationDto = z.infer<typeof CreateSellerApplicationDto>;

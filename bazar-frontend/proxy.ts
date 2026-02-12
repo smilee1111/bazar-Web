@@ -6,6 +6,9 @@ const publicPaths = ["/", "/login", "/register", "/forget-password"];
 // Admin-only routes
 const adminOnlyPaths = ["/admin", "/users"];
 
+// Seller-only routes
+const sellerOnlyPaths = ["/seller"];
+
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -17,6 +20,7 @@ const roleName =
     : user?.role?.name || user?.roleId?.roleName || user?.role?.roleName;
 
 const isAdmin = roleName?.toLowerCase() === "admin";
+  const isSeller = user?.sellerStatus === "approved";
   const isPublicPath = publicPaths.some((path) => {
     // root should match only exactly "/"
     if (path === "/") return pathname === "/";
@@ -28,6 +32,10 @@ const isAdmin = roleName?.toLowerCase() === "admin";
     pathname.startsWith(path)
   );
 
+  const isSellerOnlyPath = sellerOnlyPaths.some((path) =>
+    pathname.startsWith(path)
+  );
+
   // Not logged in → redirect to login
   if (!user && !isPublicPath) {
     return NextResponse.redirect(new URL("/login", req.url));
@@ -35,6 +43,11 @@ const isAdmin = roleName?.toLowerCase() === "admin";
 
   // Logged in but trying to access admin-only route
   if (user && isAdminOnlyPath && !isAdmin) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // Logged in but trying to access seller-only route
+  if (user && isSellerOnlyPath && !isSeller) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
