@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
-import { RoleSelect, type RoleOption } from "@/components/auth/RoleSelect";
 import { getRolesAction } from "@/lib/actions/role-action";
 import { useAuth } from "../../context/AuthContext";
 import { getRoleHomePath } from "@/lib/utils";
@@ -86,36 +85,6 @@ export default function RegisterForm() {
     const [pending, startTransition] = useTransition();
     const [serverError, setServerError] = useState<string | null>(null);
     const [acceptTerms, setAcceptTerms] = useState(false);
-    const [roles, setRoles] = useState<RoleOption[]>([]);
-    const [rolesLoading, setRolesLoading] = useState(true);
-    const [rolesError, setRolesError] = useState<string | null>(null);
-
-    useEffect(() => {
-        let active = true;
-
-        const loadRoles = async () => {
-            setRolesLoading(true);
-            const result = await getRolesAction();
-            if (!active) {
-                return;
-            }
-
-            if (result.success) {
-                setRoles(result.data);
-                setRolesError(null);
-            } else {
-                setRoles([]);
-                setRolesError(result.message || "Unable to load roles");
-            }
-            setRolesLoading(false);
-        };
-
-        loadRoles();
-
-        return () => {
-            active = false;
-        };
-    }, []);
 
     const onSubmit = async (values: RegisterData) => {
         if (!acceptTerms) {
@@ -195,23 +164,6 @@ export default function RegisterForm() {
                             );
                         })}
                     </div>
-
-                    <Controller
-                        name="role"
-                        control={control}
-                        render={({ field }) => (
-                            <RoleSelect
-                                value={field.value}
-                                onValueChange={(value) => field.onChange(value)}
-                                roles={roles}
-                                loading={rolesLoading}
-                                required
-                                error={errors.role?.message || rolesError || undefined}
-                                className="mt-2"
-                                placeholder="Select a role"
-                            />
-                        )}
-                    />
 
                     <div className="flex items-start gap-3 rounded-2xl border border-[#f0e8d0] bg-[#fdfbf6] px-4 py-3 hover:bg-[#fefcf7] transition-colors">
                         <Checkbox

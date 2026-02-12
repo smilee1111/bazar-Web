@@ -1,10 +1,12 @@
 import { SellerApplicationRepository } from "../../repositories/sellerApplication.repository";
 import { UserRepository } from "../../repositories/user.repository";
+import { RoleRepository } from "../../repositories/role.repository";
 import { CreateSellerApplicationDto, UpdateSellerApplicationDto } from "../../dtos/sellerApplication.dto";
 import { HttpError } from "../../errors/http-error";
 
 let sellerApplicationRepository = new SellerApplicationRepository();
 let userRepository = new UserRepository();
+let roleRepository = new RoleRepository();
 
 export class AdminSellerApplicationService {
     async createSellerApplication(data: CreateSellerApplicationDto) {
@@ -56,8 +58,14 @@ export class AdminSellerApplicationService {
         }
         const updatedApplication = await sellerApplicationRepository.updateSellerApplication(id, updateData);
 
-        // Update user sellerStatus to approved
-        await userRepository.updateUser(application.userId.toString(), { sellerStatus: 'approved' });
+        // Get seller role
+        const sellerRole = await roleRepository.getRoleByRoleName('seller');
+        if (!sellerRole) {
+            throw new HttpError(500, "Seller role not found");
+        }
+
+        // Update user sellerStatus to approved and role to seller
+        await userRepository.updateUser(application.userId.toString(), { sellerStatus: 'approved', roleId: sellerRole._id });
 
         return updatedApplication;
     }
