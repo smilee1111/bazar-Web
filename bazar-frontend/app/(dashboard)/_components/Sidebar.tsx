@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users } from "lucide-react";
+import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -33,7 +33,11 @@ export default function Sidebar() {
     };
 
     const navItems = isAdmin
-        ? [...baseNavItems, { label: "Users", href: "/admin/users", icon: Users }]
+        ? [
+            ...baseNavItems,
+            { label: "Users", href: "/admin/users", icon: Users },
+            { label: "Shops", href: "/admin/shops", icon: Store }
+        ]
         : baseNavItems;
 
     return (

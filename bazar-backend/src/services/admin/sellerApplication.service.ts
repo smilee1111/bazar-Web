@@ -1,12 +1,14 @@
 import { SellerApplicationRepository } from "../../repositories/sellerApplication.repository";
 import { UserRepository } from "../../repositories/user.repository";
 import { RoleRepository } from "../../repositories/role.repository";
+import { ShopRepository } from "../../repositories/shop.repository";
 import { CreateSellerApplicationDto, UpdateSellerApplicationDto } from "../../dtos/sellerApplication.dto";
 import { HttpError } from "../../errors/http-error";
 
 let sellerApplicationRepository = new SellerApplicationRepository();
 let userRepository = new UserRepository();
 let roleRepository = new RoleRepository();
+let shopRepository = new ShopRepository();
 
 export class AdminSellerApplicationService {
     async createSellerApplication(data: CreateSellerApplicationDto) {
@@ -66,6 +68,42 @@ export class AdminSellerApplicationService {
 
         // Update user sellerStatus to approved and role to seller
         await userRepository.updateUser(application.userId.toString(), { sellerStatus: 'approved', roleId: sellerRole._id });
+
+        // Auto-create shop from approved application if none exists
+        const ownerId = application.userId.toString();
+        const existingShop = await shopRepository.getShopByOwnerId(ownerId);
+        if (!existingShop) {
+            const baseName = (application.businessName || "").trim() || `Shop-${application._id.toString().slice(-6)}`;
+            const baseSlug = baseName
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
+            let shopName = baseName;
+            let slug = baseSlug || `shop-${application._id.toString().slice(-6)}`;
+            let attempts = 0;
+
+            while (attempts < 3) {
+                try {
+                    await shopRepository.createShop({
+                        ownerId,
+                        shopName,
+                        slug,
+                        shopAddress: application.businessAddress,
+                        shopContact: application.businessPhone,
+                        description: application.description,
+                    });
+                    break;
+                } catch (err: any) {
+                    if (err?.code === 11000 && attempts < 2) {
+                        attempts += 1;
+                        shopName = `${baseName}-${application._id.toString().slice(-4)}-${attempts}`;
+                        slug = `${baseSlug || "shop"}-${application._id.toString().slice(-4)}-${attempts}`;
+                        continue;
+                    }
+                    throw err;
+                }
+            }
+        }
 
         return updatedApplication;
     }

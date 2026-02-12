@@ -68,6 +68,10 @@ import adminSellerApplicationRoutes from './routes/admin/sellerApplication';
 //defining the path for usage of admin seller application routes
 app.use('/api/admin/seller-applications', adminSellerApplicationRoutes);
 
+//ADMIN-SHOP-ROUTES
+import adminShopRoutes from './routes/admin/shop';
+app.use('/api/admin/shops', adminShopRoutes);
+
 //USER SELF ROUTES 
 //For user to edit their own details and view themselves
 import userSelfRoutes from './routes/user/user_self.route';

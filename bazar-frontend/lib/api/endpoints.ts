@@ -23,5 +23,26 @@ export const API = {
     USERS_SELF: {
         UPDATE_PROFILE: '/api/user/update-profile',
         GET_USER_PROFILE: '/api/user/whoami',
+    },
+    SHOPS: {
+        CREATE_SHOP: 'api/seller/shops',
+        GET_ALL_SHOPS: 'api/seller/shops',
+        GET_MY_SHOP: 'api/seller/shops/my',
+        GET_SHOP_BY_ID: (id: string) => `api/seller/shops/${id}`,
+        UPDATE_SHOP: (id: string) => `api/seller/shops/${id}`,
+        DELETE_SHOP: (id: string) => `api/seller/shops/${id}`,
+    },
+    ADMIN_SHOPS: {
+        GET_ALL_SHOPS: 'api/admin/shops',
+    },
+    SELLER_APPLICATIONS: {
+        CREATE_APPLICATION: 'api/admin/seller-applications',
+        GET_ALL_APPLICATIONS: 'api/admin/seller-applications',
+        GET_PENDING_APPLICATIONS: 'api/admin/seller-applications/pending',
+        GET_APPLICATION_BY_ID: (id: string) => `api/admin/seller-applications/${id}`,
+        APPROVE_APPLICATION: (id: string) => `api/admin/seller-applications/${id}/approve`,
+        REJECT_APPLICATION: (id: string) => `api/admin/seller-applications/${id}/reject`,
+        UPDATE_APPLICATION: (id: string) => `api/admin/seller-applications/${id}`,
+        DELETE_APPLICATION: (id: string) => `api/admin/seller-applications/${id}`,
     }
 }
