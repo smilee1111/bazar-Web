@@ -19,6 +19,35 @@ export const createSellerApplication = async (applicationData: any) => {
     }
 }
 
+export const createMySellerApplication = async (applicationData: any) => {
+    try {
+        const response = await axios.post(
+            API.USER_SELLER_APPLICATIONS.CREATE_APPLICATION,
+            applicationData
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to create seller application"
+        );
+    }
+}
+
+export const getMySellerApplication = async () => {
+    try {
+        const response = await axios.get(
+            API.USER_SELLER_APPLICATIONS.GET_MY_APPLICATION
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to fetch seller application"
+        );
+    }
+}
+
 export const getAllSellerApplications = async () => {
     try {
         const response = await axios.get(

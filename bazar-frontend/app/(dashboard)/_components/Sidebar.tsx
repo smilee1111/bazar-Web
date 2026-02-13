@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store } from "lucide-react";
+import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store, Settings, ChevronUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -21,11 +22,13 @@ export default function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const { logout, user } = useAuth();
+    const [settingsOpen, setSettingsOpen] = useState(false);
 
     const roleName = typeof user?.role === "string"
         ? user?.role
         : user?.role?.name || user?.roleId?.roleName || user?.role?.roleName;
     const isAdmin = roleName?.toLowerCase() === "admin";
+    const isSeller = roleName?.toLowerCase() === "seller" || user?.sellerStatus === "approved";
 
     const handleLogout = () => {
         logout();
@@ -38,7 +41,12 @@ export default function Sidebar() {
             { label: "Users", href: "/admin/users", icon: Users },
             { label: "Shops", href: "/admin/shops", icon: Store }
         ]
-        : baseNavItems;
+        : isSeller
+            ? [
+                ...baseNavItems,
+                { label: "My Shop", href: "/my-shop", icon: Store }
+            ]
+            : baseNavItems;
 
     return (
         <aside className="sticky top-0 flex h-screen w-72 flex-col bg-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
@@ -101,6 +109,47 @@ export default function Sidebar() {
 
             <div className="px-4 pb-8 pt-4">
                 <Separator className="mb-4 bg-white/10" />
+                <div className="mb-3">
+                    <Button
+                        onClick={() => setSettingsOpen((prev) => !prev)}
+                        variant="ghost"
+                        className="flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/80 transition hover:bg-white/15 hover:text-white"
+                    >
+                        <Settings className="h-[18px] w-[18px] text-white/70" />
+                        <span>Settings</span>
+                        <ChevronUp
+                            className={cn(
+                                "ml-auto h-4 w-4 text-white/50 transition-transform",
+                                settingsOpen ? "rotate-0" : "rotate-180"
+                            )}
+                        />
+                    </Button>
+                    <div
+                        className={cn(
+                            "overflow-hidden pl-6 transition-all duration-300",
+                            settingsOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                        )}
+                    >
+                        <div className="mt-2 space-y-1">
+                            <Link href="/settings/account">
+                                <Button
+                                    variant="ghost"
+                                    className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/75 hover:bg-white/10 hover:text-white"
+                                >
+                                    Account
+                                </Button>
+                            </Link>
+                            <Link href="/settings/security">
+                                <Button
+                                    variant="ghost"
+                                    className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/75 hover:bg-white/10 hover:text-white"
+                                >
+                                    Security
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
                 <Button
                     onClick={handleLogout}
                     variant="ghost"

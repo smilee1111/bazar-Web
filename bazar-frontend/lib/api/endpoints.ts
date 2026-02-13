@@ -27,6 +27,10 @@ export const API = {
         UPDATE_PROFILE: '/api/user/update-profile',
         GET_USER_PROFILE: '/api/user/whoami',
     },
+    USER_SELLER_APPLICATIONS: {
+        CREATE_APPLICATION: '/api/user/seller-applications',
+        GET_MY_APPLICATION: '/api/user/seller-applications/my',
+    },
     SHOPS: {
         CREATE_SHOP: 'api/seller/shops',
         GET_ALL_SHOPS: 'api/seller/shops',

@@ -7,6 +7,7 @@ const isObjectIdString = (value: string) => /^[a-f\d]{24}$/i.test(value);
 export interface IShopRepository {
     createShop(data: Partial<IShop>): Promise<IShop>;
     getShopById(id: string): Promise<IShop | null>;
+    getShopByIdRaw(id: string): Promise<IShop | null>;
     getShopByOwnerId(ownerId: string): Promise<IShop | null>;
     getAllShops(): Promise<IShop[]>;
     updateShop(id: string, data: Partial<IShop>): Promise<IShop | null>;
@@ -54,6 +55,11 @@ export class ShopRepository implements IShopRepository {
         }
 
         return obj as unknown as IShop;
+    }
+
+    async getShopByIdRaw(id: string): Promise<IShop | null> {
+        const shop = await ShopModel.findById(id);
+        return shop;
     }
 
     async getShopByOwnerId(ownerId: string): Promise<IShop | null> {

@@ -14,13 +14,29 @@ export class AdminSellerApplicationService {
     async createSellerApplication(data: CreateSellerApplicationDto) {
         // Check if user already has an application
         const existingApplication = await sellerApplicationRepository.getSellerApplicationByUserId(data.userId);
-        if (existingApplication) {
+        if (existingApplication && existingApplication.status !== "rejected") {
             throw new HttpError(400, "User already has a seller application");
         }
 
         const existingPhoneApplication = await sellerApplicationRepository.getSellerApplicationByBusinessPhone(data.businessPhone);
-        if (existingPhoneApplication) {
+        if (
+            existingPhoneApplication &&
+            (!existingApplication || existingPhoneApplication._id.toString() !== existingApplication._id.toString())
+        ) {
             throw new HttpError(400, "Business phone already in use");
+        }
+
+        if (existingApplication && existingApplication.status === "rejected") {
+            await userRepository.updateUser(data.userId, { sellerStatus: 'pending' });
+            const updatedApplication = await sellerApplicationRepository.updateSellerApplication(
+                existingApplication._id.toString(),
+                {
+                    ...data,
+                    status: "pending",
+                    adminRemark: null,
+                }
+            );
+            return updatedApplication;
         }
 
         // Update user sellerStatus to pending

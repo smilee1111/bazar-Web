@@ -77,6 +77,10 @@ app.use('/api/admin/shops', adminShopRoutes);
 import userSelfRoutes from './routes/user/user_self.route';
 app.use('/api/user', userSelfRoutes);
 
+//USER SELLER APPLICATION ROUTES
+import userSellerApplicationRoutes from './routes/user/sellerApplication.route';
+app.use('/api/user/seller-applications', userSellerApplicationRoutes);
+
 //SELLER ROUTES
 import sellerShopRoutes from './routes/seller/shop';
 app.use('/api/seller/shops', sellerShopRoutes);

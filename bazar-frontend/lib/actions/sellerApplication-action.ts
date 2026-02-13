@@ -3,9 +3,11 @@
 //server side processing of seller application actions
 import {
     createSellerApplication,
+    createMySellerApplication,
     getAllSellerApplications,
     getPendingSellerApplications,
     getSellerApplicationById,
+    getMySellerApplication,
     approveSellerApplication,
     rejectSellerApplication,
     updateSellerApplication,
@@ -32,6 +34,51 @@ export const handleCreateSellerApplication = async (formData: any) => {
         return {
             success: false,
             message: err.message || "Failed to submit seller application"
+        };
+    }
+}
+
+export const handleCreateMySellerApplication = async (formData: any) => {
+    try {
+        const result = await createMySellerApplication(formData);
+        if (result.success) {
+            revalidatePath('/settings/account');
+            return {
+                success: true,
+                message: "Seller application submitted successfully",
+                data: result.data
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to submit seller application"
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to submit seller application"
+        };
+    }
+}
+
+export const handleGetMySellerApplication = async () => {
+    try {
+        const result = await getMySellerApplication();
+        if (result.success) {
+            return {
+                success: true,
+                message: "Seller application fetched successfully",
+                data: result.data
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to fetch seller application"
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to fetch seller application"
         };
     }
 }

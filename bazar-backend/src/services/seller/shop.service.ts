@@ -47,12 +47,14 @@ export class SellerShopService {
     }
 
     async updateShop(id: string, ownerId: string, data: UpdateShopDto) {
-        const shop = await shopRepository.getShopById(id);
-        if (!shop) {
+        const rawShop = await shopRepository.getShopByIdRaw(id);
+        if (!rawShop) {
             throw new HttpError(404, "Shop not found");
         }
 
-        if (shop.ownerId.toString() !== ownerId) {
+        const ownerIdString = ownerId?.toString();
+        const shopOwnerId = rawShop.ownerId?.toString();
+        if (!shopOwnerId || shopOwnerId !== ownerIdString) {
             throw new HttpError(403, "Not authorized to update this shop");
         }
 
@@ -61,12 +63,14 @@ export class SellerShopService {
     }
 
     async deleteShop(id: string, ownerId: string) {
-        const shop = await shopRepository.getShopById(id);
-        if (!shop) {
+        const rawShop = await shopRepository.getShopByIdRaw(id);
+        if (!rawShop) {
             throw new HttpError(404, "Shop not found");
         }
 
-        if (shop.ownerId.toString() !== ownerId) {
+        const ownerIdString = ownerId?.toString();
+        const shopOwnerId = rawShop.ownerId?.toString();
+        if (!shopOwnerId || shopOwnerId !== ownerIdString) {
             throw new HttpError(403, "Not authorized to delete this shop");
         }
 
