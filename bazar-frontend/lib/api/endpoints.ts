@@ -13,6 +13,9 @@ export const API = {
     ROLES: {
         GET_ALL: 'api/roles',
     },
+    CATEGORIES: {
+        GET_ALL: 'api/categories',
+    },
     ADMIN_USERS: {
         CREATE_USER: 'api/admin/users/register-admin',
         GET_ALL_USERS: 'api/admin/users',
@@ -34,6 +37,10 @@ export const API = {
     },
     ADMIN_SHOPS: {
         GET_ALL_SHOPS: 'api/admin/shops',
+        CREATE_SHOP: 'api/admin/shops',
+        GET_SHOP_BY_ID: (id: string) => `api/admin/shops/${id}`,
+        UPDATE_SHOP: (id: string) => `api/admin/shops/${id}`,
+        DELETE_SHOP: (id: string) => `api/admin/shops/${id}`,
     },
     SELLER_APPLICATIONS: {
         CREATE_APPLICATION: 'api/admin/seller-applications',

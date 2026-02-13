@@ -47,6 +47,64 @@ export const getAllAdminShops = async () => {
     }
 }
 
+export const createAdminShop = async (shopData: any) => {
+    try {
+        const response = await axios.post(
+            API.ADMIN_SHOPS.CREATE_SHOP,
+            shopData
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to create shop"
+        );
+    }
+}
+
+export const getAdminShopById = async (id: string) => {
+    try {
+        const response = await axios.get(
+            API.ADMIN_SHOPS.GET_SHOP_BY_ID(id)
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to fetch shop"
+        );
+    }
+}
+
+export const updateAdminShop = async (id: string, shopData: any) => {
+    try {
+        const response = await axios.put(
+            API.ADMIN_SHOPS.UPDATE_SHOP(id),
+            shopData
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to update shop"
+        );
+    }
+}
+
+export const deleteAdminShop = async (id: string) => {
+    try {
+        const response = await axios.delete(
+            API.ADMIN_SHOPS.DELETE_SHOP(id)
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to delete shop"
+        );
+    }
+}
+
 export const getMyShop = async () => {
     try {
         const response = await axios.get(

@@ -18,6 +18,7 @@ interface SellerApplication {
         phoneNumber: string;
     };
     businessName: string;
+    categoryName?: string;
     businessPhone: string;
     businessAddress: string;
     description: string;
@@ -101,6 +102,9 @@ export default function RejectedApplicationsTab() {
                                 <Badge variant="secondary" className="bg-red-100 text-red-800">
                                     Rejected
                                 </Badge>
+                                <span className="text-sm text-gray-500">
+                                    {application.categoryName || "Uncategorized"}
+                                </span>
                             </div>
                         </div>
                     </CardHeader>
@@ -150,6 +154,10 @@ export default function RejectedApplicationsTab() {
                                             <div>
                                                 <Label className="text-sm font-medium">Business Name</Label>
                                                 <p className="text-sm text-gray-700">{application.businessName}</p>
+                                            </div>
+                                            <div>
+                                                <Label className="text-sm font-medium">Category</Label>
+                                                <p className="text-sm text-gray-700">{application.categoryName || "Uncategorized"}</p>
                                             </div>
                                             <div>
                                                 <Label className="text-sm font-medium">Business Phone</Label>

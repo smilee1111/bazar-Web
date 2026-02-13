@@ -21,6 +21,7 @@ interface SellerApplication {
         phoneNumber: string;
     };
     businessName: string;
+    categoryName?: string;
     businessPhone: string;
     businessAddress: string;
     description: string;
@@ -139,6 +140,9 @@ export default function SellerApplicationsTab() {
                                 <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
                                     Pending Review
                                 </Badge>
+                                <span className="text-sm text-gray-500">
+                                    {application.categoryName || "Uncategorized"}
+                                </span>
                             </div>
                         </div>
                     </CardHeader>
@@ -188,6 +192,10 @@ export default function SellerApplicationsTab() {
                                             <div>
                                                 <Label className="text-sm font-medium">Business Name</Label>
                                                 <p className="text-sm text-gray-700">{application.businessName}</p>
+                                            </div>
+                                            <div>
+                                                <Label className="text-sm font-medium">Category</Label>
+                                                <p className="text-sm text-gray-700">{application.categoryName || "Uncategorized"}</p>
                                             </div>
                                             <div>
                                                 <Label className="text-sm font-medium">Business Phone</Label>

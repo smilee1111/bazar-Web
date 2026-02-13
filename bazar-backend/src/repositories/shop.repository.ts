@@ -2,6 +2,8 @@ import { IShop, ShopModel } from "../models/shop.model";
 import { CategoryModel } from "../models/category.model";
 import { UserModel } from "../models/user.model";
 
+const isObjectIdString = (value: string) => /^[a-f\d]{24}$/i.test(value);
+
 export interface IShopRepository {
     createShop(data: Partial<IShop>): Promise<IShop>;
     getShopById(id: string): Promise<IShop | null>;
@@ -25,7 +27,11 @@ export class ShopRepository implements IShopRepository {
         const obj: any = shop && typeof (shop as any).toObject === 'function' ? (shop as any).toObject() : JSON.parse(JSON.stringify(shop));
         const rawCatId = obj?.categoryId ? String(obj.categoryId) : null;
         if (rawCatId) {
-            const cat = await CategoryModel.findOne({ categoryId: rawCatId });
+            const cat = await CategoryModel.findOne(
+                isObjectIdString(rawCatId)
+                    ? { $or: [{ categoryId: rawCatId }, { _id: rawCatId }] }
+                    : { categoryId: rawCatId }
+            );
             obj.categoryId = cat ? { _id: cat._id, name: cat.categoryName } : { _id: null, name: '' };
         } else {
             obj.categoryId = { _id: null, name: '' };
@@ -57,7 +63,11 @@ export class ShopRepository implements IShopRepository {
         const obj: any = shop && typeof (shop as any).toObject === 'function' ? (shop as any).toObject() : JSON.parse(JSON.stringify(shop));
         const rawCatId = obj?.categoryId ? String(obj.categoryId) : null;
         if (rawCatId) {
-            const cat = await CategoryModel.findOne({ categoryId: rawCatId });
+            const cat = await CategoryModel.findOne(
+                isObjectIdString(rawCatId)
+                    ? { $or: [{ categoryId: rawCatId }, { _id: rawCatId }] }
+                    : { categoryId: rawCatId }
+            );
             obj.categoryId = cat ? { _id: cat._id, name: cat.categoryName } : { _id: null, name: '' };
         } else {
             obj.categoryId = { _id: null, name: '' };
@@ -99,11 +109,21 @@ export class ShopRepository implements IShopRepository {
 
         let categories: any[] = [];
         if (categoryIds.length > 0) {
-            categories = await CategoryModel.find({ categoryId: { $in: categoryIds } });
+            const objectIdCandidates = categoryIds.filter((id) => isObjectIdString(id));
+            categories = await CategoryModel.find({
+                $or: [
+                    { categoryId: { $in: categoryIds } },
+                    { _id: { $in: objectIdCandidates } },
+                ],
+            });
         }
 
-        const categoryMap = new Map<string, any>();
-        categories.forEach((c) => categoryMap.set(String(c.categoryId), c));
+        const categoryByIdMap = new Map<string, any>();
+        const categoryByObjectIdMap = new Map<string, any>();
+        categories.forEach((c) => {
+            categoryByIdMap.set(String(c.categoryId), c);
+            categoryByObjectIdMap.set(String(c._id), c);
+        });
 
         const ownerIds = Array.from(
             new Set(
@@ -129,7 +149,7 @@ export class ShopRepository implements IShopRepository {
             const obj: any = s && typeof (s as any).toObject === 'function' ? (s as any).toObject() : JSON.parse(JSON.stringify(s));
             const rawCat = obj?.categoryId ? String(obj.categoryId) : null;
             if (rawCat) {
-                const cat = categoryMap.get(rawCat);
+                const cat = categoryByIdMap.get(rawCat) || categoryByObjectIdMap.get(rawCat);
                 obj.categoryId = cat ? { _id: cat._id, name: cat.categoryName } : { _id: null, name: '' };
             } else {
                 obj.categoryId = { _id: null, name: '' };

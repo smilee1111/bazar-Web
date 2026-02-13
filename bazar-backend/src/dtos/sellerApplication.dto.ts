@@ -4,6 +4,7 @@ import { sellerApplicationSchema } from "../types/sellerApplication.type";
 export const CreateSellerApplicationDto = sellerApplicationSchema.pick({
     userId: true,
     businessName: true,
+    categoryName: true,
     businessPhone: true,
     businessAddress: true,
     description: true,

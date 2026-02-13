@@ -4,6 +4,7 @@ export const sellerApplicationSchema = z.object({
     applicationId: z.string().optional(),
     userId: z.union([z.string(), z.any()]),
     businessName: z.string().min(2).max(255),
+    categoryName: z.string().min(2).max(255),
     businessPhone: z
         .union([z.string(), z.number()])
         .transform((val) => String(val))
