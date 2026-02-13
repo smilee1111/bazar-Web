@@ -4,6 +4,7 @@ export interface ISellerApplicationRepository {
     createSellerApplication(data: Partial<ISellerApplication>): Promise<ISellerApplication>;
     getSellerApplicationById(id: string): Promise<ISellerApplication | null>;
     getSellerApplicationByUserId(userId: string): Promise<ISellerApplication | null>;
+    getSellerApplicationByBusinessPhone(businessPhone: string): Promise<ISellerApplication | null>;
     getAllSellerApplications(): Promise<ISellerApplication[]>;
     getPendingSellerApplications(): Promise<ISellerApplication[]>;
     updateSellerApplication(id: string, data: Partial<ISellerApplication>): Promise<ISellerApplication | null>;
@@ -27,13 +28,21 @@ export class SellerApplicationRepository implements ISellerApplicationRepository
         return application;
     }
 
+    async getSellerApplicationByBusinessPhone(businessPhone: string): Promise<ISellerApplication | null> {
+        const application = await SellerApplicationModel.findOne({ businessPhone: businessPhone });
+        return application;
+    }
+
     async getAllSellerApplications(): Promise<ISellerApplication[]> {
         const applications = await SellerApplicationModel.find();
         return applications;
     }
 
     async getPendingSellerApplications(): Promise<ISellerApplication[]> {
-        const applications = await SellerApplicationModel.find({ status: 'pending' });
+        const applications = await SellerApplicationModel.find({ status: 'pending' }).populate(
+            'userId',
+            'fullName email'
+        );
         return applications;
     }
 

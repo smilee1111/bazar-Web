@@ -18,6 +18,11 @@ export class AdminSellerApplicationService {
             throw new HttpError(400, "User already has a seller application");
         }
 
+        const existingPhoneApplication = await sellerApplicationRepository.getSellerApplicationByBusinessPhone(data.businessPhone);
+        if (existingPhoneApplication) {
+            throw new HttpError(400, "Business phone already in use");
+        }
+
         // Update user sellerStatus to pending
         await userRepository.updateUser(data.userId, { sellerStatus: 'pending' });
 
@@ -135,6 +140,13 @@ export class AdminSellerApplicationService {
         const application = await sellerApplicationRepository.getSellerApplicationById(id);
         if (!application) {
             throw new HttpError(404, "Seller application not found");
+        }
+
+        if (data.businessPhone) {
+            const existingPhoneApplication = await sellerApplicationRepository.getSellerApplicationByBusinessPhone(data.businessPhone);
+            if (existingPhoneApplication && existingPhoneApplication._id.toString() !== id) {
+                throw new HttpError(400, "Business phone already in use");
+            }
         }
 
         const updatedApplication = await sellerApplicationRepository.updateSellerApplication(id, data);

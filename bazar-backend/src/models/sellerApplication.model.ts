@@ -13,7 +13,7 @@ const SellerApplicationSchema: Schema = new Schema(
         applicationId: { type: String, required: false, unique: true, default: () => new mongoose.Types.ObjectId().toHexString() },
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         businessName: { type: String, required: true },
-        businessPhone: { type: String, required: true },
+        businessPhone: { type: String, required: true, unique: true },
         businessAddress: { type: String, required: true },
         description: { type: String, required: false },
         documentUrl: { type: String, required: false },
