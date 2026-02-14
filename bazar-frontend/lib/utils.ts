@@ -26,7 +26,7 @@ export const getRoleHomePath = (role: RoleInput) => {
     case "admin":
         return "/admin/users";
     case "seller":
-        return "/seller";
+        return "/dashboard";
     case "user":
     default:
         return "/dashboard";

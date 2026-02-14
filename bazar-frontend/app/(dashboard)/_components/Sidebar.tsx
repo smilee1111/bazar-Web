@@ -27,7 +27,9 @@ export default function Sidebar() {
     const roleName = typeof user?.role === "string"
         ? user?.role
         : user?.role?.name || user?.roleId?.roleName || user?.role?.roleName;
-    const isAdmin = roleName?.toLowerCase() === "admin";
+    const normalizedRole = roleName?.toLowerCase() || "user";
+    const isAdmin = normalizedRole === "admin";
+    const roleBadgeLabel = normalizedRole.charAt(0).toUpperCase() + normalizedRole.slice(1);
     const isSeller = roleName?.toLowerCase() === "seller" || user?.sellerStatus === "approved";
 
     const handleLogout = () => {
@@ -51,7 +53,7 @@ export default function Sidebar() {
     return (
         <aside className="sticky top-0 flex h-screen w-72 flex-col bg-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
             <div className="flex items-center gap-3 px-6 pt-8 pb-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/25 bg-white/15 shadow-inner">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/40 bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
                     <Image
                         src="/images/logo.svg"
                         alt="Bazar logo"
@@ -65,12 +67,10 @@ export default function Sidebar() {
                     <p className="text-[11px] uppercase tracking-[0.2em] text-white/60">Bazar</p>
                     <div className="flex items-center gap-2">
                         <p className="text-xl font-semibold">Dashboard</p>
-                        {isAdmin && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-[3px] text-[11px] font-medium text-white/90">
-                                <Shield className="h-3 w-3" />
-                                Admin
-                            </span>
-                        )}
+                        <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-[3px] text-[11px] font-medium text-white/90">
+                            <Shield className="h-3 w-3" />
+                            {roleBadgeLabel}
+                        </span>
                     </div>
                 </div>
             </div>
