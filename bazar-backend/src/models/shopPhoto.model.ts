@@ -11,7 +11,8 @@ const ShopPhotoSchema: Schema = new Schema(
     {
         photoId: { type: String, required: false, unique: true, default: () => new mongoose.Types.ObjectId().toHexString() },
         photoName: { type: String, required: true },
-        shopId: { type: String, required: true }
+        shopId: { type: String, required: true },
+        isActive: { type: Boolean, default: true }
     },
     {
         timestamps: true,

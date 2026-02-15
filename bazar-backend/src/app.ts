@@ -72,6 +72,14 @@ app.use('/api/admin/seller-applications', adminSellerApplicationRoutes);
 import adminShopRoutes from './routes/admin/shop';
 app.use('/api/admin/shops', adminShopRoutes);
 
+//ADMIN-SHOP-PHOTO-ROUTES
+import adminShopPhotoRoutes from './routes/admin/shopPhoto';
+app.use('/api/admin/shop-photos', adminShopPhotoRoutes);
+
+//ADMIN-SHOP-REVIEW-ROUTES
+import adminShopReviewRoutes from './routes/admin/shopReview';
+app.use('/api/admin/shop-reviews', adminShopReviewRoutes);
+
 //USER SELF ROUTES 
 //For user to edit their own details and view themselves
 import userSelfRoutes from './routes/user/user_self.route';
@@ -84,6 +92,12 @@ app.use('/api/user/seller-applications', userSellerApplicationRoutes);
 //SELLER ROUTES
 import sellerShopRoutes from './routes/seller/shop';
 app.use('/api/seller/shops', sellerShopRoutes);
+
+//SHOP PUBLIC ROUTES
+import shopPhotoRoutes from './routes/shop/photo';
+import shopReviewRoutes from './routes/shop/review';
+app.use('/api/shops', shopPhotoRoutes);
+app.use('/api/shops', shopReviewRoutes);
 
 // Global error handler - return JSON for known error types (HttpError, MulterError)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

@@ -16,7 +16,8 @@ const ShopReviewSchema: Schema = new Schema(
         reviewedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         starNum: { type: Number, required: true, min: 1, max: 5 },
         likesCount: { type: Number, default: 0 },
-        dislikeCount: { type: Number, default: 0 }
+        dislikeCount: { type: Number, default: 0 },
+        isActive: { type: Boolean, default: true }
     },
     {
         timestamps: true,

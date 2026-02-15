@@ -8,6 +8,7 @@ export const shopReviewSchema = z.object({
     starNum: z.number().min(1).max(5),
     likesCount: z.number().int().nonnegative().default(0),
     dislikeCount: z.number().int().nonnegative().default(0),
+    isActive: z.boolean().default(true),
 });
 
 export type ShopReviewType = z.infer<typeof shopReviewSchema>;
