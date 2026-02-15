@@ -18,6 +18,7 @@ const ShopSchema: Schema = new Schema(
         shopAddress: { type: String, required: true },
         shopContact: { type: String, required: true },
         categoryId: { type: String, required: false },
+        priceRange: { type: String, required: false },
         isActive: { type: Boolean, default: true }
     },
     {

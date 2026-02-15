@@ -8,6 +8,7 @@ export const CreateShopDto = shopSchema.pick({
     shopContact: true,
     description: true,
     categoryId: true,
+    priceRange: true,
 }).extend({
     ownerId: z.string().refine(val => /^[a-f\d]{24}$/i.test(val), "Invalid ObjectId"),
 });

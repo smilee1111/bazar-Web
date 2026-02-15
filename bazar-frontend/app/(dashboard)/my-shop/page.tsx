@@ -1,7 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Building2, Store, User, Mail, Phone, MapPin } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+    Building2,
+    Store,
+    User,
+    Mail,
+    Phone,
+    MapPin,
+    Star,
+    Camera,
+    MessageCircle,
+    Heart,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,8 +21,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { handleGetMyShop, handleUpdateShop } from "@/lib/actions/shop-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
+import { handleGetShopReviewsByShopId } from "@/lib/actions/shopReview-action";
+import { handleGetShopPhotosByShopId } from "@/lib/actions/shopPhoto-action";
+import { API_CONFIG } from "@/lib/api/config";
 import { toast } from "react-toastify";
 
 interface Category {
@@ -28,6 +45,7 @@ interface Shop {
     description?: string;
     categoryId: { _id: string; name: string };
     slug?: string;
+    priceRange?: string;
     isActive?: boolean;
     ownerId: {
         _id: string;
@@ -37,11 +55,35 @@ interface Shop {
     };
 }
 
+interface ShopReview {
+    _id?: string;
+    reviewId?: string;
+    reviewName?: string;
+    shopId?: string;
+    reviewedBy?: string | { fullName?: string; email?: string };
+    starNum?: number;
+    likesCount?: number;
+    dislikeCount?: number;
+    createdAt?: string;
+}
+
+interface ShopPhoto {
+    _id?: string;
+    photoId?: string;
+    photoName?: string;
+    shopId?: string;
+    createdAt?: string;
+}
+
 export default function MyShopPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [shop, setShop] = useState<Shop | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [reviews, setReviews] = useState<ShopReview[]>([]);
+    const [photos, setPhotos] = useState<ShopPhoto[]>([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [photosLoading, setPhotosLoading] = useState(false);
     const [formData, setFormData] = useState({
         shopName: "",
         shopAddress: "",
@@ -49,6 +91,7 @@ export default function MyShopPage() {
         description: "",
         categoryId: "",
         slug: "",
+        priceRange: "",
         isActive: true,
     });
 
@@ -71,6 +114,7 @@ export default function MyShopPage() {
                         description: result.data.description || "",
                         categoryId: "",
                         slug: result.data.slug || "",
+                        priceRange: result.data.priceRange || "",
                         isActive: result.data.isActive ?? true,
                     });
                 }
@@ -106,6 +150,90 @@ export default function MyShopPage() {
         }
     }, [shop, categories]);
 
+    useEffect(() => {
+        if (!shop?._id) return;
+        loadReviews(shop._id);
+        loadPhotos(shop._id);
+    }, [shop?._id]);
+
+    const loadReviews = async (shopId: string) => {
+        setReviewsLoading(true);
+        try {
+            const result = await handleGetShopReviewsByShopId(shopId);
+            if (result.success) {
+                const data = Array.isArray(result.data) ? result.data : result.data?.data;
+                setReviews(Array.isArray(data) ? data : []);
+            } else if (result.message) {
+                toast.error(result.message);
+            }
+        } catch {
+            toast.error("Failed to load reviews");
+        } finally {
+            setReviewsLoading(false);
+        }
+    };
+
+    const loadPhotos = async (shopId: string) => {
+        setPhotosLoading(true);
+        try {
+            const result = await handleGetShopPhotosByShopId(shopId);
+            if (result.success) {
+                const data = Array.isArray(result.data) ? result.data : result.data?.data;
+                setPhotos(Array.isArray(data) ? data : []);
+            } else if (result.message) {
+                toast.error(result.message);
+            }
+        } catch {
+            toast.error("Failed to load photos");
+        } finally {
+            setPhotosLoading(false);
+        }
+    };
+
+    const reviewStats = useMemo(() => {
+        const total = reviews.length;
+        const average = total
+            ? reviews.reduce((sum, review) => sum + (review.starNum || 0), 0) / total
+            : 0;
+        const breakdown = [5, 4, 3, 2, 1].map((rating) => {
+            const count = reviews.filter((review) => review.starNum === rating).length;
+            const percent = total ? Math.round((count / total) * 100) : 0;
+            return { label: rating.toString(), percent, count };
+        });
+        return { total, average, breakdown };
+    }, [reviews]);
+
+    const sortedReviews = useMemo(() => {
+        return [...reviews].sort((a, b) => {
+            const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return bTime - aTime;
+        });
+    }, [reviews]);
+
+    const getReviewerMeta = (reviewedBy?: ShopReview["reviewedBy"]) => {
+        if (!reviewedBy) {
+            return { name: "Anonymous", detail: "" };
+        }
+        if (typeof reviewedBy === "string") {
+            const shortId = reviewedBy.slice(-6).toUpperCase();
+            return { name: "Customer", detail: shortId ? `ID ${shortId}` : "" };
+        }
+        const name = reviewedBy.fullName || (typeof reviewedBy.email === "string" ? reviewedBy.email.split("@")[0] : "Customer");
+        return { name, detail: reviewedBy.email || "" };
+    };
+
+    const formatDate = (value?: string) => {
+        if (!value) return "Recently";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "Recently";
+        return date.toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        });
+    };
+
     const handleSave = async () => {
         if (!shop) return;
         setSaving(true);
@@ -117,6 +245,7 @@ export default function MyShopPage() {
                 description: formData.description,
                 categoryId: formData.categoryId || "",
                 slug: formData.slug,
+                priceRange: formData.priceRange,
                 isActive: formData.isActive,
             };
             const result = await handleUpdateShop(shop._id, payload);
@@ -262,6 +391,15 @@ export default function MyShopPage() {
                                 placeholder="Slug (optional)"
                             />
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="priceRange">Price Range</Label>
+                            <Input
+                                id="priceRange"
+                                value={formData.priceRange}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, priceRange: e.target.value }))}
+                                placeholder="e.g., $$ or Medium or 500-1000"
+                            />
+                        </div>
                         <div className="space-y-2 md:col-span-2">
                             <Label htmlFor="shopAddress">Shop Address</Label>
                             <Input
@@ -304,6 +442,257 @@ export default function MyShopPage() {
                             {saving ? "Saving..." : "Save Changes"}
                         </Button>
                     </div>
+                </CardContent>
+            </Card>
+
+            <Card className="border-[1.2px] border-white/25 bg-white/95 shadow-xl backdrop-blur-sm">
+                <CardHeader className="space-y-4">
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                        <div className="flex items-center gap-3">
+                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8f7e4f]/15">
+                                <MessageCircle className="h-5 w-5 text-[#8f7e4f]" />
+                            </span>
+                            <div>
+                                <CardTitle className="text-xl text-[#1a1a1a]">Reviews & Photos</CardTitle>
+                                <CardDescription>
+                                    Highlight what customers love and curate shop moments.
+                                </CardDescription>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Badge className="bg-[#f0e7d6] text-[#6f5f3a] border border-[#e6d8be]">
+                                {shop.categoryId?.name || "Shop"}
+                            </Badge>
+                            <Badge variant="outline" className="border-[#e6d8be] text-[#7a6b45]">
+                                {shop.shopAddress}
+                            </Badge>
+                        </div>
+                    </div>
+                </CardHeader>
+
+                <Separator className="bg-[#efefef]" />
+
+                <CardContent className="space-y-6 pt-6">
+                    <div className="grid gap-4 md:grid-cols-3">
+                        <div className="rounded-2xl border border-[#efe7d6] bg-[#fbf8f1] p-5">
+                            <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                                <Star className="h-4 w-4" />
+                                <span>Average rating</span>
+                            </div>
+                            <div className="mt-3 flex items-end gap-2">
+                                <span className="text-3xl font-semibold text-[#1f1a14]">
+                                    {reviewStats.average.toFixed(1)}
+                                </span>
+                                <span className="text-sm text-[#7a6b45]">out of 5</span>
+                            </div>
+                            <div className="mt-3 flex items-center gap-1">
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                    <Star
+                                        key={`avg-star-${index}`}
+                                        className={`h-4 w-4 ${
+                                            index < Math.round(reviewStats.average)
+                                                ? "text-[#d1a547]"
+                                                : "text-[#e6d8be]"
+                                        }`}
+                                        fill="currentColor"
+                                    />
+                                ))}
+                                <span className="ml-2 text-xs text-[#7a6b45]">
+                                    {reviewStats.total} reviews
+                                </span>
+                            </div>
+                        </div>
+                        <div className="rounded-2xl border border-[#efe7d6] bg-white p-5">
+                            <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                                <Camera className="h-4 w-4" />
+                                <span>Photo highlights</span>
+                            </div>
+                            <div className="mt-3 grid grid-cols-3 gap-2">
+                                {photos.length === 0 && (
+                                    <div className="col-span-3 rounded-xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-3 py-4 text-center text-xs text-[#7a6b45]">
+                                        No photos yet. Upload moments to showcase your shop.
+                                    </div>
+                                )}
+                                {photos.slice(0, 6).map((photo) => {
+                                    const imageUrl = API_CONFIG.getImageUrl(photo.photoName);
+                                    return (
+                                        <div
+                                            key={photo.photoId || photo._id}
+                                            className="group relative h-16 overflow-hidden rounded-xl border border-[#efe7d6] bg-[#f4ede0]"
+                                        >
+                                            {imageUrl ? (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt="Shop photo"
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="h-full w-full bg-gradient-to-br from-[#f4ede0] via-[#efe6d2] to-[#e7dbc2]" />
+                                            )}
+                                            <div className="absolute inset-0 rounded-xl bg-[#1f1a14]/0 transition group-hover:bg-[#1f1a14]/10" />
+                                            <div className="absolute bottom-1 left-1 right-1 rounded-md bg-white/80 px-1 py-0.5 text-[10px] text-[#7a6b45]">
+                                                {formatDate(photo.createdAt)}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                        <div className="rounded-2xl border border-[#efe7d6] bg-white p-5">
+                            <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                                <Heart className="h-4 w-4" />
+                                <span>Customer sentiment</span>
+                            </div>
+                            <div className="mt-4 space-y-2">
+                                {reviewStats.breakdown.map((item) => (
+                                    <div key={`rating-${item.label}`} className="flex items-center gap-2 text-xs">
+                                        <span className="w-5 text-[#6f5f3a]">{item.label}</span>
+                                        <div className="h-2 flex-1 rounded-full bg-[#efe7d6]">
+                                            <div
+                                                className="h-2 rounded-full bg-[#c9a86a]"
+                                                style={{ width: `${item.percent}%` }}
+                                            />
+                                        </div>
+                                        <span className="w-10 text-right text-[#7a6b45]">{item.percent}%</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <Tabs defaultValue="reviews" className="w-full">
+                        <TabsList className="w-full justify-start bg-[#f5efe3]">
+                            <TabsTrigger value="reviews" className="data-[state=active]:bg-white">
+                                Reviews
+                            </TabsTrigger>
+                            <TabsTrigger value="photos" className="data-[state=active]:bg-white">
+                                Photos
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="reviews" className="mt-6">
+                            <div className="space-y-4">
+                                {reviewsLoading && (
+                                    <div className="rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                        Loading reviews...
+                                    </div>
+                                )}
+                                {!reviewsLoading && sortedReviews.length === 0 && (
+                                    <div className="rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                        No reviews yet. Encourage customers to leave feedback.
+                                    </div>
+                                )}
+                                {sortedReviews.map((review) => {
+                                    const reviewer = getReviewerMeta(review.reviewedBy);
+                                    const initials = reviewer.name
+                                        .split(" ")
+                                        .map((part) => part[0])
+                                        .join("");
+                                    return (
+                                        <div
+                                            key={review.reviewId || review._id}
+                                            className="rounded-2xl border border-[#efe7d6] bg-white p-5"
+                                        >
+                                            <div className="flex flex-wrap items-center justify-between gap-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar>
+                                                        <AvatarImage src="" alt={reviewer.name} />
+                                                        <AvatarFallback>{initials || "CU"}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <div className="font-semibold text-[#1f1a14]">
+                                                            {reviewer.name}
+                                                        </div>
+                                                        <div className="text-xs text-[#7a6b45]">
+                                                            {reviewer.detail || "Verified visitor"}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="text-xs text-[#7a6b45]">
+                                                    {formatDate(review.createdAt)}
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-3 flex items-center gap-1">
+                                                {Array.from({ length: 5 }).map((_, index) => (
+                                                    <Star
+                                                        key={`review-star-${review.reviewId || review._id}-${index}`}
+                                                        className={`h-4 w-4 ${
+                                                            index < (review.starNum || 0)
+                                                                ? "text-[#d1a547]"
+                                                                : "text-[#e6d8be]"
+                                                        }`}
+                                                        fill="currentColor"
+                                                    />
+                                                ))}
+                                                <span className="ml-2 text-xs text-[#7a6b45]">
+                                                    {(review.starNum || 0).toFixed(1)}
+                                                </span>
+                                            </div>
+                                            <p className="mt-3 text-sm text-[#4a4a4a]">
+                                                {review.reviewName || "No review text provided."}
+                                            </p>
+                                            <div className="mt-4 flex flex-wrap items-center gap-2">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="border-[#e6d8be] text-[#7a6b45]"
+                                                >
+                                                    {review.likesCount || 0} likes
+                                                </Badge>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="border-[#e6d8be] text-[#7a6b45]"
+                                                >
+                                                    {review.dislikeCount || 0} dislikes
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="photos" className="mt-6">
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                {photosLoading && (
+                                    <div className="col-span-full rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                        Loading photos...
+                                    </div>
+                                )}
+                                {!photosLoading && photos.length === 0 && (
+                                    <div className="col-span-full rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                        No photos uploaded yet. Add photos to bring your shop to life.
+                                    </div>
+                                )}
+                                {photos.map((photo) => {
+                                    const imageUrl = API_CONFIG.getImageUrl(photo.photoName);
+                                    return (
+                                        <div
+                                            key={photo.photoId || photo._id}
+                                            className="group relative overflow-hidden rounded-2xl border border-[#efe7d6] bg-white"
+                                        >
+                                            {imageUrl ? (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt="Shop photo"
+                                                    className="h-40 w-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="h-40 bg-gradient-to-br from-[#f4ede0] via-[#efe6d2] to-[#e7dbc2]" />
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-[#1f1a14]/30 via-transparent to-transparent" />
+                                            <div className="absolute inset-4 flex flex-col justify-end gap-1 text-white">
+                                                <div className="text-sm font-semibold">Shop moment</div>
+                                                <div className="text-xs text-white/80">
+                                                    {formatDate(photo.createdAt)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </TabsContent>
+                    </Tabs>
                 </CardContent>
             </Card>
         </div>

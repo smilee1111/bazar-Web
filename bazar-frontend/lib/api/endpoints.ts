@@ -55,5 +55,11 @@ export const API = {
         REJECT_APPLICATION: (id: string) => `api/admin/seller-applications/${id}/reject`,
         UPDATE_APPLICATION: (id: string) => `api/admin/seller-applications/${id}`,
         DELETE_APPLICATION: (id: string) => `api/admin/seller-applications/${id}`,
-    }
+    },
+    SHOP_REVIEWS: {
+        GET_BY_SHOP: (shopId: string) => `api/shops/${shopId}/reviews`,
+    },
+    SHOP_PHOTOS: {
+        GET_BY_SHOP: (shopId: string) => `api/shops/${shopId}/photos`,
+    },
 }

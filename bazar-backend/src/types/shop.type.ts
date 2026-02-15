@@ -14,6 +14,7 @@ export const shopSchema = z.object({
             message: "Phone number must be exactly 10 digits",
         }),
     categoryId: z.string().optional(),
+    priceRange: z.string().optional(),
     isActive: z.boolean().default(true),
 });
 
