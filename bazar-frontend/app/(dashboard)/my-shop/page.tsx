@@ -12,6 +12,13 @@ import {
     Camera,
     MessageCircle,
     Heart,
+    X,
+    ZoomIn,
+    Upload,
+    Trash2,
+    Link as LinkIcon,
+    Plus,
+    Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,10 +31,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import DeleteModal from "@/components/DeleteModal";
 import { handleGetMyShop, handleUpdateShop } from "@/lib/actions/shop-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { handleGetShopReviewsByShopId } from "@/lib/actions/shopReview-action";
-import { handleGetShopPhotosByShopId } from "@/lib/actions/shopPhoto-action";
+import { handleGetShopPhotosByShopId, handleCreateShopPhoto, handleDeleteShopPhoto } from "@/lib/actions/shopPhoto-action";
+import { handleGetShopDetailByShopId, handleCreateShopDetail, handleUpdateShopDetail, handleDeleteShopDetail } from "@/lib/actions/shopDetail-action";
 import { API_CONFIG } from "@/lib/api/config";
 import { toast } from "react-toastify";
 
@@ -75,6 +85,18 @@ interface ShopPhoto {
     createdAt?: string;
 }
 
+interface ShopDetail {
+    _id?: string;
+    detailId?: string;
+    link1?: string;
+    link2?: string;
+    link3?: string;
+    link4?: string;
+    shopId?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
 export default function MyShopPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -84,6 +106,22 @@ export default function MyShopPage() {
     const [photos, setPhotos] = useState<ShopPhoto[]>([]);
     const [reviewsLoading, setReviewsLoading] = useState(false);
     const [photosLoading, setPhotosLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+    const [shopDetail, setShopDetail] = useState<ShopDetail | null>(null);
+    const [detailsLoading, setDetailsLoading] = useState(false);
+    const [detailsEditing, setDetailsEditing] = useState(false);
+    const [detailsSaving, setDetailsSaving] = useState(false);
+    const [detailFormData, setDetailFormData] = useState({
+        link1: "",
+        link2: "",
+        link3: "",
+        link4: "",
+    });
+    const [deleteLinkModalOpen, setDeleteLinkModalOpen] = useState(false);
+    const [linkToDelete, setLinkToDelete] = useState<'link1' | 'link2' | 'link3' | 'link4' | null>(null);
+    const [deleteAllModalOpen, setDeleteAllModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         shopName: "",
         shopAddress: "",
@@ -154,6 +192,7 @@ export default function MyShopPage() {
         if (!shop?._id) return;
         loadReviews(shop._id);
         loadPhotos(shop._id);
+        loadDetails(shop._id);
     }, [shop?._id]);
 
     const loadReviews = async (shopId: string) => {
@@ -187,6 +226,175 @@ export default function MyShopPage() {
             toast.error("Failed to load photos");
         } finally {
             setPhotosLoading(false);
+        }
+    };
+
+    const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || !shop?._id) return;
+
+        // Validate file type
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error("Only JPEG, PNG and GIF images are allowed");
+            return;
+        }
+
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image size should be less than 5MB");
+            return;
+        }
+
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append("image", file);
+
+            const result = await handleCreateShopPhoto(shop._id, formData);
+            if (result.success) {
+                toast.success("Photo uploaded successfully");
+                await loadPhotos(shop._id);
+            } else {
+                toast.error(result.message || "Failed to upload photo");
+            }
+        } catch (error) {
+            toast.error("Failed to upload photo");
+        } finally {
+            setUploading(false);
+            // Reset file input
+            event.target.value = "";
+        }
+    };
+
+    const handlePhotoDelete = async (photoId: string) => {
+        if (!shop?._id) return;
+
+        const confirmed = window.confirm("Are you sure you want to delete this photo?");
+        if (!confirmed) return;
+
+        setDeletingPhotoId(photoId);
+        try {
+            const result = await handleDeleteShopPhoto(shop._id, photoId);
+            if (result.success) {
+                toast.success("Photo deleted successfully");
+                await loadPhotos(shop._id);
+            } else {
+                toast.error(result.message || "Failed to delete photo");
+            }
+        } catch (error) {
+            toast.error("Failed to delete photo");
+        } finally {
+            setDeletingPhotoId(null);
+        }
+    };
+
+    const loadDetails = async (shopId: string) => {
+        setDetailsLoading(true);
+        try {
+            const result = await handleGetShopDetailByShopId(shopId);
+            if (result.success && result.data) {
+                setShopDetail(result.data);
+                setDetailFormData({
+                    link1: result.data.link1 || "",
+                    link2: result.data.link2 || "",
+                    link3: result.data.link3 || "",
+                    link4: result.data.link4 || "",
+                });
+            } else {
+                setShopDetail(null);
+            }
+        } catch {
+            // Details may not exist yet, this is fine
+            setShopDetail(null);
+        } finally {
+            setDetailsLoading(false);
+        }
+    };
+
+    const handleDetailsSave = async () => {
+        if (!shop?._id) return;
+
+        setDetailsSaving(true);
+        try {
+            let result;
+            if (shopDetail) {
+                // Update existing details
+                const detailId = shopDetail.detailId || shopDetail._id || "";
+                result = await handleUpdateShopDetail(shop._id, detailId, detailFormData);
+            } else {
+                // Create new details
+                result = await handleCreateShopDetail(shop._id, detailFormData);
+            }
+
+            if (result.success) {
+                toast.success(shopDetail ? "Links updated successfully" : "Links created successfully");
+                setDetailsEditing(false);
+                await loadDetails(shop._id);
+            } else {
+                toast.error(result.message || "Failed to save links");
+            }
+        } catch (error) {
+            toast.error("Failed to save links");
+        } finally {
+            setDetailsSaving(false);
+        }
+    };
+
+    const handleDetailsDelete = () => {
+        if (!shop?._id || !shopDetail) return;
+        setDeleteAllModalOpen(true);
+    };
+
+    const confirmDeleteAll = async () => {
+        if (!shop?._id || !shopDetail) return;
+
+        setDeleteAllModalOpen(false);
+        setDetailsSaving(true);
+        try {
+            const detailId = shopDetail.detailId || shopDetail._id || "";
+            const result = await handleDeleteShopDetail(shop._id, detailId);
+            if (result.success) {
+                toast.success("Links deleted successfully");
+                setShopDetail(null);
+                setDetailFormData({ link1: "", link2: "", link3: "", link4: "" });
+                setDetailsEditing(false);
+            } else {
+                toast.error(result.message || "Failed to delete links");
+            }
+        } catch (error) {
+            toast.error("Failed to delete links");
+        } finally {
+            setDetailsSaving(false);
+        }
+    };
+
+    const handleDeleteIndividualLink = (linkKey: 'link1' | 'link2' | 'link3' | 'link4') => {
+        setLinkToDelete(linkKey);
+        setDeleteLinkModalOpen(true);
+    };
+
+    const confirmDeleteLink = async () => {
+        if (!shop?._id || !shopDetail || !linkToDelete) return;
+
+        setDeleteLinkModalOpen(false);
+        setDetailsSaving(true);
+        try {
+            const detailId = shopDetail.detailId || shopDetail._id || "";
+            const updateData = { [linkToDelete]: "" };
+            
+            const result = await handleUpdateShopDetail(shop._id, detailId, updateData);
+            if (result.success) {
+                toast.success("Link deleted successfully");
+                await loadDetails(shop._id);
+            } else {
+                toast.error(result.message || "Failed to delete link");
+            }
+        } catch (error) {
+            toast.error("Failed to delete link");
+        } finally {
+            setDetailsSaving(false);
+            setLinkToDelete(null);
         }
     };
 
@@ -518,7 +726,8 @@ export default function MyShopPage() {
                                     return (
                                         <div
                                             key={photo.photoId || photo._id}
-                                            className="group relative h-16 overflow-hidden rounded-xl border border-[#efe7d6] bg-[#f4ede0]"
+                                            className="group relative h-16 overflow-hidden rounded-xl border border-[#efe7d6] bg-[#f4ede0] cursor-pointer transition-transform hover:scale-105"
+                                            onClick={() => imageUrl && setSelectedImage(imageUrl)}
                                         >
                                             {imageUrl ? (
                                                 <img
@@ -530,6 +739,9 @@ export default function MyShopPage() {
                                                 <div className="h-full w-full bg-gradient-to-br from-[#f4ede0] via-[#efe6d2] to-[#e7dbc2]" />
                                             )}
                                             <div className="absolute inset-0 rounded-xl bg-[#1f1a14]/0 transition group-hover:bg-[#1f1a14]/10" />
+                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <ZoomIn className="h-5 w-5 text-white drop-shadow-lg" />
+                                            </div>
                                             <div className="absolute bottom-1 left-1 right-1 rounded-md bg-white/80 px-1 py-0.5 text-[10px] text-[#7a6b45]">
                                                 {formatDate(photo.createdAt)}
                                             </div>
@@ -567,6 +779,9 @@ export default function MyShopPage() {
                             </TabsTrigger>
                             <TabsTrigger value="photos" className="data-[state=active]:bg-white">
                                 Photos
+                            </TabsTrigger>
+                            <TabsTrigger value="links" className="data-[state=active]:bg-white">
+                                Links
                             </TabsTrigger>
                         </TabsList>
 
@@ -653,6 +868,24 @@ export default function MyShopPage() {
                         </TabsContent>
 
                         <TabsContent value="photos" className="mt-6">
+                            <div className="mb-6">
+                                <input
+                                    type="file"
+                                    id="photo-upload"
+                                    accept="image/jpeg,image/png,image/gif"
+                                    onChange={handlePhotoUpload}
+                                    className="hidden"
+                                />
+                                <Button
+                                    onClick={() => document.getElementById("photo-upload")?.click()}
+                                    disabled={uploading}
+                                    className="gap-2 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white"
+                                >
+                                    <Upload className="h-4 w-4" />
+                                    {uploading ? "Uploading..." : "Upload Photo"}
+                                </Button>
+                            </div>
+
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {photosLoading && (
                                     <div className="col-span-full rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
@@ -666,35 +899,395 @@ export default function MyShopPage() {
                                 )}
                                 {photos.map((photo) => {
                                     const imageUrl = API_CONFIG.getImageUrl(photo.photoName);
+                                    const photoIdentifier = photo.photoId || photo._id || "";
+                                    const isDeleting = deletingPhotoId === photoIdentifier;
+                                    
                                     return (
                                         <div
-                                            key={photo.photoId || photo._id}
+                                            key={photoIdentifier}
                                             className="group relative overflow-hidden rounded-2xl border border-[#efe7d6] bg-white"
                                         >
-                                            {imageUrl ? (
-                                                <img
-                                                    src={imageUrl}
-                                                    alt="Shop photo"
-                                                    className="h-40 w-full object-cover"
-                                                />
-                                            ) : (
-                                                <div className="h-40 bg-gradient-to-br from-[#f4ede0] via-[#efe6d2] to-[#e7dbc2]" />
-                                            )}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-[#1f1a14]/30 via-transparent to-transparent" />
-                                            <div className="absolute inset-4 flex flex-col justify-end gap-1 text-white">
-                                                <div className="text-sm font-semibold">Shop moment</div>
-                                                <div className="text-xs text-white/80">
-                                                    {formatDate(photo.createdAt)}
+                                            <div 
+                                                className="cursor-pointer"
+                                                onClick={() => imageUrl && setSelectedImage(imageUrl)}
+                                            >
+                                                {imageUrl ? (
+                                                    <img
+                                                        src={imageUrl}
+                                                        alt="Shop photo"
+                                                        className="h-40 w-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="h-40 bg-gradient-to-br from-[#f4ede0] via-[#efe6d2] to-[#e7dbc2]" />
+                                                )}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#1f1a14]/30 via-transparent to-transparent" />
+                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-[#1f1a14]/20">
+                                                    <ZoomIn className="h-8 w-8 text-white drop-shadow-lg" />
+                                                </div>
+                                                <div className="absolute inset-4 flex flex-col justify-end gap-1 text-white">
+                                                    <div className="text-sm font-semibold">Shop moment</div>
+                                                    <div className="text-xs text-white/80">
+                                                        {formatDate(photo.createdAt)}
+                                                    </div>
                                                 </div>
                                             </div>
+                                            
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                className="absolute top-2 right-2 h-8 w-8 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-red-600 hover:bg-red-700"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handlePhotoDelete(photoIdentifier);
+                                                }}
+                                                disabled={isDeleting}
+                                            >
+                                                {isDeleting ? (
+                                                    <span className="text-xs">...</span>
+                                                ) : (
+                                                    <Trash2 className="h-4 w-4" />
+                                                )}
+                                            </Button>
                                         </div>
                                     );
                                 })}
                             </div>
                         </TabsContent>
+
+                        <TabsContent value="links" className="mt-6">
+                            {detailsLoading ? (
+                                <div className="rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                    Loading links...
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                                            <LinkIcon className="h-4 w-4" />
+                                            <span>Social Media & Website Links</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            {detailsEditing ? (
+                                                <>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => {
+                                                            setDetailsEditing(false);
+                                                            if (shopDetail) {
+                                                                setDetailFormData({
+                                                                    link1: shopDetail.link1 || "",
+                                                                    link2: shopDetail.link2 || "",
+                                                                    link3: shopDetail.link3 || "",
+                                                                    link4: shopDetail.link4 || "",
+                                                                });
+                                                            }
+                                                        }}
+                                                        disabled={detailsSaving}
+                                                        className="border-[#8f7e4f] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={handleDetailsSave}
+                                                        disabled={detailsSaving}
+                                                        className="gap-2 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white"
+                                                    >
+                                                        <Save className="h-4 w-4" />
+                                                        {detailsSaving ? "Saving..." : "Save"}
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {shopDetail && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={handleDetailsDelete}
+                                                            disabled={detailsSaving}
+                                                            className="border-red-500 text-red-600 hover:bg-red-50"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() => setDetailsEditing(true)}
+                                                        className="gap-2 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white"
+                                                    >
+                                                        {shopDetail ? (
+                                                            <>
+                                                                <LinkIcon className="h-4 w-4" />
+                                                                Edit Links
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Plus className="h-4 w-4" />
+                                                                Add Links
+                                                            </>
+                                                        )}
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="rounded-2xl border border-[#efe7d6] bg-white p-6 space-y-4">
+                                        {detailsEditing ? (
+                                            <>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="link1">Link 1 (Website/Facebook)</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            id="link1"
+                                                            type="url"
+                                                            placeholder="https://example.com"
+                                                            value={detailFormData.link1}
+                                                            onChange={(e) => setDetailFormData({ ...detailFormData, link1: e.target.value })}
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]"
+                                                        />
+                                                        {detailFormData.link1 && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="icon"
+                                                                onClick={() => setDetailFormData({ ...detailFormData, link1: "" })}
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="link2">Link 2 (Instagram/Twitter)</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            id="link2"
+                                                            type="url"
+                                                            placeholder="https://example.com"
+                                                            value={detailFormData.link2}
+                                                            onChange={(e) => setDetailFormData({ ...detailFormData, link2: e.target.value })}
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]"
+                                                        />
+                                                        {detailFormData.link2 && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="icon"
+                                                                onClick={() => setDetailFormData({ ...detailFormData, link2: "" })}
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="link3">Link 3 (LinkedIn/YouTube)</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            id="link3"
+                                                            type="url"
+                                                            placeholder="https://example.com"
+                                                            value={detailFormData.link3}
+                                                            onChange={(e) => setDetailFormData({ ...detailFormData, link3: e.target.value })}
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]"
+                                                        />
+                                                        {detailFormData.link3 && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="icon"
+                                                                onClick={() => setDetailFormData({ ...detailFormData, link3: "" })}
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="link4">Link 4 (Other)</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            id="link4"
+                                                            type="url"
+                                                            placeholder="https://example.com"
+                                                            value={detailFormData.link4}
+                                                            onChange={(e) => setDetailFormData({ ...detailFormData, link4: e.target.value })}
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]"
+                                                        />
+                                                        {detailFormData.link4 && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="icon"
+                                                                onClick={() => setDetailFormData({ ...detailFormData, link4: "" })}
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        ) : shopDetail ? (
+                                            <div className="space-y-3">
+                                                {shopDetail.link1 && (
+                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            <LinkIcon className="h-4 w-4 text-[#8f7e4f] flex-shrink-0" />
+                                                            <a
+                                                                href={shopDetail.link1}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-sm text-[#1f1a14] hover:text-[#8f7e4f] underline break-all"
+                                                            >
+                                                                {shopDetail.link1}
+                                                            </a>
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleDeleteIndividualLink('link1')}
+                                                            disabled={detailsSaving}
+                                                            className="flex-shrink-0 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                                {shopDetail.link2 && (
+                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            <LinkIcon className="h-4 w-4 text-[#8f7e4f] flex-shrink-0" />
+                                                            <a
+                                                                href={shopDetail.link2}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-sm text-[#1f1a14] hover:text-[#8f7e4f] underline break-all"
+                                                            >
+                                                                {shopDetail.link2}
+                                                            </a>
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleDeleteIndividualLink('link2')}
+                                                            disabled={detailsSaving}
+                                                            className="flex-shrink-0 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                                {shopDetail.link3 && (
+                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            <LinkIcon className="h-4 w-4 text-[#8f7e4f] flex-shrink-0" />
+                                                            <a
+                                                                href={shopDetail.link3}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-sm text-[#1f1a14] hover:text-[#8f7e4f] underline break-all"
+                                                            >
+                                                                {shopDetail.link3}
+                                                            </a>
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleDeleteIndividualLink('link3')}
+                                                            disabled={detailsSaving}
+                                                            className="flex-shrink-0 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                                {shopDetail.link4 && (
+                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            <LinkIcon className="h-4 w-4 text-[#8f7e4f] flex-shrink-0" />
+                                                            <a
+                                                                href={shopDetail.link4}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-sm text-[#1f1a14] hover:text-[#8f7e4f] underline break-all"
+                                                            >
+                                                                {shopDetail.link4}
+                                                            </a>
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleDeleteIndividualLink('link4')}
+                                                            disabled={detailsSaving}
+                                                            className="flex-shrink-0 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-8 text-sm text-[#7a6b45]">
+                                                No links added yet. Click "Add Links" to get started.
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </TabsContent>
                     </Tabs>
                 </CardContent>
             </Card>
+
+            {/* Image Viewer Dialog */}
+            <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+                <DialogContent className="max-w-4xl w-[95vw] h-[90vh] p-0 bg-black/95 border-none">
+                    <DialogClose className="absolute right-4 top-4 z-50 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors">
+                        <X className="h-5 w-5" />
+                        <span className="sr-only">Close</span>
+                    </DialogClose>
+                    {selectedImage && (
+                        <div className="relative w-full h-full flex items-center justify-center p-4">
+                            <img
+                                src={selectedImage}
+                                alt="Shop photo full view"
+                                className="max-w-full max-h-full object-contain rounded-lg"
+                            />
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Link Confirmation Modal */}
+            <DeleteModal
+                isOpen={deleteLinkModalOpen}
+                onClose={() => {
+                    setDeleteLinkModalOpen(false);
+                    setLinkToDelete(null);
+                }}
+                onConfirm={confirmDeleteLink}
+                title="Delete Link"
+                description="Are you sure you want to delete this link? This action cannot be undone."
+            />
+
+            {/* Delete All Links Confirmation Modal */}
+            <DeleteModal
+                isOpen={deleteAllModalOpen}
+                onClose={() => setDeleteAllModalOpen(false)}
+                onConfirm={confirmDeleteAll}
+                title="Delete All Links"
+                description="Are you sure you want to delete all links for this shop? This action cannot be undone."
+            />
         </div>
     );
 }

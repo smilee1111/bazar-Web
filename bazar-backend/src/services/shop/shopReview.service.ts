@@ -60,7 +60,10 @@ export class ShopReviewService {
             throw new HttpError(404, "Shop review not found");
         }
 
-        const reviewerId = existing.reviewedBy?.toString();
+        // Handle both populated and non-populated reviewedBy field
+        const reviewerId = typeof existing.reviewedBy === 'object' && existing.reviewedBy?._id
+            ? existing.reviewedBy._id.toString()
+            : existing.reviewedBy?.toString();
         if (!reviewerId || reviewerId !== userId?.toString()) {
             throw new HttpError(403, "Not authorized to update this review");
         }
@@ -80,7 +83,10 @@ export class ShopReviewService {
             throw new HttpError(404, "Shop review not found");
         }
 
-        const reviewerId = existing.reviewedBy?.toString();
+        // Handle both populated and non-populated reviewedBy field
+        const reviewerId = typeof existing.reviewedBy === 'object' && existing.reviewedBy?._id
+            ? existing.reviewedBy._id.toString()
+            : existing.reviewedBy?.toString();
         if (!reviewerId || reviewerId !== userId?.toString()) {
             throw new HttpError(403, "Not authorized to delete this review");
         }

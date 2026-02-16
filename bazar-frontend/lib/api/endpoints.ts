@@ -61,5 +61,14 @@ export const API = {
     },
     SHOP_PHOTOS: {
         GET_BY_SHOP: (shopId: string) => `api/shops/${shopId}/photos`,
+        CREATE: (shopId: string) => `api/shops/${shopId}/photos`,
+        DELETE: (shopId: string, photoId: string) => `api/shops/${shopId}/photos/${photoId}`,
+    },
+    SHOP_DETAILS: {
+        GET_BY_SHOP: (shopId: string) => `api/shops/${shopId}/details`,
+        GET_BY_ID: (shopId: string, detailId: string) => `api/shops/${shopId}/details/${detailId}`,
+        CREATE: (shopId: string) => `api/shops/${shopId}/details`,
+        UPDATE: (shopId: string, detailId: string) => `api/shops/${shopId}/details/${detailId}`,
+        DELETE: (shopId: string, detailId: string) => `api/shops/${shopId}/details/${detailId}`,
     },
 }

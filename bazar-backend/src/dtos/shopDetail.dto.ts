@@ -11,5 +11,5 @@ export const CreateShopDetailDto = shopDetailSchema.pick({
 
 export type CreateShopDetailDto = z.infer<typeof CreateShopDetailDto>;
 
-export const UpdateShopDetailDto = shopDetailSchema.partial();
+export const UpdateShopDetailDto = shopDetailSchema.partial().omit({ shopId: true });
 export type UpdateShopDetailDto = z.infer<typeof UpdateShopDetailDto>;
