@@ -88,3 +88,25 @@ export const deleteShopReview = async (shopId: string, reviewId: string) => {
         );
     }
 };
+
+export const likeShopReview = async (reviewId: string) => {
+    try {
+        const response = await axios.post(`/shops/reviews/${reviewId}/like`);
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to like review"
+        );
+    }
+};
+
+export const dislikeShopReview = async (reviewId: string) => {
+    try {
+        const response = await axios.post(`/shops/reviews/${reviewId}/dislike`);
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to dislike review"
+        );
+    }
+};

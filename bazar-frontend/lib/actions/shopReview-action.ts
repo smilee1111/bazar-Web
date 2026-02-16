@@ -1,6 +1,6 @@
 "use server";
 
-import { getShopReviewsByShopId, getAdminShopReviewsByShopId, adminDisableShopReview, adminDeleteShopReview } from "../api/shopReview";
+import { getShopReviewsByShopId, getAdminShopReviewsByShopId, adminDisableShopReview, adminDeleteShopReview, likeShopReview, dislikeShopReview } from "../api/shopReview";
 
 export const handleGetShopReviewsByShopId = async (shopId: string) => {
     try {
@@ -100,6 +100,50 @@ export const handleAdminDeleteShopReview = async (reviewId: string) => {
         return {
             success: false,
             message: err.message || "Failed to delete review",
+        };
+    }
+};
+
+export const handleLikeShopReview = async (reviewId: string) => {
+    try {
+        const result = await likeShopReview(reviewId);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Review liked successfully",
+                data: result.data,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to like review",
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to like review",
+        };
+    }
+};
+
+export const handleDislikeShopReview = async (reviewId: string) => {
+    try {
+        const result = await dislikeShopReview(reviewId);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Review disliked successfully",
+                data: result.data,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to dislike review",
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to dislike review",
         };
     }
 };

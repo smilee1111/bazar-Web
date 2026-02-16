@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import ReviewForm from "@/components/ReviewForm";
 import { API_CONFIG } from "@/lib/api/config";
 import { handleGetPublicShopById } from "@/lib/actions/shop-action";
+import { handleLikeShopReview, handleDislikeShopReview } from "@/lib/actions/shopReview-action";
 import { toast } from "react-toastify";
 
 interface Review {
@@ -94,16 +95,20 @@ export default function ShopDetailPage() {
 
     const handleLikeReview = async (reviewId: string) => {
         try {
-            setReviews(reviews.map(r =>
-                r._id === reviewId
-                    ? { 
-                        ...r, 
-                        likes: r.likes + (r.userLiked ? -1 : 1), 
-                        userLiked: !r.userLiked,
-                        userDisliked: r.userDisliked ? false : r.userDisliked 
-                      }
-                    : r
-            ));
+            const result = await handleLikeShopReview(reviewId);
+            if (result.success) {
+                // Update local state with the new counts
+                setReviews(reviews.map(r =>
+                    r._id === reviewId
+                        ? { 
+                            ...r, 
+                            likes: result.data.likesCount || result.data.likes || r.likes + 1, 
+                            userLiked: !r.userLiked,
+                            userDisliked: r.userDisliked ? false : r.userDisliked 
+                          }
+                        : r
+                ));
+            }
         } catch (error) {
             console.error("Error liking review:", error);
         }
@@ -111,16 +116,20 @@ export default function ShopDetailPage() {
 
     const handleDislikeReview = async (reviewId: string) => {
         try {
-            setReviews(reviews.map(r =>
-                r._id === reviewId
-                    ? { 
-                        ...r, 
-                        dislikes: r.dislikes + (r.userDisliked ? -1 : 1), 
-                        userDisliked: !r.userDisliked,
-                        userLiked: r.userLiked ? false : r.userLiked
-                      }
-                    : r
-            ));
+            const result = await handleDislikeShopReview(reviewId);
+            if (result.success) {
+                // Update local state with the new counts
+                setReviews(reviews.map(r =>
+                    r._id === reviewId
+                        ? { 
+                            ...r, 
+                            dislikes: result.data.dislikeCount || result.data.dislikes || r.dislikes + 1, 
+                            userDisliked: !r.userDisliked,
+                            userLiked: r.userLiked ? false : r.userLiked
+                          }
+                        : r
+                ));
+            }
         } catch (error) {
             console.error("Error disliking review:", error);
         }

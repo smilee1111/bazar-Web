@@ -93,4 +93,32 @@ export class ShopReviewService {
 
         return shopReviewRepository.deleteReview(reviewId);
     }
+
+    async likeReview(reviewId: string) {
+        const review = await shopReviewRepository.getReviewById(reviewId);
+        if (!review) {
+            throw new HttpError(404, "Review not found");
+        }
+
+        const currentLikes = review.likesCount || 0;
+        const updated = await shopReviewRepository.updateReview(reviewId, {
+            likesCount: currentLikes + 1
+        } as any);
+        
+        return updated;
+    }
+
+    async dislikeReview(reviewId: string) {
+        const review = await shopReviewRepository.getReviewById(reviewId);
+        if (!review) {
+            throw new HttpError(404, "Review not found");
+        }
+
+        const currentDislikes = review.dislikeCount || 0;
+        const updated = await shopReviewRepository.updateReview(reviewId, {
+            dislikeCount: currentDislikes + 1
+        } as any);
+        
+        return updated;
+    }
 }

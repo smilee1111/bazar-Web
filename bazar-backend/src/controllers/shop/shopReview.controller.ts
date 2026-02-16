@@ -77,4 +77,24 @@ export class ShopReviewController {
             next(error);
         }
     }
+
+    async likeReview(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { reviewId } = req.params;
+            const result = await shopReviewService.likeReview(reviewId);
+            return res.status(200).json({ success: true, data: result });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async dislikeReview(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { reviewId } = req.params;
+            const result = await shopReviewService.dislikeReview(reviewId);
+            return res.status(200).json({ success: true, data: result });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

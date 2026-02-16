@@ -10,5 +10,7 @@ router.get("/:shopId/reviews/:reviewId", shopReviewController.getReviewById);
 router.post("/:shopId/reviews", authorizedMiddleware, shopReviewController.createReview);
 router.put("/:shopId/reviews/:reviewId", authorizedMiddleware, shopReviewController.updateReview);
 router.delete("/:shopId/reviews/:reviewId", authorizedMiddleware, shopReviewController.deleteReview);
+router.post("/reviews/:reviewId/like", shopReviewController.likeReview);
+router.post("/reviews/:reviewId/dislike", shopReviewController.dislikeReview);
 
 export default router;
