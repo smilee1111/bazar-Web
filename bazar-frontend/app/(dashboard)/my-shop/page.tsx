@@ -49,6 +49,7 @@ interface Category {
 
 interface Shop {
     _id: string;
+    shopId: string;
     shopName: string;
     shopAddress: string;
     shopContact: string;
@@ -189,11 +190,11 @@ export default function MyShopPage() {
     }, [shop, categories]);
 
     useEffect(() => {
-        if (!shop?._id) return;
-        loadReviews(shop._id);
-        loadPhotos(shop._id);
-        loadDetails(shop._id);
-    }, [shop?._id]);
+        if (!shop?.shopId) return;
+        loadReviews(shop.shopId);
+        loadPhotos(shop.shopId);
+        loadDetails(shop.shopId);
+    }, [shop?.shopId]);
 
     const loadReviews = async (shopId: string) => {
         setReviewsLoading(true);
@@ -231,7 +232,7 @@ export default function MyShopPage() {
 
     const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (!file || !shop?._id) return;
+        if (!file || !shop?.shopId) return;
 
         // Validate file type
         const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -251,10 +252,10 @@ export default function MyShopPage() {
             const formData = new FormData();
             formData.append("image", file);
 
-            const result = await handleCreateShopPhoto(shop._id, formData);
+            const result = await handleCreateShopPhoto(shop.shopId, formData);
             if (result.success) {
                 toast.success("Photo uploaded successfully");
-                await loadPhotos(shop._id);
+                await loadPhotos(shop.shopId);
             } else {
                 toast.error(result.message || "Failed to upload photo");
             }
@@ -268,17 +269,17 @@ export default function MyShopPage() {
     };
 
     const handlePhotoDelete = async (photoId: string) => {
-        if (!shop?._id) return;
+        if (!shop?.shopId) return;
 
         const confirmed = window.confirm("Are you sure you want to delete this photo?");
         if (!confirmed) return;
 
         setDeletingPhotoId(photoId);
         try {
-            const result = await handleDeleteShopPhoto(shop._id, photoId);
+            const result = await handleDeleteShopPhoto(shop.shopId, photoId);
             if (result.success) {
                 toast.success("Photo deleted successfully");
-                await loadPhotos(shop._id);
+                await loadPhotos(shop.shopId);
             } else {
                 toast.error(result.message || "Failed to delete photo");
             }
@@ -313,7 +314,7 @@ export default function MyShopPage() {
     };
 
     const handleDetailsSave = async () => {
-        if (!shop?._id) return;
+        if (!shop?.shopId) return;
 
         setDetailsSaving(true);
         try {
@@ -321,16 +322,16 @@ export default function MyShopPage() {
             if (shopDetail) {
                 // Update existing details
                 const detailId = shopDetail.detailId || shopDetail._id || "";
-                result = await handleUpdateShopDetail(shop._id, detailId, detailFormData);
+                result = await handleUpdateShopDetail(shop.shopId, detailId, detailFormData);
             } else {
                 // Create new details
-                result = await handleCreateShopDetail(shop._id, detailFormData);
+                result = await handleCreateShopDetail(shop.shopId, detailFormData);
             }
 
             if (result.success) {
                 toast.success(shopDetail ? "Links updated successfully" : "Links created successfully");
                 setDetailsEditing(false);
-                await loadDetails(shop._id);
+                await loadDetails(shop.shopId);
             } else {
                 toast.error(result.message || "Failed to save links");
             }
@@ -342,18 +343,18 @@ export default function MyShopPage() {
     };
 
     const handleDetailsDelete = () => {
-        if (!shop?._id || !shopDetail) return;
+        if (!shop?.shopId || !shopDetail) return;
         setDeleteAllModalOpen(true);
     };
 
     const confirmDeleteAll = async () => {
-        if (!shop?._id || !shopDetail) return;
+        if (!shop?.shopId || !shopDetail) return;
 
         setDeleteAllModalOpen(false);
         setDetailsSaving(true);
         try {
             const detailId = shopDetail.detailId || shopDetail._id || "";
-            const result = await handleDeleteShopDetail(shop._id, detailId);
+            const result = await handleDeleteShopDetail(shop.shopId, detailId);
             if (result.success) {
                 toast.success("Links deleted successfully");
                 setShopDetail(null);

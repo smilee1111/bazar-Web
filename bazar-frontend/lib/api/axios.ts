@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { getAuthToken } from '../cookie';
+import { API_CONFIG } from './config';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL 
-|| 'http://localhost:3000/api';//5050
+const BASE_URL = `${API_CONFIG.BASE_URL}/api`;
 
 const axiosInstance = axios.create(
     {

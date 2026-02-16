@@ -4,6 +4,14 @@ import { ShopReviewRepository } from "../../repositories/shopReview.repository";
 const shopReviewRepository = new ShopReviewRepository();
 
 export class AdminShopReviewService {
+    async getReviewsByShopId(shopId: string) {
+        if (!shopId) {
+            throw new HttpError(400, "Shop ID is required");
+        }
+        const reviews = await shopReviewRepository.getReviewsByShopIds([shopId]);
+        return reviews;
+    }
+
     async disableReview(reviewId: string) {
         const existing = await shopReviewRepository.getReviewById(reviewId);
         if (!existing) {

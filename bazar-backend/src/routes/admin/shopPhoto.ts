@@ -5,6 +5,7 @@ import { adminMiddleware, authorizedMiddleware } from "../../middlewares/authori
 const router = Router();
 const adminShopPhotoController = new AdminShopPhotoController();
 
+router.get("/:shopId", authorizedMiddleware, adminMiddleware, adminShopPhotoController.getPhotosByShopId);
 router.patch("/:photoId/disable", authorizedMiddleware, adminMiddleware, adminShopPhotoController.disablePhoto);
 router.delete("/:photoId", authorizedMiddleware, adminMiddleware, adminShopPhotoController.deletePhoto);
 

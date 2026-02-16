@@ -33,6 +33,20 @@ export const getAllShops = async () => {
     }
 }
 
+export const getPublicShops = async () => {
+    try {
+        const response = await axios.get(
+            API.PUBLIC_SHOPS.GET_FEED
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to fetch public shops"
+        );
+    }
+}
+
 export const getAllAdminShops = async () => {
     try {
         const response = await axios.get(
@@ -129,6 +143,20 @@ export const getShopById = async (id: string) => {
         throw new Error(
             err.response?.data?.message || err.message
             || "Failed to fetch shop"
+        );
+    }
+}
+
+export const getPublicShopById = async (id: string) => {
+    try {
+        const response = await axios.get(
+            API.PUBLIC_SHOPS.GET_BY_ID(id)
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to fetch public shop"
         );
     }
 }

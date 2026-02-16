@@ -53,3 +53,45 @@ export const deleteShopDetail = async (shopId: string, detailId: string) => {
         );
     }
 };
+
+export const getAdminAllShopDetails = async () => {
+    try {
+        const endpoint = API.ADMIN_SHOP_DETAILS.GET_ALL;
+        console.log("🔵 API: Fetching admin details from endpoint:", endpoint);
+        const response = await axios.get(endpoint);
+        console.log("🟢 API: Admin details raw response:", response);
+        console.log("🟢 API: Admin details response.data:", response.data);
+        return response.data;
+    } catch (err: Error | any) {
+        console.error("🔴 API: Admin details error:", {
+            message: err.message,
+            response: err.response?.data,
+            status: err.response?.status,
+        });
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to fetch shop details"
+        );
+    }
+};
+
+export const getAdminShopDetailById = async (detailId: string) => {
+    try {
+        const response = await axios.get(API.ADMIN_SHOP_DETAILS.GET_BY_ID(detailId));
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to fetch shop detail"
+        );
+    }
+};
+
+export const adminDeleteShopDetail = async (detailId: string) => {
+    try {
+        const response = await axios.delete(API.ADMIN_SHOP_DETAILS.DELETE(detailId));
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to delete shop details"
+        );
+    }
+};

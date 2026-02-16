@@ -11,13 +11,19 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Eye, Store, MapPin, Phone, User, Calendar, Pencil, Trash2, Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Eye, Store, MapPin, Phone, User, Calendar, Pencil, Trash2, Plus, MessageCircle, Image as ImageIcon, Link as LinkIcon, ZoomIn, X } from "lucide-react";
 import { handleCreateAdminShop, handleDeleteAdminShop, handleGetAllAdminShops, handleUpdateAdminShop } from "@/lib/actions/shop-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
+import { handleGetAdminShopReviewsByShopId, handleAdminDeleteShopReview, handleAdminDisableShopReview } from "@/lib/actions/shopReview-action";
+import { handleGetAdminShopPhotosByShopId, handleAdminDeleteShopPhoto, handleAdminDisableShopPhoto } from "@/lib/actions/shopPhoto-action";
+import { handleGetAdminAllShopDetails, handleAdminDeleteShopDetail } from "@/lib/actions/shopDetail-action";
+import { API_CONFIG } from "@/lib/api/config";
 import { toast } from "react-toastify";
 
 interface Shop {
     _id: string;
+    shopId: string;
     shopName: string;
     shopAddress: string;
     shopContact: string;
@@ -79,6 +85,12 @@ export default function ApprovedShopsTab() {
     const [searchTerm, setSearchTerm] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [categories, setCategories] = useState<Category[]>([]);
+    const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
+    const [shopReviews, setShopReviews] = useState<any[]>([]);
+    const [shopPhotos, setShopPhotos] = useState<any[]>([]);
+    const [shopDetails, setShopDetails] = useState<any[]>([]);
+    const [detailsLoading, setDetailsLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     useEffect(() => {
         loadShops();
@@ -88,8 +100,15 @@ export default function ApprovedShopsTab() {
     const loadShops = async () => {
         try {
             const result = await handleGetAllAdminShops();
+            console.log("🔵 DEBUG: Shop API result:", result);
             if (result.success) {
                 const data = Array.isArray(result.data) ? result.data : result.data?.data;
+                console.log("🟢 DEBUG: Extracted shop data:", data);
+                if (Array.isArray(data) && data.length > 0) {
+                    console.log("🟢 DEBUG: First shop object:", data[0]);
+                    console.log("🟢 DEBUG: Shop shopId field:", data[0].shopId);
+                    console.log("🟢 DEBUG: Shop _id field:", data[0]._id);
+                }
                 setShops(Array.isArray(data) ? data : []);
             } else {
                 toast.error(result.message);
@@ -112,6 +131,77 @@ export default function ApprovedShopsTab() {
             }
         } catch {
             toast.error("Failed to load categories");
+        }
+    };
+
+    const loadShopDetails = async (shopId: string) => {
+        console.log("🟡 DEBUG: Starting loadShopDetails with shopId:", shopId);
+        console.log("🟡 DEBUG: shopId type:", typeof shopId);
+        console.log("🟡 DEBUG: shopId is empty?:", !shopId);
+        
+        setDetailsLoading(true);
+        try {
+            // Load reviews
+            const reviewsResult = await handleGetAdminShopReviewsByShopId(shopId);
+            console.log("=== Reviews Result ===", { shopId, reviewsResult });
+            console.log("🟡 DEBUG: Reviews data:", reviewsResult?.data);
+            console.log("🟡 DEBUG: Reviews length:", Array.isArray(reviewsResult?.data) ? reviewsResult.data.length : 'not array');
+            if (reviewsResult?.success) {
+                const reviews = Array.isArray(reviewsResult.data) ? reviewsResult.data : [];
+                console.log("Setting reviews:", reviews);
+                setShopReviews(reviews);
+            } else {
+                console.warn("Reviews fetch not successful:", reviewsResult?.message);
+                toast.error(reviewsResult?.message || "Failed to fetch reviews");
+            }
+
+            // Load photos
+            const photosResult = await handleGetAdminShopPhotosByShopId(shopId);
+            console.log("=== Photos Result ===", { shopId, photosResult });
+            console.log("🟡 DEBUG: Photos data:", photosResult?.data);
+            console.log("🟡 DEBUG: Photos length:", Array.isArray(photosResult?.data) ? photosResult.data.length : 'not array');
+            if (photosResult?.success) {
+                const photos = Array.isArray(photosResult.data) ? photosResult.data : [];
+                console.log("Setting photos:", photos);
+                setShopPhotos(photos);
+            } else {
+                console.warn("Photos fetch not successful:", photosResult?.message);
+                toast.error(photosResult?.message || "Failed to fetch photos");
+            }
+
+            // Load all shop details to filter by shop
+            const detailsResult = await handleGetAdminAllShopDetails();
+            console.log("=== Details Result (raw) ===", { detailsResult });
+            console.log("🟡 DEBUG: All details data:", detailsResult?.data);
+            if (detailsResult?.success) {
+                const allDetails = Array.isArray(detailsResult.data) ? detailsResult.data : [];
+                console.log("All details from API:", allDetails);
+                console.log("🟡 DEBUG: Filtering details against shopId:", shopId);
+                const filtered = allDetails.filter((d: any) => {
+                    const detailShopId = String(d.shopId);
+                    const targetShopId = String(shopId);
+                    const match = detailShopId === targetShopId;
+                    console.log("🟡 DEBUG: Detail comparison:", { 
+                        detailShopId, 
+                        targetShopId, 
+                        match,
+                        detailId: d._id,
+                        detailShopIdType: typeof d.shopId,
+                        targetShopIdType: typeof shopId
+                    });
+                    return match;
+                });
+                console.log("Filtered details:", filtered);
+                setShopDetails(filtered);
+            } else {
+                console.warn("Details fetch not successful:", detailsResult?.message);
+                toast.error(detailsResult?.message || "Failed to fetch details");
+            }
+        } catch (err) {
+            console.error("=== Error in loadShopDetails ===", err);
+            toast.error("Failed to load shop details");
+        } finally {
+            setDetailsLoading(false);
         }
     };
 
@@ -479,73 +569,312 @@ export default function ApprovedShopsTab() {
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
                                         </AlertDialog>
-                                        <Dialog>
+                                        <Dialog open={viewDetailsOpen && selectedShop?._id === shop._id} onOpenChange={(open) => {
+                                            if (!open) {
+                                                setViewDetailsOpen(false);
+                                                setSelectedShop(null);
+                                            }
+                                        }}>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm" 
+                                                    className="flex items-center gap-2"
+                                                    onClick={() => {
+                                                        console.log("🟡 DEBUG: View Details clicked for shop:", shop);
+                                                        console.log("🟡 DEBUG: shop.shopId:", shop.shopId);
+                                                        console.log("🟡 DEBUG: shop._id:", shop._id);
+                                                        setSelectedShop(shop);
+                                                        setViewDetailsOpen(true);
+                                                        loadShopDetails(shop.shopId);
+                                                    }}
+                                                >
                                                     <Eye className="h-4 w-4" />
                                                     View Details
                                                 </Button>
                                             </DialogTrigger>
-                                            <DialogContent className="max-w-2xl">
+                                            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                                                 <DialogHeader>
                                                     <DialogTitle className="flex items-center gap-2">
                                                         <Store className="h-5 w-5" />
-                                                        {shop.shopName}
+                                                        {selectedShop?.shopName}
                                                     </DialogTitle>
                                                     <DialogDescription>
-                                                        Complete shop information and details
+                                                        Shop information, reviews, photos, and contact details
                                                     </DialogDescription>
                                                 </DialogHeader>
-                                                <div className="space-y-4">
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label className="text-sm font-medium text-gray-700">Shop Name</label>
-                                                            <p className="text-sm text-gray-600">{shop.shopName}</p>
+                                                <Tabs defaultValue="info" className="w-full">
+                                                    <TabsList className="grid w-full grid-cols-4">
+                                                        <TabsTrigger value="info">Info</TabsTrigger>
+                                                        <TabsTrigger value="reviews" className="flex items-center gap-1">
+                                                            <MessageCircle className="h-3 w-3" />
+                                                            Reviews ({shopReviews.length})
+                                                        </TabsTrigger>
+                                                        <TabsTrigger value="photos" className="flex items-center gap-1">
+                                                            <ImageIcon className="h-3 w-3" />
+                                                            Photos ({shopPhotos.length})
+                                                        </TabsTrigger>
+                                                        <TabsTrigger value="details" className="flex items-center gap-1">
+                                                            <LinkIcon className="h-3 w-3" />
+                                                            Links ({shopDetails.length})
+                                                        </TabsTrigger>
+                                                    </TabsList>
+
+                                                    {/* Info Tab */}
+                                                    <TabsContent value="info" className="space-y-4">
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label className="text-sm font-medium text-gray-700">Shop Name</label>
+                                                                <p className="text-sm text-gray-600">{selectedShop?.shopName}</p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-sm font-medium text-gray-700">Category</label>
+                                                                <p className="text-sm text-gray-600">{selectedShop?.categoryId?.name || "Uncategorized"}</p>
+                                                            </div>
+                                                            <div className="col-span-2">
+                                                                <label className="text-sm font-medium text-gray-700">Address</label>
+                                                                <p className="text-sm text-gray-600">{selectedShop?.shopAddress}</p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-sm font-medium text-gray-700">Contact</label>
+                                                                <p className="text-sm text-gray-600">{selectedShop?.shopContact}</p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-sm font-medium text-gray-700">Owner</label>
+                                                                <p className="text-sm text-gray-600">{selectedShop?.ownerId.fullName}</p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-sm font-medium text-gray-700">Owner Email</label>
+                                                                <p className="text-sm text-gray-600">{selectedShop?.ownerId.email}</p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-sm font-medium text-gray-700">Owner Phone</label>
+                                                                <p className="text-sm text-gray-600">{selectedShop?.ownerId.phoneNumber}</p>
+                                                            </div>
                                                         </div>
                                                         <div>
-                                                            <label className="text-sm font-medium text-gray-700">Category</label>
-                                                            <p className="text-sm text-gray-600">{shop.categoryId?.name || "Uncategorized"}</p>
+                                                            <label className="text-sm font-medium text-gray-700">Description</label>
+                                                            <p className="text-sm text-gray-600 mt-1">{selectedShop?.description}</p>
                                                         </div>
-                                                        <div className="col-span-2">
-                                                            <label className="text-sm font-medium text-gray-700">Address</label>
-                                                            <p className="text-sm text-gray-600">{shop.shopAddress}</p>
+                                                        <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                                                            <div>
+                                                                <label className="text-sm font-medium text-gray-700">Created</label>
+                                                                <p className="text-sm text-gray-600">
+                                                                    {selectedShop && new Date(selectedShop.createdAt).toLocaleDateString()}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-sm font-medium text-gray-700">Last Updated</label>
+                                                                <p className="text-sm text-gray-600">
+                                                                    {selectedShop && new Date(selectedShop.updatedAt).toLocaleDateString()}
+                                                                </p>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <label className="text-sm font-medium text-gray-700">Contact</label>
-                                                            <p className="text-sm text-gray-600">{shop.shopContact}</p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-sm font-medium text-gray-700">Owner</label>
-                                                            <p className="text-sm text-gray-600">{shop.ownerId.fullName}</p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-sm font-medium text-gray-700">Owner Email</label>
-                                                            <p className="text-sm text-gray-600">{shop.ownerId.email}</p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-sm font-medium text-gray-700">Owner Phone</label>
-                                                            <p className="text-sm text-gray-600">{shop.ownerId.phoneNumber}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <label className="text-sm font-medium text-gray-700">Description</label>
-                                                        <p className="text-sm text-gray-600 mt-1">{shop.description}</p>
-                                                    </div>
-                                                    <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                                                        <div>
-                                                            <label className="text-sm font-medium text-gray-700">Created</label>
-                                                            <p className="text-sm text-gray-600">
-                                                                {new Date(shop.createdAt).toLocaleDateString()}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-sm font-medium text-gray-700">Last Updated</label>
-                                                            <p className="text-sm text-gray-600">
-                                                                {new Date(shop.updatedAt).toLocaleDateString()}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                    </TabsContent>
+
+                                                    {/* Reviews Tab */}
+                                                    <TabsContent value="reviews" className="space-y-4">
+                                                        {detailsLoading ? (
+                                                            <div className="flex justify-center py-8">
+                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8f7e4f]"></div>
+                                                            </div>
+                                                        ) : shopReviews.length === 0 ? (
+                                                            <div className="text-center py-8 text-sm text-gray-500">
+                                                                No reviews found for this shop
+                                                            </div>
+                                                        ) : (
+                                                            shopReviews.map((review: any) => (
+                                                                <div key={review._id} className="border rounded-lg p-4 space-y-2">
+                                                                    <div className="flex items-start justify-between">
+                                                                        <div>
+                                                                            <p className="font-medium text-sm">{review.reviewedBy?.fullName || 'Anonymous'}</p>
+                                                                            <div className="flex items-center gap-1">
+                                                                                {[...Array(5)].map((_, i) => (
+                                                                                    <span key={i} className={i < (review.starNum || review.rating || 0) ? "text-yellow-400" : "text-gray-300"}>★</span>
+                                                                                ))}
+                                                                                <span className="text-xs text-gray-600 ml-2">({review.starNum || review.rating || 0}/5)</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <AlertDialog>
+                                                                            <AlertDialogTrigger asChild>
+                                                                                <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                                                                                    <Trash2 className="h-4 w-4" />
+                                                                                </Button>
+                                                                            </AlertDialogTrigger>
+                                                                            <AlertDialogContent>
+                                                                                <AlertDialogHeader>
+                                                                                    <AlertDialogTitle>Delete Review</AlertDialogTitle>
+                                                                                    <AlertDialogDescription>
+                                                                                        Are you sure you want to delete this review?
+                                                                                    </AlertDialogDescription>
+                                                                                </AlertDialogHeader>
+                                                                                <AlertDialogFooter>
+                                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                                    <AlertDialogAction
+                                                                                        onClick={async () => {
+                                                                                            const result = await handleAdminDeleteShopReview(review._id);
+                                                                                            if (result.success) {
+                                                                                                toast.success("Review deleted");
+                                                                                                loadShopDetails(selectedShop!.shopId);
+                                                                                            } else {
+                                                                                                toast.error(result.message);
+                                                                                            }
+                                                                                        }}
+                                                                                    >
+                                                                                        Delete
+                                                                                    </AlertDialogAction>
+                                                                                </AlertDialogFooter>
+                                                                            </AlertDialogContent>
+                                                                        </AlertDialog>
+                                                                    </div>
+                                                                    <p className="text-sm text-gray-600">{review.reviewText}</p>
+                                                                    <p className="text-xs text-gray-500">
+                                                                        {new Date(review.createdAt).toLocaleDateString()}
+                                                                    </p>
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </TabsContent>
+
+                                                    {/* Photos Tab */}
+                                                    <TabsContent value="photos" className="space-y-4">
+                                                        {detailsLoading ? (
+                                                            <div className="flex justify-center py-8">
+                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8f7e4f]"></div>
+                                                            </div>
+                                                        ) : shopPhotos.length === 0 ? (
+                                                            <div className="text-center py-8 text-sm text-gray-500">
+                                                                No photos found for this shop
+                                                            </div>
+                                                        ) : (
+                                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                                                {shopPhotos.map((photo: any) => {
+                                                                    const photoUrl = API_CONFIG.getImageUrl(photo.photoName);
+                                                                    console.log("🟡 DEBUG: Photo data:", { photoName: photo.photoName, photoUrl });
+                                                                    return (
+                                                                    <div key={photo._id} className="relative group">
+                                                                        <div className="overflow-hidden rounded-lg bg-gray-100 aspect-square cursor-pointer" onClick={() => setSelectedImage(photoUrl)}>
+                                                                            <img
+                                                                                src={photoUrl}
+                                                                                alt="Shop photo"
+                                                                                className="w-full h-full object-cover group-hover:opacity-75 transition"
+                                                                            />
+                                                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                                                                <ZoomIn className="h-6 w-6 text-white" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <AlertDialog>
+                                                                            <AlertDialogTrigger asChild>
+                                                                                <Button
+                                                                                    size="sm"
+                                                                                    variant="destructive"
+                                                                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+                                                                                >
+                                                                                    <Trash2 className="h-4 w-4" />
+                                                                                </Button>
+                                                                            </AlertDialogTrigger>
+                                                                            <AlertDialogContent>
+                                                                                <AlertDialogHeader>
+                                                                                    <AlertDialogTitle>Delete Photo</AlertDialogTitle>
+                                                                                    <AlertDialogDescription>
+                                                                                        Are you sure you want to delete this photo?
+                                                                                    </AlertDialogDescription>
+                                                                                </AlertDialogHeader>
+                                                                                <AlertDialogFooter>
+                                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                                    <AlertDialogAction
+                                                                                        onClick={async () => {
+                                                                                            const result = await handleAdminDeleteShopPhoto(photo._id);
+                                                                                            if (result.success) {
+                                                                                                toast.success("Photo deleted");
+                                                                                                loadShopDetails(selectedShop!.shopId);
+                                                                                            } else {
+                                                                                                toast.error(result.message);
+                                                                                            }
+                                                                                        }}
+                                                                                    >
+                                                                                        Delete
+                                                                                    </AlertDialogAction>
+                                                                                </AlertDialogFooter>
+                                                                            </AlertDialogContent>
+                                                                        </AlertDialog>
+                                                                    </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </TabsContent>
+
+                                                    {/* Links Tab */}
+                                                    <TabsContent value="details" className="space-y-4">
+                                                        {detailsLoading ? (
+                                                            <div className="flex justify-center py-8">
+                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8f7e4f]"></div>
+                                                            </div>
+                                                        ) : shopDetails.length === 0 ? (
+                                                            <div className="text-center py-8 text-sm text-gray-500">
+                                                                No links added for this shop
+                                                            </div>
+                                                        ) : (
+                                                            shopDetails.map((detail: any) => (
+                                                                <div key={detail._id} className="border rounded-lg p-4 space-y-3">
+                                                                    <div className="flex justify-between items-start">
+                                                                        <div className="space-y-2 flex-1">
+                                                                            {[1, 2, 3, 4].map((num) => {
+                                                                                const linkKey = `link${num}`;
+                                                                                const link = (detail as any)[linkKey];
+                                                                                return link ? (
+                                                                                    <div key={linkKey} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                                                                                        <LinkIcon className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                                                                                        <a
+                                                                                            href={link}
+                                                                                            target="_blank"
+                                                                                            rel="noopener noreferrer"
+                                                                                            className="text-sm text-blue-600 hover:underline truncate"
+                                                                                        >
+                                                                                            {link}
+                                                                                        </a>
+                                                                                    </div>
+                                                                                ) : null;
+                                                                            })}
+                                                                        </div>
+                                                                        <AlertDialog>
+                                                                            <AlertDialogTrigger asChild>
+                                                                                <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 ml-2">
+                                                                                    <Trash2 className="h-4 w-4" />
+                                                                                </Button>
+                                                                            </AlertDialogTrigger>
+                                                                            <AlertDialogContent>
+                                                                                <AlertDialogHeader>
+                                                                                    <AlertDialogTitle>Delete Links</AlertDialogTitle>
+                                                                                    <AlertDialogDescription>
+                                                                                        Are you sure you want to delete all links for this shop?
+                                                                                    </AlertDialogDescription>
+                                                                                </AlertDialogHeader>
+                                                                                <AlertDialogFooter>
+                                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                                    <AlertDialogAction
+                                                                                        onClick={async () => {
+                                                                                            const result = await handleAdminDeleteShopDetail(detail._id);
+                                                                                            if (result.success) {
+                                                                                                toast.success("Links deleted");
+                                                                                                loadShopDetails(selectedShop!.shopId);
+                                                                                            } else {
+                                                                                                toast.error(result.message);
+                                                                                            }
+                                                                                        }}
+                                                                                    >
+                                                                                        Delete
+                                                                                    </AlertDialogAction>
+                                                                                </AlertDialogFooter>
+                                                                            </AlertDialogContent>
+                                                                        </AlertDialog>
+                                                                    </div>
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </TabsContent>
+                                                </Tabs>
                                             </DialogContent>
                                         </Dialog>
                                     </div>
@@ -661,6 +990,27 @@ export default function ApprovedShopsTab() {
                             {actionLoading ? "Saving..." : "Save Changes"}
                         </Button>
                     </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Image Viewer Dialog */}
+            <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+                <DialogContent className="max-w-4xl w-[95vw] h-[90vh] p-0 bg-black/95 border-none">
+                    <button
+                        onClick={() => setSelectedImage(null)}
+                        className="absolute right-4 top-4 z-50 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
+                    {selectedImage && (
+                        <div className="relative w-full h-full flex items-center justify-center p-4">
+                            <img
+                                src={selectedImage}
+                                alt="Photo full view"
+                                className="max-w-full max-h-full object-contain rounded-lg"
+                            />
+                        </div>
+                    )}
                 </DialogContent>
             </Dialog>
         </div>

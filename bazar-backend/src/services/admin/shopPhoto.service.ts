@@ -20,6 +20,14 @@ const removeUploadFile = async (filePath?: string | null) => {
 };
 
 export class AdminShopPhotoService {
+    async getPhotosByShopId(shopId: string) {
+        if (!shopId) {
+            throw new HttpError(400, "Shop ID is required");
+        }
+        const photos = await shopPhotoRepository.getPhotosByShopIds([shopId]);
+        return photos;
+    }
+
     async disablePhoto(photoId: string) {
         const existing = await shopPhotoRepository.getPhotoById(photoId);
         if (!existing) {

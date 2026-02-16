@@ -62,6 +62,11 @@ export default function Home() {
                         favorite places collection. Join thousands of community members today.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <Link href="/shops">
+                            <Button className="bg-[#8f7e4f] text-white hover:bg-[#7a6b45] rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                Browse Shops
+                            </Button>
+                        </Link>
                         <Link href="/register">
                             <Button className="bg-white text-[#8f7e4f] hover:bg-white/90 rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                                 Get Started
@@ -141,11 +146,18 @@ export default function Home() {
                             <p className="text-xl text-[#4a4a4a] mb-8 max-w-2xl mx-auto">
                                 Join our growing community and start discovering amazing local businesses today.
                             </p>
-                            <Link href="/register">
-                                <Button className="bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full px-10 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                                    Create Your Account
-                                </Button>
-                            </Link>
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                                <Link href="/shops">
+                                    <Button className="bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full px-10 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                        Browse Shops
+                                    </Button>
+                                </Link>
+                                <Link href="/register">
+                                    <Button className="bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full px-10 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                        Create Your Account
+                                    </Button>
+                                </Link>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>

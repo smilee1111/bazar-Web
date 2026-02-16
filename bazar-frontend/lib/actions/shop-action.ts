@@ -4,9 +4,11 @@
 import {
     createShop,
     getAllShops,
+    getPublicShops,
     getAllAdminShops,
     getMyShop,
     getShopById,
+    getPublicShopById,
     updateShop,
     deleteShop,
     createAdminShop,
@@ -57,6 +59,28 @@ export const handleGetAllShops = async () => {
         return {
             success: false,
             message: err.message || "Failed to fetch shops"
+        };
+    }
+}
+
+export const handleGetPublicShops = async () => {
+    try {
+        const result = await getPublicShops();
+        if (result.success) {
+            return {
+                success: true,
+                message: "Public shops fetched successfully",
+                data: result.data
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to fetch public shops"
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to fetch public shops"
         };
     }
 }
@@ -123,6 +147,28 @@ export const handleGetShopById = async (id: string) => {
         return {
             success: false,
             message: err.message || "Failed to fetch shop"
+        };
+    }
+}
+
+export const handleGetPublicShopById = async (id: string) => {
+    try {
+        const result = await getPublicShopById(id);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Public shop fetched successfully",
+                data: result.data
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to fetch public shop"
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to fetch public shop"
         };
     }
 }

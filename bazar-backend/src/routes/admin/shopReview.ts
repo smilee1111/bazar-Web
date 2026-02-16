@@ -5,6 +5,7 @@ import { adminMiddleware, authorizedMiddleware } from "../../middlewares/authori
 const router = Router();
 const adminShopReviewController = new AdminShopReviewController();
 
+router.get("/:shopId", authorizedMiddleware, adminMiddleware, adminShopReviewController.getReviewsByShopId);
 router.patch("/:reviewId/disable", authorizedMiddleware, adminMiddleware, adminShopReviewController.disableReview);
 router.delete("/:reviewId", authorizedMiddleware, adminMiddleware, adminShopReviewController.deleteReview);
 

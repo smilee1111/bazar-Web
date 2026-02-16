@@ -98,9 +98,11 @@ import sellerShopRoutes from './routes/seller/shop';
 app.use('/api/seller/shops', sellerShopRoutes);
 
 //SHOP PUBLIC ROUTES
+import shopPublicRoutes from './routes/shop/public';
 import shopPhotoRoutes from './routes/shop/photo';
 import shopReviewRoutes from './routes/shop/review';
 import shopDetailRoutes from './routes/shop/detail';
+app.use('/api/shops', shopPublicRoutes);
 app.use('/api/shops', shopPhotoRoutes);
 app.use('/api/shops', shopReviewRoutes);
 app.use('/api/shops', shopDetailRoutes);
