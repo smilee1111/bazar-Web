@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const shopSchema = z.object({
-    shopId: z.string().optional(),
+    shopId: z.string().min(1),
     ownerId: z.union([z.string(), z.any()]),
     shopName: z.string().min(2).max(100),
     slug: z.string().optional(),
@@ -13,9 +13,8 @@ export const shopSchema = z.object({
         .refine((val) => /^\d{10}$/.test(val), {
             message: "Phone number must be exactly 10 digits",
         }),
-    categoryId: z.string().optional(),
-    priceRange: z.string().optional(),
-    isActive: z.boolean().default(true),
+    contactNumber: z.string().optional(),
+    email: z.string().email().optional(),
 });
 
 export type ShopType = z.infer<typeof shopSchema>;

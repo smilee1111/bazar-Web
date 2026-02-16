@@ -2,6 +2,7 @@ import { ShopRepository } from "../../repositories/shop.repository";
 import { ShopPhotoModel } from "../../models/shopPhoto.model";
 import { ShopReviewModel } from "../../models/shopReview.model";
 import { ShopDetailModel } from "../../models/shopDetail.model";
+import { IShop } from "../../models/shop.model";
 
 const shopRepository = new ShopRepository();
 
@@ -16,10 +17,20 @@ export class PublicShopService {
     async getPublicFeed() {
         const shops = await shopRepository.getAllShops();
         const activeShops = shops.filter((shop: any) => shop?.isActive !== false);
+        console.log("Total active shops:", activeShops.length);
 
+        // Ensure all shops have shopId, if not use _id as fallback
         const shopIds = activeShops
-            .map((shop: any) => shop?.shopId || String(shop?._id || ""))
+            .map((shop: any) => {
+                // Ensure shopId is set - if not, use MongoDB _id
+                if (!shop?.shopId) {
+                    shop.shopId = String(shop?._id || "");
+                }
+                return shop?.shopId;
+            })
             .filter((id: string) => typeof id === "string" && id.length > 0);
+
+        console.log("Shop IDs for lookups:", shopIds);
 
         if (shopIds.length === 0) {
             return [];
@@ -30,6 +41,8 @@ export class PublicShopService {
             ShopReviewModel.find({ shopId: { $in: shopIds }, isActive: true }).lean(),
             ShopDetailModel.find({ shopId: { $in: shopIds } }).lean(),
         ]);
+
+        console.log("Fetched photos:", photos.length, "reviews:", reviews.length, "details:", details.length);
 
         const photosByShop = new Map<string, any[]>();
         photos.forEach((photo: any) => {
@@ -73,17 +86,44 @@ export class PublicShopService {
     }
 
     async getPublicShopById(id: string) {
-        const shopLookup = await shopRepository.getShopByIdOrShopId(id);
-        if (!shopLookup || shopLookup.isActive === false) {
+        console.log("PublicShopService.getPublicShopById called with id:", id);
+        
+        // Try direct lookup by shopId or _id
+        let shopLookup = await shopRepository.getShopByIdOrShopId(id);
+        console.log("Shop lookup result:", shopLookup ? { _id: String(shopLookup._id), shopId: (shopLookup as any).shopId, isActive: (shopLookup as any).isActive } : "null");
+        
+        // If not found by direct lookup, try to find in the feed
+        if (!shopLookup) {
+            console.log("Direct lookup failed, trying to find in the public feed...");
+            const allPublicShops = await this.getPublicFeed();
+            const foundShop = allPublicShops.find((shop: any) => 
+                shop.shopId === id || String(shop._id) === id
+            );
+            if (foundShop) {
+                shopLookup = foundShop as IShop;
+                console.log("Found shop in public feed");
+            }
+        }
+        
+        if (!shopLookup || (shopLookup as any).isActive === false) {
+            console.log("Shop not found or inactive");
             return null;
         }
 
-        const enrichedShop = await shopRepository.getShopById(String(shopLookup._id));
-        if (!enrichedShop) {
-            return null;
+        // Get enriched shop data
+        let enrichedShop: IShop | null = shopLookup;
+        if (shopLookup._id) {
+            enrichedShop = await shopRepository.getShopById(String(shopLookup._id));
+            console.log("Enriched shop:", enrichedShop ? { _id: String(enrichedShop._id), shopId: (enrichedShop as any).shopId } : null);
+            
+            if (!enrichedShop) {
+                console.log("Failed to get enriched shop");
+                return null;
+            }
         }
 
         const shopId = enrichedShop.shopId || String((enrichedShop as any)._id || "");
+        console.log("Resolved shopId:", shopId);
         const [photos, reviews, details] = await Promise.all([
             ShopPhotoModel.find({ shopId, isActive: true }).lean(),
             ShopReviewModel.find({ shopId, isActive: true }).lean(),
