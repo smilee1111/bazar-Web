@@ -20,8 +20,13 @@ interface Review {
     _id: string;
     shopId: string;
     userId: string;
+    reviewedBy?: {
+        fullName?: string;
+        email?: string;
+    } | string;
     starNum: number;
-    reviewText: string;
+    reviewText?: string;
+    reviewName?: string;
     likes: number;
     dislikes: number;
     likesCount?: number;
@@ -68,6 +73,26 @@ export default function ShopDetailPage() {
     const [isSaved, setIsSaved] = useState(false);
     const [isLoadingFav, setIsLoadingFav] = useState(false);
     const [isLoadingSave, setIsLoadingSave] = useState(false);
+
+    const getReviewerName = (reviewedBy?: Review["reviewedBy"], userId?: string) => {
+        if (reviewedBy && typeof reviewedBy !== "string") {
+            return reviewedBy.fullName || (reviewedBy.email ? reviewedBy.email.split("@")[0] : "Customer");
+        }
+        if (typeof reviewedBy === "string" && reviewedBy.trim().length > 0) {
+            return "Customer";
+        }
+        if (userId) {
+            return "Customer";
+        }
+        return "Anonymous";
+    };
+
+    const formatDate = (value?: string) => {
+        if (!value) return "Recently";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "Recently";
+        return date.toLocaleDateString();
+    };
 
     useEffect(() => {
         if (shopId) {
@@ -497,6 +522,14 @@ export default function ShopDetailPage() {
                                             key={review._id}
                                             className="border-l-2 border-[#8f7e4f] pl-4 py-4 bg-white/5 p-4 rounded-lg hover:bg-white/10 transition"
                                         >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-white font-semibold">
+                                                    {getReviewerName(review.reviewedBy, review.userId)}
+                                                </span>
+                                                <span className="text-white/60 text-sm">
+                                                    {formatDate(review.createdAt)}
+                                                </span>
+                                            </div>
                                             {/* Rating */}
                                             <div className="flex items-center gap-3 mb-3">
                                                 <div className="flex items-center gap-1">
@@ -511,14 +544,11 @@ export default function ShopDetailPage() {
                                                         />
                                                     ))}
                                                 </div>
-                                                <span className="text-white/60 text-sm">
-                                                    {new Date(review.createdAt).toLocaleDateString()}
-                                                </span>
                                             </div>
 
                                             {/* Review Text */}
                                             <p className="text-white/80 mb-4 leading-relaxed">
-                                                {review.reviewText || (review as any).reviewName || ""}
+                                                {review.reviewText || review.reviewName || ""}
                                             </p>
 
                                             {/* Like/Dislike */}
