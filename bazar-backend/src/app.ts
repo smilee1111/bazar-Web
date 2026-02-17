@@ -48,6 +48,12 @@ import roleRoutes from './routes/role/role.route';
 //defining the path for usage of role routes
 app.use('/api/roles', roleRoutes);
 
+//CATEGORY
+//importing the routes for category
+import categoryRoutes from './routes/category/category.route';
+//defining the path for usage of category routes
+app.use('/api/categories', categoryRoutes);
+
 
 //ADMIN
 //ADMIN-USER-ROUTES
@@ -57,10 +63,57 @@ import adminUserRoutes from './routes/admin/user/user.route';
 //defining the path for usage of admin routes
 app.use('/api/admin/users', adminUserRoutes);
 
+//ADMIN-SELLER-APPLICATION-ROUTES
+import adminSellerApplicationRoutes from './routes/admin/sellerApplication';
+//defining the path for usage of admin seller application routes
+app.use('/api/admin/seller-applications', adminSellerApplicationRoutes);
+
+//ADMIN-SHOP-ROUTES
+import adminShopRoutes from './routes/admin/shop';
+app.use('/api/admin/shops', adminShopRoutes);
+
+//ADMIN-SHOP-PHOTO-ROUTES
+import adminShopPhotoRoutes from './routes/admin/shopPhoto';
+app.use('/api/admin/shop-photos', adminShopPhotoRoutes);
+
+//ADMIN-SHOP-REVIEW-ROUTES
+import adminShopReviewRoutes from './routes/admin/shopReview';
+app.use('/api/admin/shop-reviews', adminShopReviewRoutes);
+
+//ADMIN-SHOP-DETAIL-ROUTES
+import adminShopDetailRoutes from './routes/admin/shopDetail';
+app.use('/api/admin/shop-details', adminShopDetailRoutes);
+
 //USER SELF ROUTES 
 //For user to edit their own details and view themselves
 import userSelfRoutes from './routes/user/user_self.route';
 app.use('/api/user', userSelfRoutes);
+
+//USER SELLER APPLICATION ROUTES
+import userSellerApplicationRoutes from './routes/user/sellerApplication.route';
+app.use('/api/user/seller-applications', userSellerApplicationRoutes);
+
+// USER - Saved shops & favourites
+import userSavedShopRoutes from './routes/user/savedShop.route';
+import userFavouriteRoutes from './routes/user/favourite.route';
+import userReviewRoutes from './routes/user/review.route';
+app.use('/api/user/saved-shops', userSavedShopRoutes);
+app.use('/api/user/favourites', userFavouriteRoutes);
+app.use('/api/user/reviews', userReviewRoutes);
+
+//SELLER ROUTES
+import sellerShopRoutes from './routes/seller/shop';
+app.use('/api/seller/shops', sellerShopRoutes);
+
+//SHOP PUBLIC ROUTES
+import shopPublicRoutes from './routes/shop/public';
+import shopPhotoRoutes from './routes/shop/photo';
+import shopReviewRoutes from './routes/shop/review';
+import shopDetailRoutes from './routes/shop/detail';
+app.use('/api/shops', shopPublicRoutes);
+app.use('/api/shops', shopPhotoRoutes);
+app.use('/api/shops', shopReviewRoutes);
+app.use('/api/shops', shopDetailRoutes);
 
 // Global error handler - return JSON for known error types (HttpError, MulterError)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

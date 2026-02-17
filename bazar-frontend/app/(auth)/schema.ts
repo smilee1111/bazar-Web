@@ -18,7 +18,6 @@ export const registerSchema = z.object({
         .regex(/^[a-zA-Z0-9_]+$/, { message: "Username can only contain letters, numbers, and underscores"}),
     password: z.string().min(8, { message: "Minimum 8 characters"}),
     confirmPassword: z.string().min(6, { message: "Minimum 8 characters"}),
-    role: z.enum(['user', 'seller'], { message: "Select a valid role" }),
     profilePic: z.string().optional(),
     // .({ message: "Enter a valid URL" })
 }).refine((v)  => v.password === v.confirmPassword, {

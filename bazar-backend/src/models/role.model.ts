@@ -9,7 +9,7 @@ export interface IRole extends RoleType, Document {
 
 const RoleSchema: Schema = new Schema(
     {
-        roleId: { type: String, required: true, unique: true },
+        roleId: { type: String, required: false, unique: true, default: () => new mongoose.Types.ObjectId().toHexString() },
         roleName: { type: String, required: true, unique: true },
         status: { type: String, enum: ['active', 'inactive'], default: 'active' }
     },

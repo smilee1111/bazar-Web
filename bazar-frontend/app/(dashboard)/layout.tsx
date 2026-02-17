@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useState } from "react";
 import Sidebar from "./_components/Sidebar";
 
 export default function DashboardLayout({
@@ -6,6 +9,8 @@ export default function DashboardLayout({
 }: {
     children: ReactNode;
 }) {
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
     return (
         <div className="relative min-h-screen bg-gradient-to-br from-[#8f7e4f] via-[#7a6b45] to-[#6b5d3c]">
             <div
@@ -14,10 +19,13 @@ export default function DashboardLayout({
             />
 
             <div className="relative z-10 flex min-h-screen">
-                <Sidebar />
+                <Sidebar
+                    isCollapsed={sidebarCollapsed}
+                    onToggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
+                />
 
-                <main className="flex-1 overflow-y-auto px-4 py-6 md:px-6">
-                    <div className="mx-auto max-w-7xl">
+                <main className="min-w-0 flex-1 overflow-y-auto px-4 py-6 md:px-6">
+                    <div className={sidebarCollapsed ? "mx-0 max-w-none" : "mx-auto max-w-7xl"}>
                         {children}
                     </div>
                 </main>
