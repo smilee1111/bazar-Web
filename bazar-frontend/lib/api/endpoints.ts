@@ -31,6 +31,16 @@ export const API = {
         CREATE_APPLICATION: 'user/seller-applications',
         GET_MY_APPLICATION: 'user/seller-applications/my',
     },
+    USER_SAVED_SHOPS: {
+        LIST: 'user/saved-shops',
+        CREATE: 'user/saved-shops',
+        DELETE: (shopId: string) => `user/saved-shops/${shopId}`,
+    },
+    USER_FAVOURITES: {
+        LIST: 'user/favourites',
+        CREATE: 'user/favourites',
+        DELETE: (shopId: string) => `user/favourites/${shopId}`,
+    },
     SHOPS: {
         CREATE_SHOP: 'seller/shops',
         GET_ALL_SHOPS: 'seller/shops',
