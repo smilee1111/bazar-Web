@@ -19,6 +19,12 @@ axiosInstance.interceptors.request.use(
         if(token && config.headers){
             config.headers['Authorization'] = `Bearer ${token}`;
         }
+        // Debug: log outgoing requests to help diagnose 404s in browser
+        try{
+            const fullUrl = `${config.baseURL || ''}${config.url || ''}`;
+            // eslint-disable-next-line no-console
+            console.debug('[API Request]', config.method?.toUpperCase(), fullUrl);
+        }catch(e){/* ignore */}
         return config;
     },
     (error) => {

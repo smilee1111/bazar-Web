@@ -70,7 +70,7 @@ export default function ShopCard({
                                 ? renderPhotoTile(collagePhotos[1], "col-span-2 row-span-1")
                                 : (
                                     <div className="col-span-2 row-span-1 rounded-xl bg-white/70 flex items-center justify-center text-[#8f7e4f] text-xs">
-                                        Add a photo
+                                        No photos yet
                                     </div>
                                 )}
                             {collagePhotos[2]

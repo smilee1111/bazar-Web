@@ -1,10 +1,17 @@
 // API configuration
+const RAW_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:5050';
+// Normalize base URL: remove trailing slash if present
+const NORMALIZED_BASE = RAW_BASE.replace(/\/$/, "");
+
 export const API_CONFIG = {
-    baseURL: `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:5050'}/api`,
-    BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:5050',
-    getImageUrl: (imagePath: string | undefined | null): string | null => {
-        if (!imagePath) return null;
-        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:5050';
-        return `${baseUrl}${imagePath}`;
+    baseURL: `${NORMALIZED_BASE}/api`,
+    BASE_URL: NORMALIZED_BASE,
+    // Always return a string for Next/Image `src`. Use a local fallback image when missing.
+    getImageUrl: (imagePath: string | undefined | null): string => {
+        const baseUrl = NORMALIZED_BASE;
+        if (!imagePath) return '/images/logo.svg';
+        // ensure imagePath starts with a slash
+        const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+        return `${baseUrl}${path}`;
     }
 };
