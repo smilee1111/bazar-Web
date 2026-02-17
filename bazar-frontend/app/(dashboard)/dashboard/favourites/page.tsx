@@ -6,8 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ShopCard from "../../shops/_components/ShopCard";
 import { handleGetFavourites, handleRemoveFavourite } from "@/lib/actions/favourite-action";
-import { handleGetPublicShopById } from "@/lib/actions/shop-action";
-import { toast } from "react-toastify";
+import { handleGetPublicShopById } from "@/lib/actions/shop-action";import { handleGetUserReviews } from "@/lib/actions/review-action";import { toast } from "react-toastify";
 
 interface FavouriteEntry {
     _id: string;
@@ -47,6 +46,7 @@ interface Shop {
 
 export default function FavouritesPage() {
     const [shops, setShops] = useState<Shop[]>([]);
+    const [userReviews, setUserReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [removing, setRemoving] = useState<string | null>(null);
 
@@ -57,16 +57,21 @@ export default function FavouritesPage() {
     const loadFavourites = async () => {
         setLoading(true);
         try {
-            const result = await handleGetFavourites();
-            if (!result.success) {
-                toast.error(result.message || "Failed to fetch favourites");
+            const [favouritesResult, reviewsResult] = await Promise.all([
+                handleGetFavourites(),
+                handleGetUserReviews(),
+            ]);
+
+            if (!favouritesResult.success) {
+                toast.error(favouritesResult.message || "Failed to fetch favourites");
                 setShops([]);
+                setLoading(false);
                 return;
             }
 
-            const list = Array.isArray(result.data)
-                ? result.data
-                : result.data?.data || [];
+            const list = Array.isArray(favouritesResult.data)
+                ? favouritesResult.data
+                : favouritesResult.data?.data || [];
 
             const shopResults = await Promise.all(
                 list.map((entry: FavouriteEntry) => handleGetPublicShopById(entry.shopId))
@@ -78,11 +83,20 @@ export default function FavouritesPage() {
                 .filter(Boolean);
 
             setShops(resolvedShops);
+
+            if (reviewsResult.success) {
+                const reviewsData = Array.isArray(reviewsResult.data) ? reviewsResult.data : reviewsResult.data?.data || [];
+                setUserReviews(reviewsData);
+            }
         } catch {
             toast.error("Failed to load favourites");
         } finally {
             setLoading(false);
         }
+    };
+
+    const isShopReviewed = (shopId: string): boolean => {
+        return userReviews.some((review: any) => review.shopId === shopId);
     };
 
     const handleRemove = async (shopId: string) => {
@@ -166,6 +180,7 @@ export default function FavouritesPage() {
                                 details={shop.details || []}
                                 avgRating={shop.avgRating}
                                 reviewCount={shop.reviewCount}
+                                isReviewed={isShopReviewed(shop.shopId || shop._id)}
                             />
                         </div>
                     ))}

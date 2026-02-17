@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { handleGetPublicShops } from "@/lib/actions/shop-action";
+import { handleGetUserReviews } from "@/lib/actions/review-action";
 import ShopCard from "../shops/_components/ShopCard";
 
 interface Shop {
@@ -28,6 +29,7 @@ interface Shop {
 export default function DashboardPage() {
     const { user } = useAuth();
     const [shops, setShops] = useState<Shop[]>([]);
+    const [userReviews, setUserReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -36,16 +38,29 @@ export default function DashboardPage() {
 
     const loadShops = async () => {
         try {
-            const result = await handleGetPublicShops();
-            if (result.success) {
-                const data = Array.isArray(result.data) ? result.data : result.data?.data || [];
+            const [shopsResult, reviewsResult] = await Promise.all([
+                handleGetPublicShops(),
+                handleGetUserReviews(),
+            ]);
+
+            if (shopsResult.success) {
+                const data = Array.isArray(shopsResult.data) ? shopsResult.data : shopsResult.data?.data || [];
                 setShops(data.slice(0, 5)); // Show 5 featured shops
+            }
+
+            if (reviewsResult.success) {
+                const reviewsData = Array.isArray(reviewsResult.data) ? reviewsResult.data : reviewsResult.data?.data || [];
+                setUserReviews(reviewsData);
             }
         } catch (error) {
             console.error("Failed to load shops:", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const isShopReviewed = (shopId: string): boolean => {
+        return userReviews.some((review: any) => review.shopId === shopId);
     };
 
     return (
@@ -110,6 +125,7 @@ export default function DashboardPage() {
                                     details={shop.details || []}
                                     avgRating={shop.avgRating}
                                     reviewCount={shop.reviewCount}
+                                    isReviewed={isShopReviewed(shop.shopId || shop._id)}
                                 />
                             </div>
                         ))}

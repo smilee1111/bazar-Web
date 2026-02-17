@@ -2,9 +2,11 @@ import { CreateShopReviewDto, UpdateShopReviewDto } from "../../dtos/shopReview.
 import { HttpError } from "../../errors/http-error";
 import { ShopRepository } from "../../repositories/shop.repository";
 import { ShopReviewRepository } from "../../repositories/shopReview.repository";
+import { FavouriteService } from "../user/favourite.service";
 
 const shopRepository = new ShopRepository();
 const shopReviewRepository = new ShopReviewRepository();
+const favouriteService = new FavouriteService();
 
 const normalizeShopIds = (shopId: string, resolvedShop: { shopId?: string; _id?: { toString(): string } }) => {
     const ids = new Set<string>();
@@ -24,7 +26,19 @@ export class ShopReviewService {
 
         const { canonicalShopId } = normalizeShopIds(shopId, shop);
         const payload = { ...data, shopId: canonicalShopId, reviewedBy: userId };
-        return shopReviewRepository.createReview(payload);
+        
+        // Create the review
+        const review = await shopReviewRepository.createReview(payload);
+        
+        // Auto-add to favourites if not already there
+        try {
+            await favouriteService.markAsReviewed(userId, canonicalShopId);
+        } catch (err) {
+            // Silently catch if favourite creation fails (e.g., duplicate)
+            console.error('Failed to auto-add favourite for reviewed shop:', err);
+        }
+        
+        return review;
     }
 
     async getReviewsByShopId(shopId: string) {
@@ -120,5 +134,9 @@ export class ShopReviewService {
         } as any);
         
         return updated;
+    }
+
+    async getReviewsByUserId(userId: string) {
+        return shopReviewRepository.getReviewsByUserId(userId);
     }
 }

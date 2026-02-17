@@ -4,13 +4,16 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, ChevronLeft, ChevronRight, Heart, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ReviewForm from "@/components/ReviewForm";
 import { API_CONFIG } from "@/lib/api/config";
 import { handleGetPublicShopById } from "@/lib/actions/shop-action";
 import { handleLikeShopReview, handleDislikeShopReview } from "@/lib/actions/shopReview-action";
+import { handleGetUserReviews } from "@/lib/actions/review-action";
+import { handleAddFavourite, handleRemoveFavourite, handleGetFavourites } from "@/lib/actions/favourite-action";
+import { handleSaveShop, handleRemoveSavedShop, handleGetSavedShops } from "@/lib/actions/savedShop-action";
 import { toast } from "react-toastify";
 
 interface Review {
@@ -60,6 +63,11 @@ export default function ShopDetailPage() {
     const [error, setError] = useState<string | null>(null);
     const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+    const [isReviewed, setIsReviewed] = useState(false);
+    const [isFav, setIsFav] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
+    const [isLoadingFav, setIsLoadingFav] = useState(false);
+    const [isLoadingSave, setIsLoadingSave] = useState(false);
 
     useEffect(() => {
         if (shopId) {
@@ -81,6 +89,34 @@ export default function ShopDetailPage() {
                 setShop(shopData);
                 setPhotos(shopData.photos || []);
                 setReviews(shopData.reviews || []);
+
+                const canonicalShopId = shopData.shopId || shopData._id || shopId;
+                const [reviewsResult, favouritesResult, savedResult] = await Promise.all([
+                    handleGetUserReviews(),
+                    handleGetFavourites(),
+                    handleGetSavedShops(),
+                ]);
+
+                if (reviewsResult.success) {
+                    const reviewsData = Array.isArray(reviewsResult.data)
+                        ? reviewsResult.data
+                        : reviewsResult.data?.data || [];
+                    setIsReviewed(reviewsData.some((review: any) => review.shopId === canonicalShopId));
+                }
+
+                if (favouritesResult.success) {
+                    const favouritesData = Array.isArray(favouritesResult.data)
+                        ? favouritesResult.data
+                        : favouritesResult.data?.data || [];
+                    setIsFav(favouritesData.some((entry: any) => entry.shopId === canonicalShopId));
+                }
+
+                if (savedResult.success) {
+                    const savedData = Array.isArray(savedResult.data)
+                        ? savedResult.data
+                        : savedResult.data?.data || [];
+                    setIsSaved(savedData.some((entry: any) => entry.shopId === canonicalShopId));
+                }
             } else {
                 console.log("API error:", result.message);
                 setError(result.message || "Failed to load shop details");
@@ -90,6 +126,50 @@ export default function ShopDetailPage() {
             setError("Failed to load shop details. Please try again.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const resolveShopId = () => shop?.shopId || shop?._id || shopId;
+
+    const handleFavouriteToggle = async () => {
+        const targetId = resolveShopId();
+        if (!targetId) return;
+        setIsLoadingFav(true);
+        try {
+            if (isFav) {
+                const result = await handleRemoveFavourite(targetId);
+                if (result.success) {
+                    setIsFav(false);
+                }
+            } else {
+                const result = await handleAddFavourite(targetId);
+                if (result.success) {
+                    setIsFav(true);
+                }
+            }
+        } finally {
+            setIsLoadingFav(false);
+        }
+    };
+
+    const handleSaveToggle = async () => {
+        const targetId = resolveShopId();
+        if (!targetId) return;
+        setIsLoadingSave(true);
+        try {
+            if (isSaved) {
+                const result = await handleRemoveSavedShop(targetId);
+                if (result.success) {
+                    setIsSaved(false);
+                }
+            } else {
+                const result = await handleSaveShop(targetId);
+                if (result.success) {
+                    setIsSaved(true);
+                }
+            }
+        } finally {
+            setIsLoadingSave(false);
         }
     };
 
@@ -265,11 +345,56 @@ export default function ShopDetailPage() {
                                 <div>
                                     <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                                         <h1 className="text-5xl font-bold text-white">{shop.shopName}</h1>
-                                        {shop.priceRange && (
-                                            <span className="rounded-full bg-[#8f7e4f]/20 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-[#d4c5a0] border border-[#8f7e4f]/30">
-                                                Price Range: {shop.priceRange}
-                                            </span>
-                                        )}
+                                        <div className="flex flex-wrap items-center gap-3 justify-end">
+                                            {shop.priceRange && (
+                                                <span className="rounded-full bg-[#8f7e4f]/20 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-[#d4c5a0] border border-[#8f7e4f]/30">
+                                                    Price Range: {shop.priceRange}
+                                                </span>
+                                            )}
+                                            {isReviewed && (
+                                                <span className="rounded-full bg-green-500/20 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-green-200 border border-green-400/30">
+                                                    ✓ You reviewed this
+                                                </span>
+                                            )}
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={handleFavouriteToggle}
+                                                    disabled={isLoadingFav}
+                                                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group relative border border-white/10"
+                                                    title={isFav ? "Remove from Favourites" : "Add to Favourites"}
+                                                >
+                                                    <Heart
+                                                        size={20}
+                                                        className={`transition-colors ${
+                                                            isFav
+                                                                ? "fill-red-500 text-red-500"
+                                                                : "text-white/60 group-hover:text-red-400"
+                                                        } ${isLoadingFav ? "opacity-50" : ""}`}
+                                                    />
+                                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                        {isFav ? "Remove from Favourites" : "Add to Favourites"}
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    onClick={handleSaveToggle}
+                                                    disabled={isLoadingSave}
+                                                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group relative border border-white/10"
+                                                    title={isSaved ? "Remove from Saved" : "Save Shop"}
+                                                >
+                                                    <Bookmark
+                                                        size={20}
+                                                        className={`transition-colors ${
+                                                            isSaved
+                                                                ? "fill-blue-400 text-blue-400"
+                                                                : "text-white/60 group-hover:text-blue-400"
+                                                        } ${isLoadingSave ? "opacity-50" : ""}`}
+                                                    />
+                                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                        {isSaved ? "Remove from Saved" : "Save Shop"}
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Rating */}

@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IFavourite extends Document {
     shopId: string;
     userId: mongoose.Types.ObjectId;
+    isReviewed: boolean; // true if auto-added from review, false if manually added
     createdAt: Date;
     updatedAt: Date;
 }
@@ -11,6 +12,7 @@ const FavouriteSchema: Schema = new Schema(
     {
         shopId: { type: String, required: true, trim: true },
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        isReviewed: { type: Boolean, default: false },
     },
     {
         timestamps: true,

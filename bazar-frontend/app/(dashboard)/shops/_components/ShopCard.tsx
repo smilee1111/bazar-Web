@@ -24,6 +24,7 @@ interface ShopCardProps {
     details?: any[];
     isFavourited?: boolean;
     isSaved?: boolean;
+    isReviewed?: boolean;
 }
 
 export default function ShopCard({
@@ -39,6 +40,7 @@ export default function ShopCard({
     priceRange,
     isFavourited = false,
     isSaved = false,
+    isReviewed = false,
 }: ShopCardProps) {
     const [isFav, setIsFav] = useState(isFavourited);
     const [isSavedShop, setIsSavedShop] = useState(isSaved);
@@ -195,6 +197,14 @@ export default function ShopCard({
                                 <div className="mb-2">
                                     <span className="rounded-full bg-[#f5efe3] px-3 py-1 text-xs font-semibold text-[#8f7e4f]">
                                         Price {priceRange}
+                                    </span>
+                                </div>
+                            )}
+
+                            {isReviewed && (
+                                <div className="mb-2">
+                                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                                        ✓ You reviewed this
                                     </span>
                                 </div>
                             )}

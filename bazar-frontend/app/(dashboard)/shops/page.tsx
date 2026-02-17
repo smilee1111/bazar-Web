@@ -7,6 +7,7 @@ import ShopCard from "./_components/ShopCard";
 import ShopSearch from "./_components/ShopSearch";
 import { handleGetPublicShops } from "@/lib/actions/shop-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
+import { handleGetUserReviews } from "@/lib/actions/review-action";
 
 interface Shop {
     _id: string;
@@ -37,6 +38,7 @@ export default function ShopsPage() {
     const [shops, setShops] = useState<Shop[]>([]);
     const [filteredShops, setFilteredShops] = useState<Shop[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
+    const [userReviews, setUserReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -46,9 +48,10 @@ export default function ShopsPage() {
     const loadShopsAndCategories = async () => {
         try {
             setLoading(true);
-            const [shopsResult, categoriesResult] = await Promise.all([
+            const [shopsResult, categoriesResult, reviewsResult] = await Promise.all([
                 handleGetPublicShops(),
                 handleGetAllCategories(),
+                handleGetUserReviews(),
             ]);
 
             if (shopsResult.success) {
@@ -64,11 +67,20 @@ export default function ShopsPage() {
                     : categoriesResult.data?.data || [];
                 setCategories(catsData);
             }
+
+            if (reviewsResult.success) {
+                const reviewsData = Array.isArray(reviewsResult.data) ? reviewsResult.data : reviewsResult.data?.data || [];
+                setUserReviews(reviewsData);
+            }
         } catch (error) {
             console.error("Failed to load shops and categories:", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const isShopReviewed = (shopId: string): boolean => {
+        return userReviews.some((review: any) => review.shopId === shopId);
     };
 
     const handleFiltersChange = (filters: ShopFilters) => {
@@ -183,6 +195,7 @@ export default function ShopsPage() {
                                     details={shop.details || []}
                                     avgRating={shop.avgRating}
                                     reviewCount={shop.reviewCount}
+                                    isReviewed={isShopReviewed(shop.shopId || shop._id)}
                                 />
                             </div>
                         ))}

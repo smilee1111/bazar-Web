@@ -41,6 +41,9 @@ export const API = {
         CREATE: 'user/favourites',
         DELETE: (shopId: string) => `user/favourites/${shopId}`,
     },
+    USER_REVIEWS: {
+        LIST: 'user/reviews',
+    },
     SHOPS: {
         CREATE_SHOP: 'seller/shops',
         GET_ALL_SHOPS: 'seller/shops',

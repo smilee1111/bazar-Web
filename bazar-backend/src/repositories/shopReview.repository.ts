@@ -6,6 +6,7 @@ export interface IShopReviewRepository {
     createReview(data: Partial<IShopReview>): Promise<IShopReview>;
     getReviewById(id: string): Promise<IShopReview | null>;
     getReviewsByShopIds(shopIds: string[]): Promise<IShopReview[]>;
+    getReviewsByUserId(userId: string): Promise<IShopReview[]>;
     updateReview(id: string, data: Partial<IShopReview>): Promise<IShopReview | null>;
     deleteReview(id: string): Promise<boolean | null>;
 }
@@ -31,6 +32,10 @@ export class ShopReviewRepository implements IShopReviewRepository {
             return [];
         }
         return ShopReviewModel.find({ shopId: { $in: uniqueIds }, isActive: true }).populate('reviewedBy', 'fullName email');
+    }
+
+    async getReviewsByUserId(userId: string): Promise<IShopReview[]> {
+        return ShopReviewModel.find({ reviewedBy: userId, isActive: true }).lean();
     }
 
     async updateReview(id: string, data: Partial<IShopReview>): Promise<IShopReview | null> {

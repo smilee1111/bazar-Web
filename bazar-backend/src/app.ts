@@ -96,8 +96,10 @@ app.use('/api/user/seller-applications', userSellerApplicationRoutes);
 // USER - Saved shops & favourites
 import userSavedShopRoutes from './routes/user/savedShop.route';
 import userFavouriteRoutes from './routes/user/favourite.route';
+import userReviewRoutes from './routes/user/review.route';
 app.use('/api/user/saved-shops', userSavedShopRoutes);
 app.use('/api/user/favourites', userFavouriteRoutes);
+app.use('/api/user/reviews', userReviewRoutes);
 
 //SELLER ROUTES
 import sellerShopRoutes from './routes/seller/shop';

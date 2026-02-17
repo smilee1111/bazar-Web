@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import ShopCard from "../../shops/_components/ShopCard";
 import { handleGetSavedShops, handleRemoveSavedShop } from "@/lib/actions/savedShop-action";
 import { handleGetPublicShopById } from "@/lib/actions/shop-action";
+import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { toast } from "react-toastify";
 
 interface SavedShopEntry {
@@ -47,6 +48,7 @@ interface Shop {
 
 export default function SavedShopsPage() {
     const [shops, setShops] = useState<Shop[]>([]);
+    const [userReviews, setUserReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [removing, setRemoving] = useState<string | null>(null);
 
@@ -57,16 +59,21 @@ export default function SavedShopsPage() {
     const loadSavedShops = async () => {
         setLoading(true);
         try {
-            const result = await handleGetSavedShops();
-            if (!result.success) {
-                toast.error(result.message || "Failed to fetch saved shops");
+            const [savedShopsResult, reviewsResult] = await Promise.all([
+                handleGetSavedShops(),
+                handleGetUserReviews(),
+            ]);
+
+            if (!savedShopsResult.success) {
+                toast.error(savedShopsResult.message || "Failed to fetch saved shops");
                 setShops([]);
+                setLoading(false);
                 return;
             }
 
-            const entries = Array.isArray(result.data)
-                ? result.data
-                : result.data?.data || [];
+            const entries = Array.isArray(savedShopsResult.data)
+                ? savedShopsResult.data
+                : savedShopsResult.data?.data || [];
 
             const shopResults = await Promise.all(
                 entries.map((entry: SavedShopEntry) => handleGetPublicShopById(entry.shopId))
@@ -78,11 +85,20 @@ export default function SavedShopsPage() {
                 .filter(Boolean);
 
             setShops(resolvedShops);
+
+            if (reviewsResult.success) {
+                const reviewsData = Array.isArray(reviewsResult.data) ? reviewsResult.data : reviewsResult.data?.data || [];
+                setUserReviews(reviewsData);
+            }
         } catch {
             toast.error("Failed to load saved shops");
         } finally {
             setLoading(false);
         }
+    };
+
+    const isShopReviewed = (shopId: string): boolean => {
+        return userReviews.some((review: any) => review.shopId === shopId);
     };
 
     const handleRemove = async (shopId: string) => {
@@ -166,6 +182,7 @@ export default function SavedShopsPage() {
                                 details={shop.details || []}
                                 avgRating={shop.avgRating}
                                 reviewCount={shop.reviewCount}
+                                isReviewed={isShopReviewed(shop.shopId || shop._id)}
                             />
                         </div>
                     ))}
