@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const imageFileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
     if (allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
@@ -30,14 +30,33 @@ const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.
     }
 };
 
+const documentFileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    const allowedMimeTypes = ['application/pdf'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new HttpError(400, 'Invalid file type. Only PDF files are allowed.'));
+    }
+};
+
 export const upload = multer({
     storage: storage,
-    fileFilter: fileFilter,
+    fileFilter: imageFileFilter,
     limits: { fileSize: 5 * 1024 * 1024 } // 5 MB limit
+});
+
+export const documentUpload = multer({
+    storage: storage,
+    fileFilter: documentFileFilter,
+    limits: { fileSize: 10 * 1024 * 1024 } // 10 MB limit for documents
 });
 
 export const uploads = {
     single: (fieldName: string) => upload.single(fieldName),
     array: (fieldName: string, maxCount: number) => upload.array(fieldName, maxCount),
     fields: (fieldsArray: { name: string; maxCount?: number }[]) => upload.fields(fieldsArray)
+};
+
+export const documentUploads = {
+    single: (fieldName: string) => documentUpload.single(fieldName)
 };

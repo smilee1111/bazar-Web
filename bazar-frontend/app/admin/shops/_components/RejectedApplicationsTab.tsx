@@ -22,7 +22,7 @@ interface SellerApplication {
     businessPhone: string;
     businessAddress: string;
     description: string;
-    documentUrl?: string;
+    documentUrl: string;
     status: "pending" | "approved" | "rejected";
     adminRemark?: string;
     createdAt: string;
@@ -186,19 +186,17 @@ export default function RejectedApplicationsTab() {
                                                 <p className="text-sm text-gray-700 mt-1">{application.adminRemark}</p>
                                             </div>
                                         )}
-                                        {application.documentUrl && (
-                                            <div>
-                                                <Label className="text-sm font-medium">Document</Label>
-                                                <a
-                                                    href={application.documentUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-sm text-[#8f7e4f] hover:underline ml-2"
-                                                >
-                                                    View Document
-                                                </a>
-                                            </div>
-                                        )}
+                                        <div>
+                                            <Label className="text-sm font-medium">Document</Label>
+                                            <a
+                                                href={application.documentUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm text-[#8f7e4f] hover:underline ml-2"
+                                            >
+                                                View Document
+                                            </a>
+                                        </div>
                                     </div>
                                 </DialogContent>
                             </Dialog>

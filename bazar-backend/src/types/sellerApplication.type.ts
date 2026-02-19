@@ -13,7 +13,7 @@ export const sellerApplicationSchema = z.object({
         }),
     businessAddress: z.string().min(10).max(1024),
     description: z.string().optional(),
-    documentUrl: z.string().url().optional(),
+    documentUrl: z.string().url(),
     status: z.enum(["pending", "approved", "rejected"]).default("pending"),
     adminRemark: z.string().nullable().optional(),
 });

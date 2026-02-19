@@ -29,7 +29,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //origin: "*", //allow all domains
 app.use(cors(corsOptions));
 
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Serve uploaded files with CORS headers
+app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, '../uploads')));
 //test api
 app.get('/',(req:Request,res:Response) => {
     res.send("Hello World!");

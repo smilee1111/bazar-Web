@@ -4,6 +4,29 @@
 import axios from './axios';
 import { API } from "./endpoints";
 
+export const uploadDocument = async (file: File) => {
+    try {
+        const formData = new FormData();
+        formData.append('document', file);
+        
+        const response = await axios.post(
+            API.USER_SELLER_APPLICATIONS.UPLOAD_DOCUMENT,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to upload document"
+        );
+    }
+}
+
 export const createSellerApplication = async (applicationData: any) => {
     try {
         const response = await axios.post(
