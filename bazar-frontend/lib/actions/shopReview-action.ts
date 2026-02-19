@@ -1,6 +1,6 @@
 "use server";
 
-import { getShopReviewsByShopId, getAdminShopReviewsByShopId, adminDisableShopReview, adminDeleteShopReview, likeShopReview, unlikeShopReview, isReviewLiked, dislikeShopReview, undislikeShopReview, isReviewDisliked } from "../api/shopReview";
+import { getShopReviewsByShopId, getAdminShopReviewsByShopId, adminDisableShopReview, adminDeleteShopReview, deleteShopReview, likeShopReview, unlikeShopReview, isReviewLiked, dislikeShopReview, undislikeShopReview, isReviewDisliked } from "../api/shopReview";
 
 export const handleGetShopReviewsByShopId = async (shopId: string) => {
     try {
@@ -26,9 +26,9 @@ export const handleGetShopReviewsByShopId = async (shopId: string) => {
 
 export const handleGetAdminShopReviewsByShopId = async (shopId: string) => {
     try {
-        console.log("🟠 SERVER ACTION: Calling getAdminShopReviewsByShopId with shopId:", shopId);
+        console.log("SERVER ACTION: Calling getAdminShopReviewsByShopId with shopId:", shopId);
         const result = await getAdminShopReviewsByShopId(shopId);
-        console.log("🟠 SERVER ACTION: API returned:", result);
+        console.log("SERVER ACTION: API returned:", result);
         
         // Handle both array and object responses
         if (result?.success !== false && (Array.isArray(result) || result?.data !== undefined)) {
@@ -236,6 +236,28 @@ export const handleIsReviewDisliked = async (shopId: string, reviewId: string) =
             success: false,
             message: err.message || "Failed to check if review is disliked",
             isDisliked: false,
+        };
+    }
+};
+
+export const handleDeleteShopReview = async (shopId: string, reviewId: string) => {
+    try {
+        const result = await deleteShopReview(shopId, reviewId);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Review deleted successfully",
+                data: result.data,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to delete review",
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to delete review",
         };
     }
 };

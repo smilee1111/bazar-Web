@@ -4,14 +4,15 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, ChevronLeft, ChevronRight, Heart, Bookmark, Edit2, Save, XCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, ChevronLeft, ChevronRight, Heart, Bookmark, Edit2, Save, XCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import ReviewForm from "@/components/ReviewForm";
+import DeleteModal from "@/components/DeleteModal";
 import { API_CONFIG } from "@/lib/api/config";
 import { handleGetPublicShopById } from "@/lib/actions/shop-action";
-import { handleLikeShopReview, handleUnlikeShopReview, handleIsReviewLiked, handleDislikeShopReview, handleUndislikeShopReview, handleIsReviewDisliked } from "@/lib/actions/shopReview-action";
+import { handleLikeShopReview, handleUnlikeShopReview, handleIsReviewLiked, handleDislikeShopReview, handleUndislikeShopReview, handleIsReviewDisliked, handleDeleteShopReview } from "@/lib/actions/shopReview-action";
 import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { handleAddFavourite, handleRemoveFavourite, handleGetFavourites } from "@/lib/actions/favourite-action";
 import { handleSaveShop, handleRemoveSavedShop, handleGetSavedShops } from "@/lib/actions/savedShop-action";
@@ -23,6 +24,7 @@ interface Review {
     shopId: string;
     userId: string;
     reviewedBy?: {
+        _id?: string;
         fullName?: string;
         email?: string;
     } | string;
@@ -58,6 +60,7 @@ interface Shop {
     photos?: Photo[];
     reviews?: Review[];
     avgRating?: number;
+    ownerId?: string | { _id: string };
 }
 
 export default function ShopDetailPage() {
@@ -83,6 +86,8 @@ export default function ShopDetailPage() {
     const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
     const [editReviewText, setEditReviewText] = useState("");
     const [editReviewRating, setEditReviewRating] = useState(0);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
 
     const getReviewerName = (reviewedBy?: Review["reviewedBy"], userId?: string) => {
         if (reviewedBy && typeof reviewedBy !== "string") {
@@ -430,6 +435,47 @@ export default function ShopDetailPage() {
         } catch (error: any) {
             console.error("Error updating review:", error);
             toast.error(error.message || "Error updating review");
+        }
+    };
+
+    const handleDeleteReview = (reviewId: string) => {
+        setReviewToDelete(reviewId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setReviewToDelete(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!reviewToDelete) return;
+
+        const targetShopId = resolveShopId();
+        if (!targetShopId) {
+            toast.error("Shop ID not found");
+            handleCloseDeleteModal();
+            return;
+        }
+
+        try {
+            const result = await handleDeleteShopReview(targetShopId, reviewToDelete);
+            if (result.success) {
+                // Remove from local state
+                setReviews(reviews.filter(r => r._id !== reviewToDelete));
+                toast.success("Review deleted successfully");
+                // Clear editing state if this review was being edited
+                if (editingReviewId === reviewToDelete) {
+                    handleCancelEdit();
+                }
+            } else {
+                toast.error(result.message || "Failed to delete review");
+            }
+        } catch (error: any) {
+            console.error("Error deleting review:", error);
+            toast.error(error.message || "Error deleting review");
+        } finally {
+            handleCloseDeleteModal();
         }
     };
 
@@ -842,14 +888,24 @@ export default function ShopDetailPage() {
                                                             <span className="text-sm">{review.dislikeCount ?? 0}</span>
                                                         </button>
                                                         {isReviewOwner(review) && (
-                                                            <button
-                                                                onClick={() => handleStartEditReview(review)}
-                                                                className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 transition ml-auto"
-                                                                title="Edit your review"
-                                                            >
-                                                                <Edit2 className="h-4 w-4" />
-                                                                <span className="text-sm">Edit</span>
-                                                            </button>
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleStartEditReview(review)}
+                                                                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 transition ml-auto"
+                                                                    title="Edit your review"
+                                                                >
+                                                                    <Edit2 className="h-4 w-4" />
+                                                                    <span className="text-sm">Edit</span>
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteReview(review._id)}
+                                                                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/50 hover:bg-red-500/30 transition"
+                                                                    title="Delete your review"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                    <span className="text-sm">Delete</span>
+                                                                </button>
+                                                            </>
                                                         )}
                                                     </>
                                                 )}
@@ -920,6 +976,15 @@ export default function ShopDetailPage() {
                     background: rgba(143, 126, 79, 0.5);
                 }
             `}</style>
+
+            {/* Delete Review Modal */}
+            <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={handleCloseDeleteModal}
+                onConfirm={handleConfirmDelete}
+                title="Delete Review"
+                description="Are you sure you want to delete this review? This action cannot be undone."
+            />
         </div>
     );
 }
