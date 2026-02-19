@@ -80,9 +80,41 @@ export class ShopReviewController {
 
     async likeReview(req: Request, res: Response, next: NextFunction) {
         try {
+            if (!req.user?._id) {
+                return res.status(401).json({ success: false, message: "Unauthorized" });
+            }
             const { reviewId } = req.params;
-            const result = await shopReviewService.likeReview(reviewId);
-            return res.status(200).json({ success: true, data: result });
+            const userId = req.user._id.toString();
+            const result = await shopReviewService.likeReview(reviewId, userId);
+            return res.status(200).json({ success: true, data: result, message: "Review liked successfully" });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async unlikeReview(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.user?._id) {
+                return res.status(401).json({ success: false, message: "Unauthorized" });
+            }
+            const { reviewId } = req.params;
+            const userId = req.user._id.toString();
+            const result = await shopReviewService.unlikeReview(reviewId, userId);
+            return res.status(200).json({ success: true, data: result, message: "Review unliked successfully" });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async isReviewLikedByUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.user?._id) {
+                return res.status(401).json({ success: false, message: "Unauthorized" });
+            }
+            const { reviewId } = req.params;
+            const userId = req.user._id.toString();
+            const isLiked = await shopReviewService.isReviewLikedByUser(reviewId, userId);
+            return res.status(200).json({ success: true, data: { isLiked } });
         } catch (error) {
             next(error);
         }
@@ -90,9 +122,41 @@ export class ShopReviewController {
 
     async dislikeReview(req: Request, res: Response, next: NextFunction) {
         try {
+            if (!req.user?._id) {
+                return res.status(401).json({ success: false, message: "Unauthorized" });
+            }
             const { reviewId } = req.params;
-            const result = await shopReviewService.dislikeReview(reviewId);
-            return res.status(200).json({ success: true, data: result });
+            const userId = req.user._id.toString();
+            const result = await shopReviewService.dislikeReview(reviewId, userId);
+            return res.status(200).json({ success: true, data: result, message: "Review disliked successfully" });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async undislikeReview(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.user?._id) {
+                return res.status(401).json({ success: false, message: "Unauthorized" });
+            }
+            const { reviewId } = req.params;
+            const userId = req.user._id.toString();
+            const result = await shopReviewService.undislikeReview(reviewId, userId);
+            return res.status(200).json({ success: true, data: result, message: "Review undisliked successfully" });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async isReviewDislikedByUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.user?._id) {
+                return res.status(401).json({ success: false, message: "Unauthorized" });
+            }
+            const { reviewId } = req.params;
+            const userId = req.user._id.toString();
+            const isDisliked = await shopReviewService.isReviewDislikedByUser(reviewId, userId);
+            return res.status(200).json({ success: true, data: { isDisliked } });
         } catch (error) {
             next(error);
         }

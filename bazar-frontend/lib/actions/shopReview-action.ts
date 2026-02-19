@@ -1,6 +1,6 @@
 "use server";
 
-import { getShopReviewsByShopId, getAdminShopReviewsByShopId, adminDisableShopReview, adminDeleteShopReview, likeShopReview, dislikeShopReview } from "../api/shopReview";
+import { getShopReviewsByShopId, getAdminShopReviewsByShopId, adminDisableShopReview, adminDeleteShopReview, likeShopReview, unlikeShopReview, isReviewLiked, dislikeShopReview, undislikeShopReview, isReviewDisliked } from "../api/shopReview";
 
 export const handleGetShopReviewsByShopId = async (shopId: string) => {
     try {
@@ -104,9 +104,9 @@ export const handleAdminDeleteShopReview = async (reviewId: string) => {
     }
 };
 
-export const handleLikeShopReview = async (reviewId: string) => {
+export const handleLikeShopReview = async (shopId: string, reviewId: string) => {
     try {
-        const result = await likeShopReview(reviewId);
+        const result = await likeShopReview(shopId, reviewId);
         if (result.success) {
             return {
                 success: true,
@@ -126,9 +126,55 @@ export const handleLikeShopReview = async (reviewId: string) => {
     }
 };
 
-export const handleDislikeShopReview = async (reviewId: string) => {
+export const handleUnlikeShopReview = async (shopId: string, reviewId: string) => {
     try {
-        const result = await dislikeShopReview(reviewId);
+        const result = await unlikeShopReview(shopId, reviewId);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Review unliked successfully",
+                data: result.data,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to unlike review",
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to unlike review",
+        };
+    }
+};
+
+export const handleIsReviewLiked = async (shopId: string, reviewId: string) => {
+    try {
+        const result = await isReviewLiked(shopId, reviewId);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Check completed",
+                isLiked: result.data?.isLiked || false,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to check if review is liked",
+            isLiked: false,
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to check if review is liked",
+            isLiked: false,
+        };
+    }
+};
+
+export const handleDislikeShopReview = async (shopId: string, reviewId: string) => {
+    try {
+        const result = await dislikeShopReview(shopId, reviewId);
         if (result.success) {
             return {
                 success: true,
@@ -144,6 +190,52 @@ export const handleDislikeShopReview = async (reviewId: string) => {
         return {
             success: false,
             message: err.message || "Failed to dislike review",
+        };
+    }
+};
+
+export const handleUndislikeShopReview = async (shopId: string, reviewId: string) => {
+    try {
+        const result = await undislikeShopReview(shopId, reviewId);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Review undisliked successfully",
+                data: result.data,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to undislike review",
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to undislike review",
+        };
+    }
+};
+
+export const handleIsReviewDisliked = async (shopId: string, reviewId: string) => {
+    try {
+        const result = await isReviewDisliked(shopId, reviewId);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Check completed",
+                isDisliked: result.data?.isDisliked || false,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to check if review is disliked",
+            isDisliked: false,
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to check if review is disliked",
+            isDisliked: false,
         };
     }
 };

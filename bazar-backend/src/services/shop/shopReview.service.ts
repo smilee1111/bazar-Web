@@ -3,10 +3,14 @@ import { HttpError } from "../../errors/http-error";
 import { ShopRepository } from "../../repositories/shop.repository";
 import { ShopReviewRepository } from "../../repositories/shopReview.repository";
 import { FavouriteService } from "../user/favourite.service";
+import { ReviewLikeService } from "./reviewLike.service";
+import { ReviewDislikeService } from "./reviewDislike.service";
 
 const shopRepository = new ShopRepository();
 const shopReviewRepository = new ShopReviewRepository();
 const favouriteService = new FavouriteService();
+const reviewLikeService = new ReviewLikeService();
+const reviewDislikeService = new ReviewDislikeService();
 
 const normalizeShopIds = (shopId: string, resolvedShop: { shopId?: string; _id?: { toString(): string } }) => {
     const ids = new Set<string>();
@@ -22,6 +26,15 @@ export class ShopReviewService {
         const shop = await shopRepository.getShopByIdOrShopId(shopId);
         if (!shop) {
             throw new HttpError(404, "Shop not found");
+        }
+
+        // Prevent shop owner from reviewing their own shop
+        const shopOwnerId = typeof shop.ownerId === 'object' && shop.ownerId?._id
+            ? shop.ownerId._id.toString()
+            : shop.ownerId?.toString();
+        
+        if (shopOwnerId === userId?.toString()) {
+            throw new HttpError(403, "Shop owners cannot review their own shop");
         }
 
         const { canonicalShopId } = normalizeShopIds(shopId, shop);
@@ -47,7 +60,8 @@ export class ShopReviewService {
             throw new HttpError(404, "Shop not found");
         }
         const { shopIds } = normalizeShopIds(shopId, shop);
-        return shopReviewRepository.getReviewsByShopIds(shopIds);
+        const reviews = await shopReviewRepository.getReviewsByShopIds(shopIds);
+        return reviews;
     }
 
     async getReviewById(shopId: string, reviewId: string) {
@@ -108,32 +122,28 @@ export class ShopReviewService {
         return shopReviewRepository.deleteReview(reviewId);
     }
 
-    async likeReview(reviewId: string) {
-        const review = await shopReviewRepository.getReviewById(reviewId);
-        if (!review) {
-            throw new HttpError(404, "Review not found");
-        }
-
-        const currentLikes = review.likesCount || 0;
-        const updated = await shopReviewRepository.updateReview(reviewId, {
-            likesCount: currentLikes + 1
-        } as any);
-        
-        return updated;
+    async likeReview(reviewId: string, userId: string) {
+        return reviewLikeService.likeReview(reviewId, userId);
     }
 
-    async dislikeReview(reviewId: string) {
-        const review = await shopReviewRepository.getReviewById(reviewId);
-        if (!review) {
-            throw new HttpError(404, "Review not found");
-        }
+    async unlikeReview(reviewId: string, userId: string) {
+        return reviewLikeService.unlikeReview(reviewId, userId);
+    }
 
-        const currentDislikes = review.dislikeCount || 0;
-        const updated = await shopReviewRepository.updateReview(reviewId, {
-            dislikeCount: currentDislikes + 1
-        } as any);
-        
-        return updated;
+    async isReviewLikedByUser(reviewId: string, userId: string): Promise<boolean> {
+        return reviewLikeService.isUserLikedReview(reviewId, userId);
+    }
+
+    async dislikeReview(reviewId: string, userId: string) {
+        return reviewDislikeService.dislikeReview(reviewId, userId);
+    }
+
+    async undislikeReview(reviewId: string, userId: string) {
+        return reviewDislikeService.undislikeReview(reviewId, userId);
+    }
+
+    async isReviewDislikedByUser(reviewId: string, userId: string): Promise<boolean> {
+        return reviewDislikeService.isUserDislikedReview(reviewId, userId);
     }
 
     async getReviewsByUserId(userId: string) {

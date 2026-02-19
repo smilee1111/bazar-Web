@@ -4,17 +4,19 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, ChevronLeft, ChevronRight, Heart, Bookmark } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, ChevronLeft, ChevronRight, Heart, Bookmark, Edit2, Save, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import ReviewForm from "@/components/ReviewForm";
 import { API_CONFIG } from "@/lib/api/config";
 import { handleGetPublicShopById } from "@/lib/actions/shop-action";
-import { handleLikeShopReview, handleDislikeShopReview } from "@/lib/actions/shopReview-action";
+import { handleLikeShopReview, handleUnlikeShopReview, handleIsReviewLiked, handleDislikeShopReview, handleUndislikeShopReview, handleIsReviewDisliked } from "@/lib/actions/shopReview-action";
 import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { handleAddFavourite, handleRemoveFavourite, handleGetFavourites } from "@/lib/actions/favourite-action";
 import { handleSaveShop, handleRemoveSavedShop, handleGetSavedShops } from "@/lib/actions/savedShop-action";
 import { toast } from "react-toastify";
+import { useAuth } from "@/app/context/AuthContext";
 
 interface Review {
     _id: string;
@@ -61,6 +63,7 @@ interface Shop {
 export default function ShopDetailPage() {
     const params = useParams();
     const shopId = params?.shopId as string;
+    const { user } = useAuth();
     const [shop, setShop] = useState<Shop | null>(null);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [photos, setPhotos] = useState<Photo[]>([]);
@@ -73,6 +76,13 @@ export default function ShopDetailPage() {
     const [isSaved, setIsSaved] = useState(false);
     const [isLoadingFav, setIsLoadingFav] = useState(false);
     const [isLoadingSave, setIsLoadingSave] = useState(false);
+    const [likedReviews, setLikedReviews] = useState<Set<string>>(new Set());
+    const [loadingLikeStates, setLoadingLikeStates] = useState<Set<string>>(new Set());
+    const [dislikedReviews, setDislikedReviews] = useState<Set<string>>(new Set());
+    const [loadingDislikeStates, setLoadingDislikeStates] = useState<Set<string>>(new Set());
+    const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+    const [editReviewText, setEditReviewText] = useState("");
+    const [editReviewRating, setEditReviewRating] = useState(0);
 
     const getReviewerName = (reviewedBy?: Review["reviewedBy"], userId?: string) => {
         if (reviewedBy && typeof reviewedBy !== "string") {
@@ -142,6 +152,36 @@ export default function ShopDetailPage() {
                         : savedResult.data?.data || [];
                     setIsSaved(savedData.some((entry: any) => entry.shopId === canonicalShopId));
                 }
+
+                // Check which reviews are liked by current user
+                if (shopData.reviews && shopData.reviews.length > 0) {
+                    const likedSet = new Set<string>();
+                    const dislikedSet = new Set<string>();
+                    const canonicalId = canonicalShopId;
+                    for (const review of shopData.reviews) {
+                        try {
+                            const likeCheckResult = await handleIsReviewLiked(canonicalId, review._id);
+                            if (likeCheckResult.success && likeCheckResult.isLiked) {
+                                likedSet.add(review._id);
+                            }
+                        } catch (err) {
+                            // Silently fail on like check
+                            console.error("Error checking if review is liked:", err);
+                        }
+
+                        try {
+                            const dislikeCheckResult = await handleIsReviewDisliked(canonicalId, review._id);
+                            if (dislikeCheckResult.success && dislikeCheckResult.isDisliked) {
+                                dislikedSet.add(review._id);
+                            }
+                        } catch (err) {
+                            // Silently fail on dislike check
+                            console.error("Error checking if review is disliked:", err);
+                        }
+                    }
+                    setLikedReviews(likedSet);
+                    setDislikedReviews(dislikedSet);
+                }
             } else {
                 console.log("API error:", result.message);
                 setError(result.message || "Failed to load shop details");
@@ -199,45 +239,218 @@ export default function ShopDetailPage() {
     };
 
     const handleLikeReview = async (reviewId: string) => {
+        const targetShopId = resolveShopId();
+        if (!targetShopId) {
+            toast.error("Shop ID not found");
+            return;
+        }
+
+        setLoadingLikeStates(prev => new Set(prev).add(reviewId));
         try {
-            const result = await handleLikeShopReview(reviewId);
-            if (result.success) {
-                // Update local state with the new counts
-                setReviews(reviews.map(r =>
-                    r._id === reviewId
-                        ? { 
-                            ...r, 
-                            likes: result.data.likesCount || result.data.likes || r.likes + 1, 
-                            userLiked: !r.userLiked,
-                            userDisliked: r.userDisliked ? false : r.userDisliked 
-                          }
-                        : r
-                ));
+            const isCurrentlyLiked = likedReviews.has(reviewId);
+            
+            if (isCurrentlyLiked) {
+                // Unlike the review
+                const result = await handleUnlikeShopReview(targetShopId, reviewId);
+                if (result.success) {
+                    // Update liked reviews set
+                    const newLikedSet = new Set(likedReviews);
+                    newLikedSet.delete(reviewId);
+                    setLikedReviews(newLikedSet);
+                    
+                    // Update review likesCount
+                    setReviews(reviews.map(r =>
+                        r._id === reviewId
+                            ? { 
+                                ...r, 
+                                likesCount: Math.max(0, (r.likesCount ?? 0) - 1)
+                              }
+                            : r
+                    ));
+                    toast.success("Review unliked");
+                } else {
+                    toast.error(result.message || "Failed to unlike review");
+                }
+            } else {
+                // Like the review
+                const result = await handleLikeShopReview(targetShopId, reviewId);
+                if (result.success) {
+                    // Update liked reviews set
+                    const newLikedSet = new Set(likedReviews);
+                    newLikedSet.add(reviewId);
+                    setLikedReviews(newLikedSet);
+                    
+                    // Update review likesCount
+                    setReviews(reviews.map(r =>
+                        r._id === reviewId
+                            ? { 
+                                ...r, 
+                                likesCount: (r.likesCount ?? 0) + 1
+                              }
+                            : r
+                    ));
+                    toast.success("Review liked");
+                } else {
+                    toast.error(result.message || "Failed to like review");
+                }
             }
-        } catch (error) {
-            console.error("Error liking review:", error);
+        } catch (error: any) {
+            console.error("Error liking/unliking review:", error);
+            toast.error(error.message || "Error processing like");
+        } finally {
+            setLoadingLikeStates(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(reviewId);
+                return newSet;
+            });
         }
     };
 
     const handleDislikeReview = async (reviewId: string) => {
+        const targetShopId = resolveShopId();
+        if (!targetShopId) {
+            toast.error("Shop ID not found");
+            return;
+        }
+
+        setLoadingDislikeStates(prev => new Set(prev).add(reviewId));
         try {
-            const result = await handleDislikeShopReview(reviewId);
+            const isCurrentlyDisliked = dislikedReviews.has(reviewId);
+            
+            if (isCurrentlyDisliked) {
+                // Undislike the review
+                const result = await handleUndislikeShopReview(targetShopId, reviewId);
+                if (result.success) {
+                    // Update disliked reviews set
+                    const newDislikedSet = new Set(dislikedReviews);
+                    newDislikedSet.delete(reviewId);
+                    setDislikedReviews(newDislikedSet);
+                    
+                    // Update review dislikeCount
+                    setReviews(reviews.map(r =>
+                        r._id === reviewId
+                            ? { 
+                                ...r, 
+                                dislikeCount: Math.max(0, (r.dislikeCount ?? 0) - 1)
+                              }
+                            : r
+                    ));
+                    toast.success("Review undisliked");
+                } else {
+                    toast.error(result.message || "Failed to undislike review");
+                }
+            } else {
+                // Dislike the review
+                const result = await handleDislikeShopReview(targetShopId, reviewId);
+                if (result.success) {
+                    // Update disliked reviews set
+                    const newDislikedSet = new Set(dislikedReviews);
+                    newDislikedSet.add(reviewId);
+                    setDislikedReviews(newDislikedSet);
+                    
+                    // Update review dislikeCount
+                    setReviews(reviews.map(r =>
+                        r._id === reviewId
+                            ? { 
+                                ...r, 
+                                dislikeCount: (r.dislikeCount ?? 0) + 1
+                              }
+                            : r
+                    ));
+                    toast.success("Review disliked");
+                } else {
+                    toast.error(result.message || "Failed to dislike review");
+                }
+            }
+        } catch (error: any) {
+            console.error("Error disliking/undisliking review:", error);
+            toast.error(error.message || "Error processing dislike");
+        } finally {
+            setLoadingDislikeStates(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(reviewId);
+                return newSet;
+            });
+        }
+    };
+
+    const handleStartEditReview = (review: Review) => {
+        setEditingReviewId(review._id);
+        setEditReviewText(review.reviewText || review.reviewName || "");
+        setEditReviewRating(review.starNum);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingReviewId(null);
+        setEditReviewText("");
+        setEditReviewRating(0);
+    };
+
+    const handleSaveEditReview = async (reviewId: string) => {
+        const targetShopId = resolveShopId();
+        if (!targetShopId) {
+            toast.error("Shop ID not found");
+            return;
+        }
+
+        if (editReviewRating === 0) {
+            toast.error("Please select a rating");
+            return;
+        }
+
+        if (editReviewText.trim().length < 10) {
+            toast.error("Review must be at least 10 characters long");
+            return;
+        }
+
+        try {
+            const { updateShopReview } = await import("@/lib/api/shopReview");
+            const result = await updateShopReview(targetShopId, reviewId, {
+                reviewName: editReviewText,
+                starNum: editReviewRating
+            });
+
             if (result.success) {
-                // Update local state with the new counts
+                // Update local state
                 setReviews(reviews.map(r =>
                     r._id === reviewId
                         ? { 
                             ...r, 
-                            dislikes: result.data.dislikeCount || result.data.dislikes || r.dislikes + 1, 
-                            userDisliked: !r.userDisliked,
-                            userLiked: r.userLiked ? false : r.userLiked
+                            reviewName: editReviewText,
+                            reviewText: editReviewText,
+                            starNum: editReviewRating
                           }
                         : r
                 ));
+                toast.success("Review updated successfully");
+                handleCancelEdit();
+            } else {
+                toast.error(result.message || "Failed to update review");
             }
-        } catch (error) {
-            console.error("Error disliking review:", error);
+        } catch (error: any) {
+            console.error("Error updating review:", error);
+            toast.error(error.message || "Error updating review");
         }
+    };
+
+    const isReviewOwner = (review: Review): boolean => {
+        if (!user) return false;
+        const reviewerId = typeof review.reviewedBy === 'object' && review.reviewedBy?._id
+            ? review.reviewedBy._id
+            : typeof review.reviewedBy === 'object' && review.reviewedBy?.email
+            ? review.reviewedBy.email
+            : review.reviewedBy;
+        
+        return user._id === reviewerId || user.email === reviewerId || user._id === review.userId;
+    };
+
+    const isShopOwner = (): boolean => {
+        if (!user || !shop) return false;
+        const shopOwnerId = typeof shop.ownerId === 'object' && (shop.ownerId as any)?._id
+            ? (shop.ownerId as any)._id
+            : shop.ownerId;
+        
+        return user._id === shopOwnerId || user.email === shopOwnerId;
     };
 
     const avgRating = reviews.length > 0
@@ -546,35 +759,100 @@ export default function ShopDetailPage() {
                                                 </div>
                                             </div>
 
-                                            {/* Review Text */}
-                                            <p className="text-white/80 mb-4 leading-relaxed">
-                                                {review.reviewText || review.reviewName || ""}
-                                            </p>
+                                            {/* Review Text or Edit Mode */}
+                                            {editingReviewId === review._id ? (
+                                                <div className="mb-4 space-y-3">
+                                                    {/* Star Rating Selector in Edit Mode */}
+                                                    <div className="flex items-center gap-2">
+                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                            <button
+                                                                key={star}
+                                                                type="button"
+                                                                onClick={() => setEditReviewRating(star)}
+                                                                className="transition"
+                                                            >
+                                                                <Star
+                                                                    className={`h-6 w-6 ${
+                                                                        star <= editReviewRating
+                                                                            ? "fill-yellow-400 text-yellow-400"
+                                                                            : "text-white/30 hover:text-yellow-400/50"
+                                                                    }`}
+                                                                />
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    <Textarea
+                                                        value={editReviewText}
+                                                        onChange={(e) => setEditReviewText(e.target.value)}
+                                                        className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[100px]"
+                                                        placeholder="Update your review..."
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <p className="text-white/80 mb-4 leading-relaxed">
+                                                    {review.reviewText || review.reviewName || ""}
+                                                </p>
+                                            )}
 
-                                            {/* Like/Dislike */}
+                                            {/* Like/Dislike and Edit Buttons */}
                                             <div className="flex items-center gap-4">
-                                                <button
-                                                    onClick={() => handleLikeReview(review._id)}
-                                                    className={`flex items-center gap-2 px-3 py-1 rounded-full transition ${
-                                                        review.userLiked
-                                                            ? "bg-green-500/30 text-green-300 border border-green-500/50"
-                                                            : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
-                                                    }`}
-                                                >
-                                                    <ThumbsUp className="h-4 w-4" />
-                                                    <span className="text-sm">{review.likes ?? (review as any).likesCount ?? 0}</span>
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDislikeReview(review._id)}
-                                                    className={`flex items-center gap-2 px-3 py-1 rounded-full transition ${
-                                                        review.userDisliked
-                                                            ? "bg-red-500/30 text-red-300 border border-red-500/50"
-                                                            : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
-                                                    }`}
-                                                >
-                                                    <ThumbsDown className="h-4 w-4" />
-                                                    <span className="text-sm">{review.dislikes ?? (review as any).dislikeCount ?? 0}</span>
-                                                </button>
+                                                {editingReviewId === review._id ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleSaveEditReview(review._id)}
+                                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 text-green-300 border border-green-500/50 hover:bg-green-500/30 transition"
+                                                        >
+                                                            <Save className="h-4 w-4" />
+                                                            <span className="text-sm">Save</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={handleCancelEdit}
+                                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 transition"
+                                                        >
+                                                            <XCircle className="h-4 w-4" />
+                                                            <span className="text-sm">Cancel</span>
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleLikeReview(review._id)}
+                                                            disabled={loadingLikeStates.has(review._id)}
+                                                            className={`flex items-center gap-2 px-3 py-1 rounded-full transition ${
+                                                                likedReviews.has(review._id)
+                                                                    ? "bg-blue-500/30 text-blue-300 border border-blue-500/50"
+                                                                    : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                                                            } ${loadingLikeStates.has(review._id) ? "opacity-50 cursor-not-allowed" : ""}`}
+                                                            title={likedReviews.has(review._id) ? "Unlike review" : "Like review"}
+                                                        >
+                                                            <ThumbsUp className="h-4 w-4" />
+                                                            <span className="text-sm">{review.likesCount ?? 0}</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDislikeReview(review._id)}
+                                                            disabled={loadingDislikeStates.has(review._id)}
+                                                            className={`flex items-center gap-2 px-3 py-1 rounded-full transition ${
+                                                                dislikedReviews.has(review._id)
+                                                                    ? "bg-red-500/30 text-red-300 border border-red-500/50"
+                                                                    : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                                                            } ${loadingDislikeStates.has(review._id) ? "opacity-50 cursor-not-allowed" : ""}`}
+                                                            title={dislikedReviews.has(review._id) ? "Undislike review" : "Dislike review"}
+                                                        >
+                                                            <ThumbsDown className="h-4 w-4" />
+                                                            <span className="text-sm">{review.dislikeCount ?? 0}</span>
+                                                        </button>
+                                                        {isReviewOwner(review) && (
+                                                            <button
+                                                                onClick={() => handleStartEditReview(review)}
+                                                                className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 transition ml-auto"
+                                                                title="Edit your review"
+                                                            >
+                                                                <Edit2 className="h-4 w-4" />
+                                                                <span className="text-sm">Edit</span>
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -591,7 +869,11 @@ export default function ShopDetailPage() {
 
                     {/* Sidebar - Review Form */}
                     <div className="lg:col-span-1">
-                        <ReviewForm shopId={shop.shopId || shop._id} onReviewSubmitted={loadShopDetails} />
+                        <ReviewForm 
+                            shopId={shop.shopId || shop._id} 
+                            onReviewSubmitted={loadShopDetails}
+                            isShopOwner={isShopOwner()}
+                        />
                     </div>
                 </div>
             </div>
