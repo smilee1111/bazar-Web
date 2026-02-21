@@ -111,6 +111,7 @@ export class AdminSellerApplicationService {
                         slug,
                         shopAddress: application.businessAddress,
                         shopContact: application.businessPhone,
+                        location: (application as any).location,
                         description: application.description,
                     });
                     break;

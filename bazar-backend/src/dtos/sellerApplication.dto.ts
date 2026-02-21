@@ -7,6 +7,7 @@ export const CreateSellerApplicationDto = sellerApplicationSchema.pick({
     categoryName: true,
     businessPhone: true,
     businessAddress: true,
+    location: true,
     description: true,
     documentUrl: true,
 }).extend({

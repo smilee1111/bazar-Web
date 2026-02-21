@@ -8,6 +8,7 @@ import { FileText, Calendar, User, Phone, MapPin, Building, Eye, XCircle } from 
 import { handleGetAllSellerApplications } from "@/lib/actions/sellerApplication-action";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
+import ApplicationLocationMap from "./ApplicationLocationMap";
 
 interface SellerApplication {
     _id: string;
@@ -21,6 +22,7 @@ interface SellerApplication {
     categoryName?: string;
     businessPhone: string;
     businessAddress: string;
+    location?: { type: "Point"; coordinates: [number, number] };
     description: string;
     documentUrl: string;
     status: "pending" | "approved" | "rejected";
@@ -180,6 +182,11 @@ export default function RejectedApplicationsTab() {
                                             <Label className="text-sm font-medium">Description</Label>
                                             <p className="text-sm text-gray-700 mt-1">{application.description}</p>
                                         </div>
+                                        <ApplicationLocationMap
+                                            location={application.location}
+                                            businessAddress={application.businessAddress}
+                                            height={220}
+                                        />
                                         {application.adminRemark && (
                                             <div>
                                                 <Label className="text-sm font-medium">Admin Remark</Label>

@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { CheckCircle, XCircle, Eye, FileText, Calendar, User, Phone, MapPin, Building } from "lucide-react";
 import { handleGetPendingSellerApplications, handleApproveSellerApplication, handleRejectSellerApplication } from "@/lib/actions/sellerApplication-action";
 import { toast } from "react-toastify";
+import ApplicationLocationMap from "./ApplicationLocationMap";
 
 interface SellerApplication {
     _id: string;
@@ -24,6 +25,7 @@ interface SellerApplication {
     categoryName?: string;
     businessPhone: string;
     businessAddress: string;
+    location?: { type: "Point"; coordinates: [number, number] };
     description: string;
     documentUrl: string;
     status: 'pending' | 'approved' | 'rejected';
@@ -218,6 +220,11 @@ export default function SellerApplicationsTab() {
                                             <Label className="text-sm font-medium">Description</Label>
                                             <p className="text-sm text-gray-700 mt-1">{application.description}</p>
                                         </div>
+                                        <ApplicationLocationMap
+                                            location={application.location}
+                                            businessAddress={application.businessAddress}
+                                            height={220}
+                                        />
                                         <div>
                                             <Label className="text-sm font-medium">Document</Label>
                                             <a
