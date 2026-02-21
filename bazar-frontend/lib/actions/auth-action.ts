@@ -111,9 +111,9 @@ export const handleUpdateProfile = async (formData: any) => {
         }
     };
 
-    export const handleResetPassword = async (token: string, newPassword: string) => {
+    export const handleResetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
         try {
-            const response = await resetPassword(token, newPassword);
+            const response = await resetPassword(token, newPassword, confirmPassword);
             if (response.success) {
                 return {
                     success: true,

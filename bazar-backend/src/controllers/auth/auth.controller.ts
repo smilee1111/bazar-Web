@@ -2,6 +2,7 @@ import { AuthService } from "../../services/auth/auth.service";
 import z, { success } from 'zod';
 import { Request, Response} from 'express';
 import { CreateUserDto, LoginUserDto,UpdateUserDto } from "../../dtos/user.dto";
+import { RequestPasswordResetDto, ResetPasswordWithTokenDto, VerifyResetOtpDto } from "../../dtos/passwordReset.dto";
 
 
 //initialize the auth service
@@ -103,12 +104,19 @@ async getUserProfile(req: Request, res: Response){
 
     async sendResetPasswordEmail(req: Request, res: Response) {
         try {
-            const email = req.body.email;
-            const user = await authService.sendResetPasswordEmail(email);
+            const parsedData = RequestPasswordResetDto.safeParse(req.body);
+            if (!parsedData.success) {
+                return res.status(400).json(
+                    { success: false, message: z.prettifyError(parsedData.error) }
+                );
+            }
+
+            const result = await authService.sendResetPasswordEmail(
+                parsedData.data.email,
+                parsedData.data.clientType
+            );
             return res.status(200).json(
-                { success: true,
-                    data: user,
-                    message: "If the email is registered, a reset link has been sent." }
+                { success: true, data: result, message: result.message }
             );
         } catch (error: Error | any) {
             return res.status(error.statusCode ?? 500).json(
@@ -119,12 +127,48 @@ async getUserProfile(req: Request, res: Response){
 
     async resetPassword(req: Request, res: Response) {
         try {
+            const token = req.params.token;
+            const parsedData = ResetPasswordWithTokenDto.safeParse({
+                ...req.body,
+                token
+            });
 
-           const token = req.params.token;
-            const { newPassword } = req.body;
-            await authService.resetPassword(token, newPassword);
+            if (!parsedData.success) {
+                return res.status(400).json(
+                    { success: false, message: z.prettifyError(parsedData.error) }
+                );
+            }
+
+            const result = await authService.resetPassword(
+                parsedData.data.token,
+                parsedData.data.newPassword
+            );
             return res.status(200).json(
-                { success: true, message: "Password has been reset successfully." }
+                { success: true, message: result.message }
+            );
+        } catch (error: Error | any) {
+            return res.status(error.statusCode ?? 500).json(
+                { success: false, message: error.message || "Internal Server Error" }
+            );
+        }
+    }
+
+    async verifyResetOtp(req: Request, res: Response) {
+        try {
+            const parsedData = VerifyResetOtpDto.safeParse(req.body);
+            if (!parsedData.success) {
+                return res.status(400).json(
+                    { success: false, message: z.prettifyError(parsedData.error) }
+                );
+            }
+
+            const result = await authService.verifyResetOtp(
+                parsedData.data.email,
+                parsedData.data.otp,
+                parsedData.data.newPassword
+            );
+            return res.status(200).json(
+                { success: true, message: result.message }
             );
         } catch (error: Error | any) {
             return res.status(error.statusCode ?? 500).json(

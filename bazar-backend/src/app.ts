@@ -9,6 +9,8 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config({ path: "./config/config.env" });
 
+// Import rate limiting middleware
+import { generalLimiter } from './middlewares/rateLimiter.middleware';
 
 //can use env variables below this 
 console.log(process.env.PORT);
@@ -23,11 +25,18 @@ let corsOptions = {
 
 }
 
+// Trust proxy for rate limiting and security headers
+// This allows proper IP detection when behind reverse proxies (nginx, Cloudflare, etc.)
+app.set('trust proxy', 1);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //origin: "*", //allow all domains
 app.use(cors(corsOptions));
+
+// Apply general rate limiter to all routes
+app.use(generalLimiter);
 
 // Serve uploaded files with CORS headers
 app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, '../uploads')));
