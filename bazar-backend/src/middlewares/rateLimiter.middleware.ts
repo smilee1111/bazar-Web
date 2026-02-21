@@ -12,11 +12,6 @@ export const generalLimiter = rateLimit({
         // Skip rate limiting for health check endpoint
         return req.path === '/';
     },
-    keyGenerator: (req: Request) => {
-        // Use X-Forwarded-For if behind a proxy, otherwise use the ip
-        const forwarded = req.headers['x-forwarded-for'];
-        return typeof forwarded === 'string' ? forwarded.split(',')[0] : req.ip || 'unknown';
-    },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,
@@ -33,10 +28,6 @@ export const authLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: false, // Count successful requests too
-    keyGenerator: (req: Request) => {
-        const forwarded = req.headers['x-forwarded-for'];
-        return typeof forwarded === 'string' ? forwarded.split(',')[0] : req.ip || 'unknown';
-    },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,
@@ -93,10 +84,6 @@ export const tokenResetLimiter = rateLimit({
     message: 'Too many password reset attempts. Please try again after 30 minutes.',
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req: Request) => {
-        const forwarded = req.headers['x-forwarded-for'];
-        return typeof forwarded === 'string' ? forwarded.split(',')[0] : req.ip || 'unknown';
-    },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,
@@ -112,10 +99,6 @@ export const createResourceLimiter = rateLimit({
     message: 'Too many requests to create resources, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req: Request) => {
-        const forwarded = req.headers['x-forwarded-for'];
-        return typeof forwarded === 'string' ? forwarded.split(',')[0] : req.ip || 'unknown';
-    },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,

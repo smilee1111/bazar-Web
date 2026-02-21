@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import {
     Building2,
     Store,
@@ -41,6 +42,9 @@ import { handleGetShopDetailByShopId, handleCreateShopDetail, handleUpdateShopDe
 import { API_CONFIG } from "@/lib/api/config";
 import { toast } from "react-toastify";
 
+const ShopLocationMap = dynamic(() => import("@/components/maps/ShopLocationMap"), { ssr: false });
+const LocationPicker = dynamic(() => import("@/components/maps/LocationPicker"), { ssr: false });
+
 interface Category {
     _id: string;
     categoryId: string;
@@ -53,6 +57,7 @@ interface Shop {
     shopName: string;
     shopAddress: string;
     shopContact: string;
+    location?: { type: "Point"; coordinates: [number, number] };
     description?: string;
     categoryId: { _id: string; name: string };
     slug?: string;
@@ -127,6 +132,8 @@ export default function MyShopPage() {
         shopName: "",
         shopAddress: "",
         shopContact: "",
+        locationLat: "",
+        locationLng: "",
         description: "",
         categoryId: "",
         slug: "",
@@ -146,10 +153,14 @@ export default function MyShopPage() {
             if (result.success) {
                 setShop(result.data || null);
                 if (result.data) {
+                    const coords = result.data.location?.coordinates || [];
+                    const [lng, lat] = coords.length === 2 ? coords : ["", ""];
                     setFormData({
                         shopName: result.data.shopName || "",
                         shopAddress: result.data.shopAddress || "",
                         shopContact: result.data.shopContact || "",
+                        locationLat: lat ? String(lat) : "",
+                        locationLng: lng ? String(lng) : "",
                         description: result.data.description || "",
                         categoryId: "",
                         slug: result.data.slug || "",
@@ -443,14 +454,63 @@ export default function MyShopPage() {
         });
     };
 
+    const locationLatValue = Number(formData.locationLat);
+    const locationLngValue = Number(formData.locationLng);
+    const hasValidLocation = Number.isFinite(locationLatValue) && Number.isFinite(locationLngValue);
+
+    const handleUseMyLocation = () => {
+        if (!navigator.geolocation) {
+            toast.error("Geolocation is not supported by your browser");
+            return;
+        }
+
+        toast.info("Fetching your location...", { autoClose: 2000 });
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setFormData((prev) => ({
+                    ...prev,
+                    locationLat: position.coords.latitude.toFixed(6),
+                    locationLng: position.coords.longitude.toFixed(6),
+                }));
+                toast.success("Location fetched successfully!");
+            },
+            (error) => {
+                let errorMessage = "Unable to fetch your location";
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = "Location permission denied. Please enable location access in your browser settings.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = "Location information is unavailable. Please try again.";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = "Location request timed out. Please try again.";
+                        break;
+                }
+                toast.error(errorMessage);
+                console.error("Geolocation error:", error);
+            },
+            { 
+                enableHighAccuracy: true, 
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    };
+
     const handleSave = async () => {
         if (!shop) return;
         setSaving(true);
         try {
+            const location = hasValidLocation
+                ? { type: "Point", coordinates: [locationLngValue, locationLatValue] as [number, number] }
+                : undefined;
             const payload = {
                 shopName: formData.shopName,
                 shopAddress: formData.shopAddress,
                 shopContact: formData.shopContact,
+                location,
                 description: formData.description,
                 categoryId: formData.categoryId || "",
                 slug: formData.slug,
@@ -618,6 +678,32 @@ export default function MyShopPage() {
                                 placeholder="Shop address"
                             />
                         </div>
+                    </div>
+
+                    {/* Interactive Location Picker */}
+                    <div className="space-y-2">
+                        <Label>Shop Location</Label>
+                        <LocationPicker
+                            value={
+                                formData.locationLat && formData.locationLng
+                                    ? {
+                                          lat: Number(formData.locationLat),
+                                          lng: Number(formData.locationLng),
+                                      }
+                                    : undefined
+                            }
+                            onChange={(location) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    locationLat: location.lat.toFixed(6),
+                                    locationLng: location.lng.toFixed(6),
+                                }));
+                            }}
+                            height={350}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2 md:col-span-2">
                             <Label htmlFor="description">Description</Label>
                             <Textarea

@@ -125,6 +125,10 @@ app.use('/api/shops', shopPhotoRoutes);
 app.use('/api/shops', shopReviewRoutes);
 app.use('/api/shops', shopDetailRoutes);
 
+//MAPS ROUTES
+import geocodingRoutes from './routes/maps/geocoding';
+app.use('/api/maps', geocodingRoutes);
+
 // Global error handler - return JSON for known error types (HttpError, MulterError)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,11 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Building2, ShieldCheck, FileCheck, RefreshCw, Upload, FileText } from "lucide-react";
+import { Building2, ShieldCheck, FileCheck, RefreshCw, Upload, FileText, MapPin } from "lucide-react";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { handleCreateMySellerApplication, handleGetMySellerApplication } from "@/lib/actions/sellerApplication-action";
 import { uploadDocument } from "@/lib/api/sellerApplication";
 import { toast } from "react-toastify";
+
+const ShopLocationMap = dynamic(() => import("@/components/maps/ShopLocationMap"), { ssr: false });
+const LocationPicker = dynamic(() => import("@/components/maps/LocationPicker"), { ssr: false });
 
 interface Category {
     _id: string;
@@ -27,6 +31,7 @@ interface SellerApplication {
     businessName: string;
     businessPhone: string;
     businessAddress: string;
+    location?: { type: "Point"; coordinates: [number, number] };
     description?: string;
     documentUrl: string;
     categoryName?: string;
@@ -55,6 +60,8 @@ export default function AccountSettingsPage() {
         categoryName: "",
         businessPhone: "",
         businessAddress: "",
+        locationLat: "",
+        locationLng: "",
         description: "",
         documentUrl: "",
     });
@@ -100,6 +107,9 @@ export default function AccountSettingsPage() {
     }, [categories]);
 
     const canApply = !application || application.status === "rejected";
+    const locationLatValue = Number(formData.locationLat);
+    const locationLngValue = Number(formData.locationLng);
+    const hasValidLocation = Number.isFinite(locationLatValue) && Number.isFinite(locationLngValue);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -139,6 +149,49 @@ export default function AccountSettingsPage() {
         }
     };
 
+    const handleUseMyLocation = () => {
+        if (!navigator.geolocation) {
+            toast.error("Geolocation is not supported by your browser");
+            return;
+        }
+
+        toast.info("Fetching your location...", { autoClose: 2000 });
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                setFormData((prev) => ({
+                    ...prev,
+                    locationLat: lat.toFixed(6),
+                    locationLng: lng.toFixed(6),
+                }));
+                toast.success("Location fetched successfully!");
+            },
+            (error) => {
+                let errorMessage = "Unable to fetch your location";
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = "Location permission denied. Please enable location access in your browser settings.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = "Location information is unavailable. Please try again.";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = "Location request timed out. Please try again.";
+                        break;
+                }
+                toast.error(errorMessage);
+                console.error("Geolocation error:", error);
+            },
+            { 
+                enableHighAccuracy: true, 
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    };
+
     const handleSubmit = async () => {
         if (!formData.businessName || !formData.categoryName || !formData.businessPhone || !formData.businessAddress) {
             toast.error("Please fill in all required fields");
@@ -152,7 +205,17 @@ export default function AccountSettingsPage() {
 
         setActionLoading(true);
         try {
-            const result = await handleCreateMySellerApplication(formData);
+            const { locationLat, locationLng, ...rest } = formData;
+            const lat = Number(locationLat);
+            const lng = Number(locationLng);
+            const location = Number.isFinite(lat) && Number.isFinite(lng)
+                ? { type: "Point", coordinates: [lng, lat] as [number, number] }
+                : undefined;
+            const payload = {
+                ...rest,
+                location,
+            };
+            const result = await handleCreateMySellerApplication(payload);
             if (result.success) {
                 toast.success("Seller application submitted successfully");
                 setShowForm(false);
@@ -169,11 +232,15 @@ export default function AccountSettingsPage() {
 
     const handleTryAgain = () => {
         if (!application) return;
+        const coords = application.location?.coordinates || [];
+        const [lng, lat] = coords.length === 2 ? coords : ["", ""];
         setFormData({
             businessName: application.businessName || "",
             categoryName: application.categoryName || "",
             businessPhone: application.businessPhone || "",
             businessAddress: application.businessAddress || "",
+            locationLat: lat ? String(lat) : "",
+            locationLng: lng ? String(lng) : "",
             description: application.description || "",
             documentUrl: application.documentUrl || "",
         });
@@ -255,6 +322,14 @@ export default function AccountSettingsPage() {
                                     <span className="font-medium text-[#1a1a1a]">Address</span>
                                     <p>{application.businessAddress}</p>
                                 </div>
+                                <div>
+                                    <span className="font-medium text-[#1a1a1a]">Location</span>
+                                    <p>
+                                        {application.location?.coordinates
+                                            ? `${application.location.coordinates[1].toFixed(5)}, ${application.location.coordinates[0].toFixed(5)}`
+                                            : "Not set"}
+                                    </p>
+                                </div>
                                 <div className="md:col-span-2">
                                     <span className="font-medium text-[#1a1a1a]">Supporting Document</span>
                                     <p>
@@ -270,6 +345,21 @@ export default function AccountSettingsPage() {
                                     </p>
                                 </div>
                             </div>
+                            {application.location?.coordinates && (
+                                <div className="mt-4">
+                                    <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                                        <MapPin className="h-4 w-4" />
+                                        <span>Business location</span>
+                                    </div>
+                                    <div className="mt-2 overflow-hidden rounded-2xl">
+                                        <ShopLocationMap
+                                            lat={application.location.coordinates[1]}
+                                            lng={application.location.coordinates[0]}
+                                            height={220}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                             {application.adminRemark && (
                                 <p className="mt-3 text-sm text-[#7a6b45]">Admin remark: {application.adminRemark}</p>
                             )}
@@ -342,7 +432,33 @@ export default function AccountSettingsPage() {
                                         placeholder="Address"
                                     />
                                 </div>
-                                <div className="space-y-2 md:col-span-2">
+                            </div>
+
+                            {/* Interactive Location Picker */}
+                            <div className="space-y-2">
+                                <Label>Business Location</Label>
+                                <LocationPicker
+                                    value={
+                                        formData.locationLat && formData.locationLng
+                                            ? {
+                                                  lat: Number(formData.locationLat),
+                                                  lng: Number(formData.locationLng),
+                                              }
+                                            : undefined
+                                    }
+                                    onChange={(location) => {
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            locationLat: location.lat.toFixed(6),
+                                            locationLng: location.lng.toFixed(6),
+                                        }));
+                                    }}
+                                    height={350}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4">
+                                <div className="space-y-2">
                                     <Label htmlFor="description">Description</Label>
                                     <Textarea
                                         id="description"
@@ -351,7 +467,7 @@ export default function AccountSettingsPage() {
                                         placeholder="Tell us about your business"
                                     />
                                 </div>
-                                <div className="space-y-2 md:col-span-2">
+                                <div className="space-y-2">
                                     <Label htmlFor="document" className="flex items-center gap-2">
                                         <FileText className="h-4 w-4" />
                                         Supporting Document (PDF) <span className="text-red-500">*</span>

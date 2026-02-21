@@ -3,8 +3,10 @@ import { ShopPhotoModel } from "../../models/shopPhoto.model";
 import { ShopReviewModel } from "../../models/shopReview.model";
 import { ShopDetailModel } from "../../models/shopDetail.model";
 import { IShop } from "../../models/shop.model";
+import { OsrmService } from "../maps/osrm.service";
 
 const shopRepository = new ShopRepository();
+const osrmService = new OsrmService();
 
 const mapReview = (review: any) => ({
     ...review,
@@ -148,6 +150,30 @@ export class PublicShopService {
             details,
             avgRating,
             reviewCount: mappedReviews.length,
+        };
+    }
+
+    async getRouteToShop(shopId: string, fromLat: number, fromLng: number) {
+        const shop = await shopRepository.getShopByIdOrShopId(shopId);
+        if (!shop || (shop as any).isActive === false) {
+            return null;
+        }
+
+        const location = (shop as any).location;
+        if (!location || !Array.isArray(location.coordinates) || location.coordinates.length !== 2) {
+            return { error: "Shop location is not available" };
+        }
+
+        const [toLng, toLat] = location.coordinates;
+        const route = await osrmService.getRoute(fromLng, fromLat, toLng, toLat);
+
+        return {
+            shopId: (shop as any).shopId || String((shop as any)._id || ""),
+            from: { lat: fromLat, lng: fromLng },
+            to: { lat: toLat, lng: toLng },
+            distance: route.distance,
+            duration: route.duration,
+            geometry: route.geometry,
         };
     }
 }

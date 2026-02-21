@@ -1,23 +1,27 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, ChevronLeft, ChevronRight, Heart, Bookmark, Edit2, Save, XCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, ChevronLeft, ChevronRight, Heart, Bookmark, Edit2, Save, XCircle, Trash2, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import ReviewForm from "@/components/ReviewForm";
 import DeleteModal from "@/components/DeleteModal";
 import { API_CONFIG } from "@/lib/api/config";
-import { handleGetPublicShopById } from "@/lib/actions/shop-action";
+import { handleGetPublicShopById, handleGetRouteToShop } from "@/lib/actions/shop-action";
 import { handleLikeShopReview, handleUnlikeShopReview, handleIsReviewLiked, handleDislikeShopReview, handleUndislikeShopReview, handleIsReviewDisliked, handleDeleteShopReview } from "@/lib/actions/shopReview-action";
 import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { handleAddFavourite, handleRemoveFavourite, handleGetFavourites } from "@/lib/actions/favourite-action";
 import { handleSaveShop, handleRemoveSavedShop, handleGetSavedShops } from "@/lib/actions/savedShop-action";
 import { toast } from "react-toastify";
 import { useAuth } from "@/app/context/AuthContext";
+
+const RouteMap = dynamic(() => import("@/components/maps/RouteMap"), { ssr: false });
+const ShopLocationMap = dynamic(() => import("@/components/maps/ShopLocationMap"), { ssr: false });
 
 interface Review {
     _id: string;
@@ -51,6 +55,7 @@ interface Shop {
     shopId: string;
     shopName: string;
     shopAddress: string;
+    location?: { type: "Point"; coordinates: [number, number] };
     description: string;
     contactNumber?: string;
     email?: string;
@@ -88,6 +93,9 @@ export default function ShopDetailPage() {
     const [editReviewRating, setEditReviewRating] = useState(0);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
+    const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+    const [routeData, setRouteData] = useState<any | null>(null);
+    const [routeLoading, setRouteLoading] = useState(false);
 
     const getReviewerName = (reviewedBy?: Review["reviewedBy"], userId?: string) => {
         if (reviewedBy && typeof reviewedBy !== "string") {
@@ -107,6 +115,21 @@ export default function ShopDetailPage() {
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) return "Recently";
         return date.toLocaleDateString();
+    };
+
+    const formatDistance = (meters?: number) => {
+        if (!meters && meters !== 0) return "-";
+        if (meters < 1000) return `${Math.round(meters)} m`;
+        return `${(meters / 1000).toFixed(1)} km`;
+    };
+
+    const formatDuration = (seconds?: number) => {
+        if (!seconds && seconds !== 0) return "-";
+        const mins = Math.round(seconds / 60);
+        if (mins < 60) return `${mins} min`;
+        const hours = Math.floor(mins / 60);
+        const rem = mins % 60;
+        return `${hours} h ${rem} min`;
     };
 
     useEffect(() => {
@@ -199,7 +222,65 @@ export default function ShopDetailPage() {
         }
     };
 
+    const fetchRoute = async (fromLat: number, fromLng: number, targetShopId: string) => {
+        setRouteLoading(true);
+        try {
+            const result = await handleGetRouteToShop(targetShopId, fromLat, fromLng);
+            if (result.success) {
+                setRouteData(result.data);
+            } else {
+                setRouteData(null);
+            }
+        } catch {
+            setRouteData(null);
+        } finally {
+            setRouteLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const coords = shop?.location?.coordinates;
+        if (!shop || !coords || coords.length !== 2) return;
+        if (!navigator.geolocation) {
+            console.warn("Geolocation is not supported by this browser");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const fromLat = position.coords.latitude;
+                const fromLng = position.coords.longitude;
+                setUserLocation({ lat: fromLat, lng: fromLng });
+                fetchRoute(fromLat, fromLng, shop.shopId || shop._id || shopId);
+            },
+            (error) => {
+                console.warn("Unable to fetch user location for route:", error.message);
+                // Don't show toast error, just log it - route map will fallback to shop location map
+            },
+            { 
+                enableHighAccuracy: true, 
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    }, [shop?.location?.coordinates, shop?.shopId, shop?._id, shopId]);
+
     const resolveShopId = () => shop?.shopId || shop?._id || shopId;
+
+    const handleOpenDirections = () => {
+        const coords = shop?.location?.coordinates;
+        if (!coords || coords.length !== 2) {
+            toast.error("Shop location is not available");
+            return;
+        }
+        const [lng, lat] = coords;
+        const origin = userLocation ? `${userLocation.lat},${userLocation.lng}` : "";
+        const destination = `${lat},${lng}`;
+        const url = origin
+            ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`
+            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+    };
 
     const handleFavouriteToggle = async () => {
         const targetId = resolveShopId();
@@ -737,6 +818,58 @@ export default function ShopDetailPage() {
                                         )}
                                     </div>
                                 </div>
+
+                                {shop.location?.coordinates && (
+                                    <div className="border-t border-white/10 pt-6">
+                                        <div className="flex items-center justify-between gap-4 mb-4">
+                                            <h3 className="text-white font-semibold text-lg">Map & Route</h3>
+                                            <Button
+                                                type="button"
+                                                onClick={handleOpenDirections}
+                                                className="bg-[#8f7e4f] text-white hover:bg-[#7a6b45]"
+                                            >
+                                                <Navigation className="mr-2 h-4 w-4" />
+                                                Navigate
+                                            </Button>
+                                        </div>
+
+                                        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                                            {routeLoading ? (
+                                                <div className="flex h-[320px] items-center justify-center text-white/70">
+                                                    Loading route...
+                                                </div>
+                                            ) : routeData && userLocation ? (
+                                                <RouteMap
+                                                    from={userLocation}
+                                                    to={{
+                                                        lat: shop.location.coordinates[1],
+                                                        lng: shop.location.coordinates[0],
+                                                    }}
+                                                    geometry={routeData.geometry}
+                                                    height={320}
+                                                />
+                                            ) : (
+                                                <ShopLocationMap
+                                                    lat={shop.location.coordinates[1]}
+                                                    lng={shop.location.coordinates[0]}
+                                                    height={320}
+                                                />
+                                            )}
+                                        </div>
+
+                                        <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-white/70">
+                                            <span>
+                                                Distance: <span className="text-[#d4c5a0]">{formatDistance(routeData?.distance)}</span>
+                                            </span>
+                                            <span>
+                                                ETA: <span className="text-[#d4c5a0]">{formatDuration(routeData?.duration)}</span>
+                                            </span>
+                                            {!userLocation && (
+                                                <span className="text-white/50">Enable location to see route.</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Shop Links */}
                                 {shop.details && shop.details.length > 0 && (

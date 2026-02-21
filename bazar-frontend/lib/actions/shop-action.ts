@@ -9,6 +9,7 @@ import {
     getMyShop,
     getShopById,
     getPublicShopById,
+    getRouteToShop,
     updateShop,
     deleteShop,
     createAdminShop,
@@ -307,6 +308,28 @@ export const handleDeleteAdminShop = async (id: string) => {
         return {
             success: false,
             message: err.message || "Failed to delete shop"
+        };
+    }
+}
+
+export const handleGetRouteToShop = async (id: string, fromLat: number, fromLng: number) => {
+    try {
+        const result = await getRouteToShop(id, fromLat, fromLng);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Route fetched successfully",
+                data: result.data,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to fetch route",
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to fetch route",
         };
     }
 }

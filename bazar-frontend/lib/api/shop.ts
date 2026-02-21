@@ -161,6 +161,21 @@ export const getPublicShopById = async (id: string) => {
     }
 }
 
+export const getRouteToShop = async (id: string, fromLat: number, fromLng: number) => {
+    try {
+        const response = await axios.get(
+            API.PUBLIC_SHOPS.GET_ROUTE(id),
+            { params: { fromLat, fromLng } }
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to fetch route"
+        );
+    }
+}
+
 export const updateShop = async (id: string, shopData: any) => {
     try {
         const response = await axios.put(
