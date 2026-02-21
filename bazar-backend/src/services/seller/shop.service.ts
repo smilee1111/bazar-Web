@@ -2,9 +2,11 @@ import { ShopRepository } from "../../repositories/shop.repository";
 import { UserRepository } from "../../repositories/user.repository";
 import { CreateShopDto, UpdateShopDto } from "../../dtos/shop.dto";
 import { HttpError } from "../../errors/http-error";
+import { NotificationHelperService } from "../user/notificationHelper.service";
 
 let shopRepository = new ShopRepository();
 let userRepository = new UserRepository();
+const notificationHelper = new NotificationHelperService();
 
 export class SellerShopService {
     async createShop(ownerId: string, data: CreateShopDto) {
@@ -22,6 +24,22 @@ export class SellerShopService {
 
         const shopData = { ...data, ownerId };
         const newShop = await shopRepository.createShop(shopData);
+        
+        // Notify all users about the new shop (async, don't wait)
+        try {
+            const shopIdForNotification = newShop.shopId || newShop._id?.toString() || '';
+            notificationHelper.notifyNewShop(
+                shopIdForNotification,
+                data.shopName,
+                ownerId
+            ).catch(err => {
+                console.error('Failed to send new shop notifications:', err);
+            });
+        } catch (error) {
+            console.error('Error initiating new shop notifications:', error);
+            // Don't fail shop creation if notification fails
+        }
+        
         return newShop;
     }
 

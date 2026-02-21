@@ -2,9 +2,11 @@ import { SellerApplicationRepository } from "../../repositories/sellerApplicatio
 import { UserRepository } from "../../repositories/user.repository";
 import { CreateSellerApplicationDto } from "../../dtos/sellerApplication.dto";
 import { HttpError } from "../../errors/http-error";
+import { NotificationHelperService } from "./notificationHelper.service";
 
 let sellerApplicationRepository = new SellerApplicationRepository();
 let userRepository = new UserRepository();
+const notificationHelper = new NotificationHelperService();
 
 export class UserSellerApplicationService {
     async getMySellerApplication(userId: string) {
@@ -36,11 +38,39 @@ export class UserSellerApplicationService {
                     adminRemark: null,
                 }
             );
+            
+            // Notify admins about the resubmitted application
+            if (updatedApplication) {
+                try {
+                    const applicationId = updatedApplication._id?.toString() || existingApplication._id.toString();
+                    await notificationHelper.notifySellerApplication(
+                        data.userId,
+                        applicationId,
+                        data.businessName
+                    );
+                } catch (error) {
+                    console.error('Failed to send seller application notification:', error);
+                }
+            }
+            
             return updatedApplication;
         }
 
         await userRepository.updateUser(data.userId, { sellerStatus: "pending" });
         const newApplication = await sellerApplicationRepository.createSellerApplication(data);
+        
+        // Notify admins about the new application
+        try {
+            const applicationId = newApplication._id?.toString() || '';
+            await notificationHelper.notifySellerApplication(
+                data.userId,
+                applicationId,
+                data.businessName
+            );
+        } catch (error) {
+            console.error('Failed to send seller application notification:', error);
+        }
+        
         return newApplication;
     }
 }

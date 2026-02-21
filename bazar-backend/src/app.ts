@@ -10,7 +10,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: "./config/config.env" });
 
 // Import rate limiting middleware
-import { generalLimiter } from './middlewares/rateLimiter.middleware';
+import { generalLimiter, readLimiter, writeLimiter } from './middlewares/rateLimiter.middleware';
 
 //can use env variables below this 
 console.log(process.env.PORT);
@@ -35,8 +35,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //origin: "*", //allow all domains
 app.use(cors(corsOptions));
 
-// Apply general rate limiter to all routes
+// Apply rate limiters to all routes
+// These work together to allow normal browsing while protecting against abuse:
+// - generalLimiter: 500 requests per 15 min (overall cap)
+// - readLimiter: 300 GET requests per 5 min (browsing)
+// - writeLimiter: 50 write operations per 15 min (POST/PUT/DELETE/PATCH)
 app.use(generalLimiter);
+app.use(readLimiter);
+app.use(writeLimiter);
 
 // Serve uploaded files with CORS headers
 app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, '../uploads')));
@@ -107,9 +113,11 @@ app.use('/api/user/seller-applications', userSellerApplicationRoutes);
 import userSavedShopRoutes from './routes/user/savedShop.route';
 import userFavouriteRoutes from './routes/user/favourite.route';
 import userReviewRoutes from './routes/user/review.route';
+import notificationRoutes from './routes/user/notification.route';
 app.use('/api/user/saved-shops', userSavedShopRoutes);
 app.use('/api/user/favourites', userFavouriteRoutes);
 app.use('/api/user/reviews', userReviewRoutes);
+app.use('/api/user/notifications', notificationRoutes);
 
 //SELLER ROUTES
 import sellerShopRoutes from './routes/seller/shop';

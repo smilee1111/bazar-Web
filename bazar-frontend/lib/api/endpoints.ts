@@ -45,6 +45,16 @@ export const API = {
     USER_REVIEWS: {
         LIST: 'user/reviews',
     },
+    USER_NOTIFICATIONS: {
+        LIST: 'user/notifications',
+        GET_BY_ID: (id: string) => `user/notifications/${id}`,
+        UNREAD_COUNT: 'user/notifications/unread-count',
+        MARK_AS_READ: (id: string) => `user/notifications/${id}/read`,
+        MARK_MULTIPLE_READ: 'user/notifications/mark-multiple-read',
+        MARK_ALL_READ: 'user/notifications/mark-all-read',
+        DELETE: (id: string) => `user/notifications/${id}`,
+        DELETE_ALL: 'user/notifications',
+    },
     SHOPS: {
         CREATE_SHOP: 'seller/shops',
         GET_ALL_SHOPS: 'seller/shops',

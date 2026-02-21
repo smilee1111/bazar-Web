@@ -5,12 +5,14 @@ import { ShopReviewRepository } from "../../repositories/shopReview.repository";
 import { FavouriteService } from "../user/favourite.service";
 import { ReviewLikeService } from "./reviewLike.service";
 import { ReviewDislikeService } from "./reviewDislike.service";
+import { NotificationHelperService } from "../user/notificationHelper.service";
 
 const shopRepository = new ShopRepository();
 const shopReviewRepository = new ShopReviewRepository();
 const favouriteService = new FavouriteService();
 const reviewLikeService = new ReviewLikeService();
 const reviewDislikeService = new ReviewDislikeService();
+const notificationHelper = new NotificationHelperService();
 
 const normalizeShopIds = (shopId: string, resolvedShop: { shopId?: string; _id?: { toString(): string } }) => {
     const ids = new Set<string>();
@@ -49,6 +51,20 @@ export class ShopReviewService {
         } catch (err) {
             // Silently catch if favourite creation fails (e.g., duplicate)
             console.error('Failed to auto-add favourite for reviewed shop:', err);
+        }
+        
+        // Send notification to shop owner
+        try {
+            await notificationHelper.notifyShopReviewed(
+                shopOwnerId,
+                userId,
+                canonicalShopId,
+                shop.shopName,
+                data.starNum
+            );
+        } catch (error) {
+            console.error('Failed to send shop review notification:', error);
+            // Don't fail the review creation if notification fails
         }
         
         return review;

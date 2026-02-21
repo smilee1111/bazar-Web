@@ -1,16 +1,56 @@
 import rateLimit from 'express-rate-limit';
 import { Request, Response } from 'express';
 
-// General rate limiter - 100 requests per 15 minutes per IP
+// General rate limiter - 500 requests per 15 minutes per IP
+// This allows normal browsing (GET requests) while still protecting against abuse
 export const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: 500, // limit each IP to 500 requests per windowMs
     message: 'Too many requests from this IP, please try again after 15 minutes.',
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
     skip: (req: Request) => {
         // Skip rate limiting for health check endpoint
         return req.path === '/';
+    },
+    handler: (req: Request, res: Response) => {
+        res.status(429).json({
+            success: false,
+            message: 'Too many requests, please try again later.'
+        });
+    }
+});
+
+// Read-only limiter for GET requests - more generous for browsing
+export const readLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 300, // 300 GET requests per 5 minutes (60 per minute avg)
+    message: 'Too many requests, please slow down.',
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req: Request) => {
+        // Only apply to GET requests, skip others
+        return req.method !== 'GET' || req.path === '/';
+    },
+    handler: (req: Request, res: Response) => {
+        res.status(429).json({
+            success: false,
+            message: 'Too many requests, please try again later.'
+        });
+    }
+});
+
+// Write operations limiter - stricter for POST/PUT/DELETE/PATCH
+export const writeLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50, // 50 write operations per 15 minutes
+    message: 'Too many write requests, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req: Request) => {
+        // Only apply to write operations
+        const writeMethods = ['POST', 'PUT', 'DELETE', 'PATCH'];
+        return !writeMethods.includes(req.method) || req.path === '/';
     },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
@@ -36,19 +76,18 @@ export const authLimiter = rateLimit({
     }
 });
 
-// Password reset request limiter - 3 requests per hour per email + IP
+// Password reset request limiter - 3 requests per hour per email
 export const passwordResetRequestLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 3, // limit each IP to 3 password reset requests per hour
+    max: 3, // limit each email to 3 password reset requests per hour
     message: 'Too many password reset requests, please try again after 1 hour.',
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req: Request) => {
-        // Use email + IP as the key to prevent abuse per email address
-        const email = (req.body?.email || '').toLowerCase();
-        const forwarded = req.headers['x-forwarded-for'];
-        const ip = typeof forwarded === 'string' ? forwarded.split(',')[0] : req.ip || 'unknown';
-        return `${email}:${ip}`;
+        // Use email as the key to prevent abuse per email address
+        // IP-based limiting is already handled by generalLimiter
+        const email = (req.body?.email || 'no-email').toLowerCase();
+        return `pwd-reset:${email}`;
     },
     handler: (req: Request, res: Response) => {
         res.status(429).json({

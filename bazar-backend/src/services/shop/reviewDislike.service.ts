@@ -1,9 +1,13 @@
 import { HttpError } from "../../errors/http-error";
 import { ReviewDislikeRepository } from "../../repositories/reviewDislike.repository";
 import { ShopReviewRepository } from "../../repositories/shopReview.repository";
+import { ShopRepository } from "../../repositories/shop.repository";
+import { NotificationHelperService } from "../user/notificationHelper.service";
 
 const reviewDislikeRepository = new ReviewDislikeRepository();
 const shopReviewRepository = new ShopReviewRepository();
+const shopRepository = new ShopRepository();
+const notificationHelper = new NotificationHelperService();
 
 export class ReviewDislikeService {
     /**
@@ -30,6 +34,27 @@ export class ReviewDislikeService {
         const updated = await shopReviewRepository.updateReview(reviewId, {
             dislikeCount: currentDislikes + 1
         } as any);
+
+        // Send notification to review owner
+        try {
+            const reviewOwnerId = typeof review.reviewedBy === 'object' && review.reviewedBy?._id
+                ? review.reviewedBy._id.toString()
+                : review.reviewedBy?.toString();
+
+            // Get shop name for better notification context
+            let shopName: string | undefined;
+            try {
+                const shop = await shopRepository.getShopByIdOrShopId(review.shopId);
+                shopName = shop?.shopName;
+            } catch (e) {
+                // Ignore if shop not found
+            }
+
+            await notificationHelper.notifyReviewDisliked(reviewOwnerId, userId, reviewId, shopName);
+        } catch (error) {
+            console.error('Failed to send review dislike notification:', error);
+            // Don't fail the dislike operation if notification fails
+        }
 
         return updated;
     }
