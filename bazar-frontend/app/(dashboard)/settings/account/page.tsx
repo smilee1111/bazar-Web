@@ -10,9 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Building2, ShieldCheck, FileCheck, RefreshCw } from "lucide-react";
+import { Building2, ShieldCheck, FileCheck, RefreshCw, Upload, FileText } from "lucide-react";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { handleCreateMySellerApplication, handleGetMySellerApplication } from "@/lib/actions/sellerApplication-action";
+import { uploadDocument } from "@/lib/api/sellerApplication";
 import { toast } from "react-toastify";
 
 interface Category {
@@ -27,7 +28,7 @@ interface SellerApplication {
     businessPhone: string;
     businessAddress: string;
     description?: string;
-    documentUrl?: string;
+    documentUrl: string;
     categoryName?: string;
     status: "pending" | "approved" | "rejected";
     adminRemark?: string | null;
@@ -47,6 +48,8 @@ export default function AccountSettingsPage() {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
+    const [uploadingDocument, setUploadingDocument] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [formData, setFormData] = useState({
         businessName: "",
         categoryName: "",
@@ -98,9 +101,52 @@ export default function AccountSettingsPage() {
 
     const canApply = !application || application.status === "rejected";
 
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (file.type !== 'application/pdf') {
+            toast.error("Only PDF files are allowed");
+            return;
+        }
+
+        // Validate file size (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            toast.error("File size must be less than 10MB");
+            return;
+        }
+
+        setSelectedFile(file);
+        
+        // Auto-upload the document
+        setUploadingDocument(true);
+        try {
+            const result = await uploadDocument(file);
+            if (result.success) {
+                const documentUrl = result.data?.documentUrl || result.data?.url;
+                setFormData(prev => ({ ...prev, documentUrl }));
+                toast.success("Document uploaded successfully");
+            } else {
+                toast.error(result.message || "Failed to upload document");
+                setSelectedFile(null);
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Failed to upload document");
+            setSelectedFile(null);
+        } finally {
+            setUploadingDocument(false);
+        }
+    };
+
     const handleSubmit = async () => {
         if (!formData.businessName || !formData.categoryName || !formData.businessPhone || !formData.businessAddress) {
             toast.error("Please fill in all required fields");
+            return;
+        }
+
+        if (!formData.documentUrl) {
+            toast.error("Please upload a supporting document (PDF)");
             return;
         }
 
@@ -131,6 +177,7 @@ export default function AccountSettingsPage() {
             description: application.description || "",
             documentUrl: application.documentUrl || "",
         });
+        setSelectedFile(null);
         setShowForm(true);
     };
 
@@ -207,6 +254,20 @@ export default function AccountSettingsPage() {
                                 <div>
                                     <span className="font-medium text-[#1a1a1a]">Address</span>
                                     <p>{application.businessAddress}</p>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <span className="font-medium text-[#1a1a1a]">Supporting Document</span>
+                                    <p>
+                                        <a 
+                                            href={application.documentUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-[#8f7e4f] hover:underline flex items-center gap-1"
+                                        >
+                                            <FileText className="h-4 w-4" />
+                                            View Document
+                                        </a>
+                                    </p>
                                 </div>
                             </div>
                             {application.adminRemark && (
@@ -291,13 +352,35 @@ export default function AccountSettingsPage() {
                                     />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
-                                    <Label htmlFor="documentUrl">Supporting Document (optional)</Label>
-                                    <Input
-                                        id="documentUrl"
-                                        value={formData.documentUrl}
-                                        onChange={(e) => setFormData((prev) => ({ ...prev, documentUrl: e.target.value }))}
-                                        placeholder="Document URL"
-                                    />
+                                    <Label htmlFor="document" className="flex items-center gap-2">
+                                        <FileText className="h-4 w-4" />
+                                        Supporting Document (PDF) <span className="text-red-500">*</span>
+                                    </Label>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <Input
+                                                id="document"
+                                                type="file"
+                                                accept="application/pdf"
+                                                onChange={handleFileChange}
+                                                disabled={uploadingDocument}
+                                                className="cursor-pointer"
+                                            />
+                                            {uploadingDocument && (
+                                                <Upload className="h-4 w-4 animate-spin text-[#8f7e4f]" />
+                                            )}
+                                        </div>
+                                        {selectedFile && (
+                                            <p className="text-sm text-[#4a4a4a]">
+                                                Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                                            </p>
+                                        )}
+                                        {formData.documentUrl && (
+                                            <p className="text-sm text-green-600">
+                                                ✓ Document uploaded successfully
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 

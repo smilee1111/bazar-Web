@@ -30,6 +30,7 @@ export const API = {
     USER_SELLER_APPLICATIONS: {
         CREATE_APPLICATION: 'user/seller-applications',
         GET_MY_APPLICATION: 'user/seller-applications/my',
+        UPLOAD_DOCUMENT: 'user/seller-applications/upload-document',
     },
     USER_SAVED_SHOPS: {
         LIST: 'user/saved-shops',

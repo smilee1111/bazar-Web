@@ -38,7 +38,9 @@ export class PublicShopService {
 
         const [photos, reviews, details] = await Promise.all([
             ShopPhotoModel.find({ shopId: { $in: shopIds }, isActive: true }).lean(),
-            ShopReviewModel.find({ shopId: { $in: shopIds }, isActive: true }).lean(),
+            ShopReviewModel.find({ shopId: { $in: shopIds }, isActive: true })
+                .populate("reviewedBy", "fullName email")
+                .lean(),
             ShopDetailModel.find({ shopId: { $in: shopIds } }).lean(),
         ]);
 
@@ -126,7 +128,9 @@ export class PublicShopService {
         console.log("Resolved shopId:", shopId);
         const [photos, reviews, details] = await Promise.all([
             ShopPhotoModel.find({ shopId, isActive: true }).lean(),
-            ShopReviewModel.find({ shopId, isActive: true }).lean(),
+            ShopReviewModel.find({ shopId, isActive: true })
+                .populate("reviewedBy", "fullName email")
+                .lean(),
             ShopDetailModel.find({ shopId }).lean(),
         ]);
 

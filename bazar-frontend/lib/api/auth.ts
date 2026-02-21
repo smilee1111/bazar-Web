@@ -81,9 +81,13 @@ export const requestPasswordReset = async (email: string) => {
     }
 };
 
-export const resetPassword = async (token: string, newPassword: string) => {
+export const resetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
     try {
-        const response = await axios.post(API.AUTH.RESET_PASSWORD(token), { newPassword: newPassword });
+        const response = await axios.post(API.AUTH.RESET_PASSWORD(token), { 
+            newPassword: newPassword,
+            confirmPassword: confirmPassword,
+            token: token
+        });
         return response.data;
     } catch (error: Error | any) {
         throw new Error(error.response?.data?.message || error.message || 'Reset password failed');

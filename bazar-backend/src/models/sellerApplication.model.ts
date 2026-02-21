@@ -17,7 +17,7 @@ const SellerApplicationSchema: Schema = new Schema(
         businessPhone: { type: String, required: true, unique: true },
         businessAddress: { type: String, required: true },
         description: { type: String, required: false },
-        documentUrl: { type: String, required: false },
+        documentUrl: { type: String, required: true },
         status: { type: String, enum: ['pending','approved','rejected'], default: 'pending' },
         adminRemark: { type: String, required: false, default: null }
     },

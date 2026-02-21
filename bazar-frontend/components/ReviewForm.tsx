@@ -11,13 +11,28 @@ import { createShopReview } from "@/lib/api/shopReview";
 interface ReviewFormProps {
     shopId: string;
     onReviewSubmitted?: () => void;
+    isShopOwner?: boolean;
 }
 
-export default function ReviewForm({ shopId, onReviewSubmitted }: ReviewFormProps) {
+export default function ReviewForm({ shopId, onReviewSubmitted, isShopOwner = false }: ReviewFormProps) {
     const [rating, setRating] = useState(0);
     const [hoveredRating, setHoveredRating] = useState(0);
     const [reviewText, setReviewText] = useState("");
     const [loading, setLoading] = useState(false);
+
+    // If user is shop owner, show a message instead of the form
+    if (isShopOwner) {
+        return (
+            <Card className="p-8 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl sticky top-24">
+                <h3 className="text-2xl font-bold text-white mb-6">Write a Review</h3>
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+                    <p className="text-white/70 text-base">
+                        You cannot review your own shop.
+                    </p>
+                </div>
+            </Card>
+        );
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

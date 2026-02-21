@@ -89,9 +89,9 @@ export const deleteShopReview = async (shopId: string, reviewId: string) => {
     }
 };
 
-export const likeShopReview = async (reviewId: string) => {
+export const likeShopReview = async (shopId: string, reviewId: string) => {
     try {
-        const response = await axios.post(`/shops/reviews/${reviewId}/like`);
+        const response = await axios.post(`/shops/${shopId}/reviews/${reviewId}/like`);
         return response.data;
     } catch (err: Error | any) {
         throw new Error(
@@ -100,13 +100,57 @@ export const likeShopReview = async (reviewId: string) => {
     }
 };
 
-export const dislikeShopReview = async (reviewId: string) => {
+export const unlikeShopReview = async (shopId: string, reviewId: string) => {
     try {
-        const response = await axios.post(`/shops/reviews/${reviewId}/dislike`);
+        const response = await axios.post(`/shops/${shopId}/reviews/${reviewId}/unlike`);
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to unlike review"
+        );
+    }
+};
+
+export const isReviewLiked = async (shopId: string, reviewId: string) => {
+    try {
+        const response = await axios.get(`/shops/${shopId}/reviews/${reviewId}/liked`);
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to check if review is liked"
+        );
+    }
+};
+
+export const dislikeShopReview = async (shopId: string, reviewId: string) => {
+    try {
+        const response = await axios.post(`/shops/${shopId}/reviews/${reviewId}/dislike`);
         return response.data;
     } catch (err: Error | any) {
         throw new Error(
             err.response?.data?.message || err.message || "Failed to dislike review"
+        );
+    }
+};
+
+export const undislikeShopReview = async (shopId: string, reviewId: string) => {
+    try {
+        const response = await axios.post(`/shops/${shopId}/reviews/${reviewId}/undislike`);
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to undislike review"
+        );
+    }
+};
+
+export const isReviewDisliked = async (shopId: string, reviewId: string) => {
+    try {
+        const response = await axios.get(`/shops/${shopId}/reviews/${reviewId}/disliked`);
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to check if review is disliked"
         );
     }
 };

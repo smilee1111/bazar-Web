@@ -33,7 +33,7 @@ export default function ResetPasswordForm({
 
     const onSubmit = async (data: ResetPasswordDTO) => {
         try {
-            const response = await handleResetPassword(token, data.password);
+            const response = await handleResetPassword(token, data.password, data.confirmPassword);
             if (response.success) {
                 toast.success("Password reset successfully");
                 // Redirect to login page

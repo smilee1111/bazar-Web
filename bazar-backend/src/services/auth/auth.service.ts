@@ -1,15 +1,36 @@
 import { UserRepository } from "../../repositories/user.repository";
 import { RoleRepository } from "../../repositories/role.repository";
+import { PasswordResetRepository } from "../../repositories/passwordReset.repository";
 import { CreateUserDto, LoginUserDto, UpdateUserDto} from "../../dtos/user.dto";
+import { RequestPasswordResetDto } from "../../dtos/passwordReset.dto";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../../errors/http-error";
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from "../../config";
 import { sendEmail } from "../../config/email";
+import crypto from 'crypto';
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
 let userRepository = new UserRepository();
 let roleRepository = new RoleRepository();
+let passwordResetRepository = new PasswordResetRepository();
+
+// Utility functions
+const generateOtp = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const hashOtp = (otp: string): string => {
+    return crypto.createHash('sha256').update(otp).digest('hex');
+};
+
+const generateResetToken = (): string => {
+    return crypto.randomBytes(32).toString('hex');
+};
+
+const hashToken = (token: string): string => {
+    return crypto.createHash('sha256').update(token).digest('hex');
+};
 
 export class AuthService{
     async registerUser(data: CreateUserDto){
@@ -116,20 +137,65 @@ export class AuthService{
         return updatedUser;
     }
 
-    async sendResetPasswordEmail(email?: string) {
+    async sendResetPasswordEmail(email?: string, clientType: string = 'web') {
         if (!email) {
             throw new HttpError(400, "Email is required");
         }
         const user = await userRepository.getUserByEmail(email);
         if (!user) {
-            throw new HttpError(404, "User not found");
+            // Don't reveal if email exists or not (security best practice)
+            return { message: "If the email is registered, a reset link/OTP has been sent." };
         }
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // 1 hour expiry
-        const resetLink = `${CLIENT_URL}/reset-password?token=${token}`;
-        const html = `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 1 hour.</p>`;
-        await sendEmail(user.email, "Password Reset", html);
-        return user;
 
+        // Delete any previous reset requests for this email
+        await passwordResetRepository.deleteByEmail(email);
+
+        if (clientType === 'mobile') {
+            // OTP-based reset for mobile
+            const otp = generateOtp();
+            const otpHash = hashOtp(otp);
+            const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+            
+            await passwordResetRepository.createPasswordReset({
+                userId: user._id,
+                email: user.email,
+                type: 'otp',
+                otpHash,
+                expiresAt,
+            });
+
+            const html = `
+                <h3>Password Reset OTP</h3>
+                <p>Your OTP for password reset is: <strong>${otp}</strong></p>
+                <p>This OTP will expire in 15 minutes.</p>
+                <p>Do not share this OTP with anyone.</p>
+            `;
+            await sendEmail(user.email, "Password Reset OTP", html);
+        } else {
+            // Link-based reset for web
+            const token = generateResetToken();
+            const tokenHash = hashToken(token);
+            const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+            await passwordResetRepository.createPasswordReset({
+                userId: user._id,
+                email: user.email,
+                type: 'link',
+                tokenHash,
+                expiresAt,
+            });
+
+            const resetLink = `${CLIENT_URL}/reset-password?token=${token}`;
+            const html = `
+                <h3>Password Reset Request</h3>
+                <p>Click <a href="${resetLink}">here</a> to reset your password.</p>
+                <p>This link will expire in 1 hour.</p>
+                <p>If you didn't request this, please ignore this email.</p>
+            `;
+            await sendEmail(user.email, "Password Reset Link", html);
+        }
+
+        return { message: "If the email is registered, a reset link/OTP has been sent." };
     }
 
     async resetPassword(token?: string, newPassword?: string) {
@@ -137,18 +203,72 @@ export class AuthService{
             if (!token || !newPassword) {
                 throw new HttpError(400, "Token and new password are required");
             }
-            const decoded: any = jwt.verify(token, JWT_SECRET);
-            const userId = decoded.id;
-            const user = await userRepository.getUserById(userId);
+            
+            const tokenHash = hashToken(token);
+            const resetRecord = await passwordResetRepository.findByToken(tokenHash);
+            
+            if (!resetRecord) {
+                throw new HttpError(400, "Invalid or expired token");
+            }
+
+            if (resetRecord.used) {
+                throw new HttpError(400, "This reset token has already been used");
+            }
+
+            const user = await userRepository.getUserById(resetRecord.userId.toString());
             if (!user) {
                 throw new HttpError(404, "User not found");
             }
+
             const hashedPassword = await bcryptjs.hash(newPassword, 10);
-            await userRepository.updateUser(userId, { password: hashedPassword });
-            return user;
-        } catch (error) {
+            await userRepository.updateUser(user._id.toString(), { password: hashedPassword });
+            await passwordResetRepository.markAsUsed(resetRecord._id);
+            
+            return { message: "Password has been reset successfully." };
+        } catch (error: any) {
+            if (error instanceof HttpError) {
+                throw error;
+            }
             throw new HttpError(400, "Invalid or expired token");
         }
+    }
+
+    async verifyResetOtp(email: string, otp: string, newPassword: string) {
+        if (!email || !otp || !newPassword) {
+            throw new HttpError(400, "Email, OTP, and new password are required");
+        }
+
+        const filteredEmail = email.trim();
+        const otpHash = hashOtp(otp);
+        const resetRecord = await passwordResetRepository.findByOtp(filteredEmail, otpHash);
+
+        if (!resetRecord) {
+            // Decrement attempts for failed attempt
+            const record = await passwordResetRepository.findByEmailAndType(filteredEmail, 'otp');
+            if (record && record.attemptsLeft > 0) {
+                await passwordResetRepository.decrementAttempts(record._id);
+            }
+            throw new HttpError(400, "Invalid OTP");
+        }
+
+        if (resetRecord.used) {
+            throw new HttpError(400, "This OTP has already been used");
+        }
+
+        if (resetRecord.attemptsLeft <= 0) {
+            throw new HttpError(400, "OTP attempts exceeded");
+        }
+
+        const user = await userRepository.getUserById(resetRecord.userId.toString());
+        if (!user) {
+            throw new HttpError(404, "User not found");
+        }
+
+        const hashedPassword = await bcryptjs.hash(newPassword, 10);
+        await userRepository.updateUser(user._id.toString(), { password: hashedPassword });
+        await passwordResetRepository.markAsUsed(resetRecord._id);
+
+        return { message: "Password has been reset successfully." };
     }
 
 }
