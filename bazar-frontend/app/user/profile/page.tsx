@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,8 @@ import UpdateForm from "./components/UpdateForm";
 export default async function ProfilePage() {
     const result = await handleWhoAmI();
     if (!result.success) {
-        throw new Error(result.message || "some error occurred");
+        // Redirect to login instead of throwing error
+        redirect('/login');
     }
 
     if (!result.data) {
