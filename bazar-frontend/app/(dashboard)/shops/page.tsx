@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Store } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ShopCard from "./_components/ShopCard";
 import ShopSearch from "./_components/ShopSearch";
@@ -40,10 +41,23 @@ export default function ShopsPage() {
     const [categories, setCategories] = useState<any[]>([]);
     const [userReviews, setUserReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const totalPages = Math.max(1, Math.ceil(filteredShops.length / itemsPerPage));
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedShops = filteredShops.slice(startIndex, endIndex);
 
     useEffect(() => {
         loadShopsAndCategories();
     }, []);
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(totalPages);
+        }
+    }, [currentPage, totalPages]);
 
     const loadShopsAndCategories = async () => {
         try {
@@ -143,6 +157,7 @@ export default function ShopsPage() {
         }
 
         setFilteredShops(filtered);
+        setCurrentPage(1);
     };
 
     return (
@@ -180,7 +195,7 @@ export default function ShopsPage() {
                     </Card>
                 ) : (
                     <div className="space-y-0">
-                        {filteredShops.map((shop) => (
+                        {paginatedShops.map((shop) => (
                             <div key={shop._id} className="pb-5 last:pb-0">
                                 <ShopCard
                                     shopId={shop.shopId || shop._id}
@@ -204,8 +219,33 @@ export default function ShopsPage() {
 
                 {/* Results Count */}
                 {filteredShops.length > 0 && (
-                    <div className="text-center text-white/80 py-4">
-                        <p>Showing {filteredShops.length} of {shops.length} shops</p>
+                    <div className="space-y-3 py-4 text-center text-white/80">
+                        <p>
+                            Showing {startIndex + 1}-{Math.min(endIndex, filteredShops.length)} of {filteredShops.length} shops
+                        </p>
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 disabled:opacity-50"
+                                >
+                                    Previous
+                                </Button>
+                                <span className="text-sm text-white/90">
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 disabled:opacity-50"
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

@@ -31,10 +31,22 @@ export default function DashboardPage() {
     const [shops, setShops] = useState<Shop[]>([]);
     const [userReviews, setUserReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const totalPages = Math.max(1, Math.ceil(shops.length / itemsPerPage));
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedShops = shops.slice(startIndex, endIndex);
 
     useEffect(() => {
         loadShops();
     }, []);
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(totalPages);
+        }
+    }, [currentPage, totalPages]);
 
     const loadShops = async () => {
         try {
@@ -45,7 +57,8 @@ export default function DashboardPage() {
 
             if (shopsResult.success) {
                 const data = Array.isArray(shopsResult.data) ? shopsResult.data : shopsResult.data?.data || [];
-                setShops(data.slice(0, 5)); // Show 5 featured shops
+                setShops(data);
+                setCurrentPage(1);
             }
 
             if (reviewsResult.success) {
@@ -110,7 +123,7 @@ export default function DashboardPage() {
                     </Card>
                 ) : (
                     <div className="space-y-0">
-                        {shops.map((shop) => (
+                        {paginatedShops.map((shop) => (
                             <div key={shop._id} className="pb-5 last:pb-0">
                                 <ShopCard
                                     shopId={shop.shopId || shop._id}
@@ -129,6 +142,36 @@ export default function DashboardPage() {
                                 />
                             </div>
                         ))}
+                        {shops.length > 0 && (
+                            <div className="space-y-3 py-4 text-center text-white/85">
+                                <p>
+                                    Showing {startIndex + 1}-{Math.min(endIndex, shops.length)} of {shops.length} shops
+                                </p>
+                                {totalPages > 1 && (
+                                    <div className="flex items-center justify-center gap-3">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                                            disabled={currentPage === 1}
+                                            className="border-white/30 bg-white/10 text-white hover:bg-white/20 disabled:opacity-50"
+                                        >
+                                            Previous
+                                        </Button>
+                                        <span className="text-sm text-white/90">
+                                            Page {currentPage} of {totalPages}
+                                        </span>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                                            disabled={currentPage === totalPages}
+                                            className="border-white/30 bg-white/10 text-white hover:bg-white/20 disabled:opacity-50"
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
