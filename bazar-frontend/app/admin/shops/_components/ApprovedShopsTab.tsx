@@ -686,13 +686,35 @@ export default function ApprovedShopsTab() {
                                                             shopReviews.map((review: any) => (
                                                                 <div key={review._id} className="border rounded-lg p-4 space-y-2">
                                                                     <div className="flex items-start justify-between">
-                                                                        <div>
-                                                                            <p className="font-medium text-sm">{review.reviewedBy?.fullName || 'Anonymous'}</p>
-                                                                            <div className="flex items-center gap-1">
-                                                                                {[...Array(5)].map((_, i) => (
-                                                                                    <span key={i} className={i < (review.starNum || review.rating || 0) ? "text-yellow-400" : "text-gray-300"}>★</span>
-                                                                                ))}
-                                                                                <span className="text-xs text-gray-600 ml-2">({review.starNum || review.rating || 0}/5)</span>
+                                                                        <div className="flex items-start gap-3">
+                                                                            <div className="h-9 w-9 overflow-hidden rounded-full border bg-gray-100">
+                                                                                {review.reviewedBy?.profilePic ? (
+                                                                                    <img
+                                                                                        src={API_CONFIG.getImageUrl(review.reviewedBy.profilePic)}
+                                                                                        alt={review.reviewedBy?.fullName || "Reviewer"}
+                                                                                        className="h-full w-full object-cover"
+                                                                                    />
+                                                                                ) : (
+                                                                                    <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-gray-600">
+                                                                                        {(review.reviewedBy?.fullName || "AN").slice(0, 2).toUpperCase()}
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div>
+                                                                                <p className="font-medium text-sm">{review.reviewedBy?.fullName || 'Anonymous'}</p>
+                                                                                <p className="text-xs text-gray-500 mb-1">
+                                                                                    {review.reviewedBy?.sellerStatus === "approved" ||
+                                                                                    review.reviewedBy?.roleId?.roleName?.toLowerCase?.() === "seller" ||
+                                                                                    review.reviewedBy?.roleId?.toLowerCase?.() === "seller"
+                                                                                        ? "Seller"
+                                                                                        : "User"}
+                                                                                </p>
+                                                                                <div className="flex items-center gap-1">
+                                                                                    {[...Array(5)].map((_, i) => (
+                                                                                        <span key={i} className={i < (review.starNum || review.rating || 0) ? "text-yellow-400" : "text-gray-300"}>★</span>
+                                                                                    ))}
+                                                                                    <span className="text-xs text-gray-600 ml-2">({review.starNum || review.rating || 0}/5)</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                         <AlertDialog>

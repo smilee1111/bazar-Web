@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 
@@ -36,15 +36,26 @@ function MapInitializer() {
 }
 
 export default function ShopLocationMap({ lat, lng, height = 280, className }: ShopLocationMapProps) {
+    const [mounted, setMounted] = useState(false);
     const position = useMemo<[number, number]>(() => [lat, lng], [lat, lng]);
+    const mapKey = useMemo(() => `shop-map-${lat}-${lng}-${height}`, [lat, lng, height]);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return <div className={className} style={{ height: `${height}px`, width: "100%" }} />;
+    }
 
     return (
-        <div className={className} style={{ height: `${height}px`, width: '100%' }}>
+        <div className={className} style={{ height: `${height}px`, width: "100%" }}>
             <MapContainer
+                key={mapKey}
                 center={position}
                 zoom={15}
                 scrollWheelZoom={false}
-                style={{ height: '100%', width: '100%' }}
+                style={{ height: "100%", width: "100%" }}
                 className="rounded-2xl border border-[#efe7d6]"
                 zoomControl={true}
             >

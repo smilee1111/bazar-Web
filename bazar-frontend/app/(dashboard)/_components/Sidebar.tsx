@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store, Settings, ChevronUp, MapPin, ChevronLeft, ChevronRight, Bell } from "lucide-react";
+import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store, Settings, ChevronUp, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -24,7 +24,6 @@ const userNavItems = [
     { label: "Browse Shops", href: "/shops", icon: MapPin },
     { label: "Saved Shops", href: "/dashboard/saved-shops", icon: Bookmark },
     { label: "Favourites", href: "/dashboard/favourites", icon: Heart },
-    { label: "Notifications", href: "/user/notifications", icon: Bell },
     { label: "Profile", href: "/profile", icon: UserRound },
 ];
 

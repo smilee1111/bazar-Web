@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 
@@ -46,18 +46,32 @@ function MapInitializer() {
 }
 
 export default function RouteMap({ from, to, geometry, height = 320 }: RouteMapProps) {
+    const [mounted, setMounted] = useState(false);
     const polyline = useMemo(() => {
         const coords = geometry?.coordinates || [];
         return coords.map(([lng, lat]) => [lat, lng]) as [number, number][];
     }, [geometry]);
+    const mapKey = useMemo(
+        () => `route-map-${from.lat}-${from.lng}-${to.lat}-${to.lng}-${height}-${polyline.length}`,
+        [from.lat, from.lng, to.lat, to.lng, height, polyline.length]
+    );
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return <div style={{ height: `${height}px`, width: "100%" }} />;
+    }
 
     return (
-        <div style={{ height: `${height}px`, width: '100%' }}>
+        <div style={{ height: `${height}px`, width: "100%" }}>
             <MapContainer
+                key={mapKey}
                 center={[to.lat, to.lng]}
                 zoom={14}
                 scrollWheelZoom={false}
-                style={{ height: '100%', width: '100%' }}
+                style={{ height: "100%", width: "100%" }}
                 className="rounded-2xl"
                 zoomControl={true}
             >

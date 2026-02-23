@@ -31,6 +31,9 @@ interface Review {
         _id?: string;
         fullName?: string;
         email?: string;
+        profilePic?: string;
+        sellerStatus?: string;
+        roleId?: { roleName?: string } | string;
     } | string;
     starNum: number;
     reviewText?: string;
@@ -108,6 +111,21 @@ export default function ShopDetailPage() {
             return "Customer";
         }
         return "Anonymous";
+    };
+
+    const getReviewerRole = (reviewedBy?: Review["reviewedBy"]) => {
+        if (!reviewedBy || typeof reviewedBy === "string") return "User";
+        const roleSource = typeof reviewedBy.roleId === "string"
+            ? reviewedBy.roleId
+            : reviewedBy.roleId?.roleName;
+        if (reviewedBy.sellerStatus === "approved") return "Seller";
+        if (typeof roleSource === "string" && roleSource.toLowerCase() === "seller") return "Seller";
+        return "User";
+    };
+
+    const getReviewerProfilePic = (reviewedBy?: Review["reviewedBy"]) => {
+        if (!reviewedBy || typeof reviewedBy === "string") return "";
+        return reviewedBy.profilePic || "";
     };
 
     const formatDate = (value?: string) => {
@@ -840,6 +858,7 @@ export default function ShopDetailPage() {
                                                 </div>
                                             ) : routeData && userLocation ? (
                                                 <RouteMap
+                                                    key={`route-${shop.shopId || shop._id}-${userLocation.lat}-${userLocation.lng}`}
                                                     from={userLocation}
                                                     to={{
                                                         lat: shop.location.coordinates[1],
@@ -850,6 +869,7 @@ export default function ShopDetailPage() {
                                                 />
                                             ) : (
                                                 <ShopLocationMap
+                                                    key={`shop-${shop.shopId || shop._id}`}
                                                     lat={shop.location.coordinates[1]}
                                                     lng={shop.location.coordinates[0]}
                                                     height={320}
@@ -914,11 +934,32 @@ export default function ShopDetailPage() {
                                             key={review._id}
                                             className="border-l-2 border-[#8f7e4f] pl-4 py-4 bg-white/5 p-4 rounded-lg hover:bg-white/10 transition"
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-white font-semibold">
-                                                    {getReviewerName(review.reviewedBy, review.userId)}
-                                                </span>
-                                                <span className="text-white/60 text-sm">
+                                            <div className="mb-2 flex items-center justify-between gap-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/20 bg-white/10">
+                                                        {getReviewerProfilePic(review.reviewedBy) ? (
+                                                            <Image
+                                                                src={API_CONFIG.getImageUrl(getReviewerProfilePic(review.reviewedBy))}
+                                                                alt={getReviewerName(review.reviewedBy, review.userId)}
+                                                                fill
+                                                                className="object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-white/80">
+                                                                {getReviewerName(review.reviewedBy, review.userId).slice(0, 2).toUpperCase()}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-white">
+                                                            {getReviewerName(review.reviewedBy, review.userId)}
+                                                        </p>
+                                                        <p className="text-xs text-white/60">
+                                                            {getReviewerRole(review.reviewedBy)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <span className="text-sm text-white/60">
                                                     {formatDate(review.createdAt)}
                                                 </span>
                                             </div>

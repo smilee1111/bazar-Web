@@ -76,7 +76,13 @@ interface ShopReview {
     reviewId?: string;
     reviewName?: string;
     shopId?: string;
-    reviewedBy?: string | { fullName?: string; email?: string };
+    reviewedBy?: string | {
+        fullName?: string;
+        email?: string;
+        profilePic?: string;
+        sellerStatus?: string;
+        roleId?: { roleName?: string } | string;
+    };
     starNum?: number;
     likesCount?: number;
     dislikeCount?: number;
@@ -433,14 +439,19 @@ export default function MyShopPage() {
 
     const getReviewerMeta = (reviewedBy?: ShopReview["reviewedBy"]) => {
         if (!reviewedBy) {
-            return { name: "Anonymous", detail: "" };
+            return { name: "Anonymous", detail: "User", profilePic: "" };
         }
         if (typeof reviewedBy === "string") {
-            const shortId = reviewedBy.slice(-6).toUpperCase();
-            return { name: "Customer", detail: shortId ? `ID ${shortId}` : "" };
+            return { name: "Customer", detail: "User", profilePic: "" };
         }
         const name = reviewedBy.fullName || (typeof reviewedBy.email === "string" ? reviewedBy.email.split("@")[0] : "Customer");
-        return { name, detail: reviewedBy.email || "" };
+        const roleSource = typeof reviewedBy.roleId === "string"
+            ? reviewedBy.roleId
+            : reviewedBy.roleId?.roleName;
+        const detail = reviewedBy.sellerStatus === "approved" || roleSource?.toLowerCase() === "seller"
+            ? "Seller"
+            : "User";
+        return { name, detail, profilePic: reviewedBy.profilePic || "" };
     };
 
     const formatDate = (value?: string) => {
@@ -898,7 +909,10 @@ export default function MyShopPage() {
                                             <div className="flex flex-wrap items-center justify-between gap-4">
                                                 <div className="flex items-center gap-3">
                                                     <Avatar>
-                                                        <AvatarImage src="" alt={reviewer.name} />
+                                                        <AvatarImage
+                                                            src={reviewer.profilePic ? API_CONFIG.getImageUrl(reviewer.profilePic) : undefined}
+                                                            alt={reviewer.name}
+                                                        />
                                                         <AvatarFallback>{initials || "CU"}</AvatarFallback>
                                                     </Avatar>
                                                     <div>
@@ -906,7 +920,7 @@ export default function MyShopPage() {
                                                             {reviewer.name}
                                                         </div>
                                                         <div className="text-xs text-[#7a6b45]">
-                                                            {reviewer.detail || "Verified visitor"}
+                                                            {reviewer.detail || "User"}
                                                         </div>
                                                     </div>
                                                 </div>

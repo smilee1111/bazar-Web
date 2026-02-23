@@ -7,6 +7,11 @@ import { OsrmService } from "../maps/osrm.service";
 
 const shopRepository = new ShopRepository();
 const osrmService = new OsrmService();
+const reviewerPopulate = {
+    path: "reviewedBy",
+    select: "fullName email profilePic roleId sellerStatus",
+    populate: { path: "roleId", select: "roleName" },
+};
 
 const mapReview = (review: any) => ({
     ...review,
@@ -41,7 +46,7 @@ export class PublicShopService {
         const [photos, reviews, details] = await Promise.all([
             ShopPhotoModel.find({ shopId: { $in: shopIds }, isActive: true }).lean(),
             ShopReviewModel.find({ shopId: { $in: shopIds }, isActive: true })
-                .populate("reviewedBy", "fullName email")
+                .populate(reviewerPopulate)
                 .lean(),
             ShopDetailModel.find({ shopId: { $in: shopIds } }).lean(),
         ]);
@@ -131,7 +136,7 @@ export class PublicShopService {
         const [photos, reviews, details] = await Promise.all([
             ShopPhotoModel.find({ shopId, isActive: true }).lean(),
             ShopReviewModel.find({ shopId, isActive: true })
-                .populate("reviewedBy", "fullName email")
+                .populate(reviewerPopulate)
                 .lean(),
             ShopDetailModel.find({ shopId }).lean(),
         ]);
