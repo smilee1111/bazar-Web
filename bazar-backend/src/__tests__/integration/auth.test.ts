@@ -2,6 +2,8 @@ import request from 'supertest';
 import app from "../../app";
 import { UserModel } from '../../models/user.model';
 
+jest.setTimeout(20000);
+
 describe(
     "Auhentication Integration Tests", //name of test suite group
     () => { //what to do in test

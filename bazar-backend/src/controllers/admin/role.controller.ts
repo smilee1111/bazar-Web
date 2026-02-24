@@ -37,7 +37,12 @@ export class AdminRoleController {
         console.log('Collection:', mongoose.connection.collections.roles?.collectionName);
     
             // Check if user is authenticated and is admin
-            const isAdmin = req.user && req.user.roleId?.toString() === 'role_admin_001';
+            const role = req.user?.roleId as any;
+            const isAdmin = !!req.user && (
+                (typeof role === 'string' && role === 'role_admin_001') ||
+                role?.roleId === 'role_admin_001' ||
+                role?.roleName === 'admin'
+            );
             
             const allRoles = await roleService.getAllRoles();
              console.log('Roles count:', allRoles?.length);

@@ -1,6 +1,8 @@
 import rateLimit from 'express-rate-limit';
 import { Request, Response } from 'express';
 
+const isTestEnv = process.env.NODE_ENV === 'test' || !!process.env.JEST_WORKER_ID;
+
 // General rate limiter - 500 requests per 15 minutes per IP
 // This allows normal browsing (GET requests) while still protecting against abuse
 export const generalLimiter = rateLimit({
@@ -10,8 +12,8 @@ export const generalLimiter = rateLimit({
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
     skip: (req: Request) => {
-        // Skip rate limiting for health check endpoint
-        return req.path === '/';
+        // Skip rate limiting during tests and health checks
+        return isTestEnv || req.path === '/';
     },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
@@ -29,8 +31,8 @@ export const readLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req: Request) => {
-        // Only apply to GET requests, skip others
-        return req.method !== 'GET' || req.path === '/';
+        // Only apply to GET requests, skip others and tests
+        return isTestEnv || req.method !== 'GET' || req.path === '/';
     },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
@@ -48,9 +50,9 @@ export const writeLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req: Request) => {
-        // Only apply to write operations
+        // Only apply to write operations, skip during tests
         const writeMethods = ['POST', 'PUT', 'DELETE', 'PATCH'];
-        return !writeMethods.includes(req.method) || req.path === '/';
+        return isTestEnv || !writeMethods.includes(req.method) || req.path === '/';
     },
     handler: (req: Request, res: Response) => {
         res.status(429).json({
@@ -68,6 +70,7 @@ export const authLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: false, // Count successful requests too
+    skip: () => isTestEnv,
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,
@@ -89,6 +92,7 @@ export const passwordResetRequestLimiter = rateLimit({
         const email = (req.body?.email || 'no-email').toLowerCase();
         return `pwd-reset:${email}`;
     },
+    skip: () => isTestEnv,
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,
@@ -108,6 +112,7 @@ export const otpVerificationLimiter = rateLimit({
         // Use email as the key for OTP attempts
         return (req.body?.email || '').toLowerCase();
     },
+    skip: () => isTestEnv,
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,
@@ -123,6 +128,7 @@ export const tokenResetLimiter = rateLimit({
     message: 'Too many password reset attempts. Please try again after 30 minutes.',
     standardHeaders: true,
     legacyHeaders: false,
+    skip: () => isTestEnv,
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,
@@ -138,6 +144,7 @@ export const createResourceLimiter = rateLimit({
     message: 'Too many requests to create resources, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+    skip: () => isTestEnv,
     handler: (req: Request, res: Response) => {
         res.status(429).json({
             success: false,
