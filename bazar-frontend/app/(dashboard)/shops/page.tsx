@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ShopCard from "./_components/ShopCard";
 import ShopSearch from "./_components/ShopSearch";
-import { handleGetPublicShops } from "@/lib/actions/shop-action";
+import { handleGetNearestShops, handleGetPublicShops } from "@/lib/actions/shop-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { handleGetUserReviews } from "@/lib/actions/review-action";
+import { toast } from "react-toastify";
 
 interface Shop {
     _id: string;
@@ -33,6 +34,7 @@ interface ShopFilters {
     minPrice: string;
     maxPrice: string;
     minRating: string;
+    nearestOnly?: boolean;
 }
 
 export default function ShopsPage() {
@@ -98,6 +100,23 @@ export default function ShopsPage() {
     };
 
     const handleFiltersChange = (filters: ShopFilters) => {
+        console.log("Selected category for nearest:", filters.category);
+        if (filters.nearestOnly && filters.category) {
+        // Get user location (prompt if needed)
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const result = await handleGetNearestShops(filters.category, lat, lng);
+            if (result.success) {
+                setFilteredShops(result.data);
+                setCurrentPage(1);
+            } else {
+                toast.error(result?.message || "Could not fetch nearest shops.");
+            }
+        }, (err) => {
+             toast.error("Location access denied. Showing all shops instead.");
+        });
+    } else {
         let filtered = [...shops];
 
         // Search filter
@@ -113,9 +132,15 @@ export default function ShopsPage() {
         // Category filter
         if (filters.category) {
             filtered = filtered.filter((shop) => {
+                // Shop may have categoryId as string or as object with _id/categoryId
                 const catId = typeof shop.categoryId === "string" ? shop.categoryId : shop.categoryId?._id;
                 const catAltId = shop.categoryId?.categoryId;
-                return catId === filters.category || catAltId === filters.category;
+                // Also check if shop.categoryId matches the selected category's _id
+                return (
+        String(catId) === String(filters.category) ||
+        String(catAltId) === String(filters.category) ||
+        String(shop.categoryId) === String(filters.category)
+    );
             });
         }
 
@@ -158,6 +183,7 @@ export default function ShopsPage() {
 
         setFilteredShops(filtered);
         setCurrentPage(1);
+    }      
     };
 
     return (
@@ -195,8 +221,14 @@ export default function ShopsPage() {
                     </Card>
                 ) : (
                     <div className="space-y-0">
-                        {paginatedShops.map((shop) => (
-                            <div key={shop._id} className="pb-5 last:pb-0">
+                        {paginatedShops.map((shop) => {
+                            const categoryName =
+                           typeof shop.categoryId === "object"
+                            ? shop.categoryId.name
+                            : categories.find(cat => cat._id === shop.categoryId)?.name || "";               
+                            console.log("Rendering ShopCard for", shop.shopName, "categoryId:", shop.categoryId, "categoryName:", categoryName);;
+                            return(
+                                <div key={shop._id} className="pb-5 last:pb-0">
                                 <ShopCard
                                     shopId={shop.shopId || shop._id}
                                     shopName={shop.shopName}
@@ -204,6 +236,7 @@ export default function ShopsPage() {
                                     description={shop.description}
                                     contactNumber={shop.contactNumber}
                                     categoryId={shop.categoryId}
+                                    categoryName={categoryName}
                                     priceRange={shop.priceRange}
                                     photos={shop.photos || []}
                                     reviews={shop.reviews || []}
@@ -211,9 +244,11 @@ export default function ShopsPage() {
                                     avgRating={shop.avgRating}
                                     reviewCount={shop.reviewCount}
                                     isReviewed={isShopReviewed(shop.shopId || shop._id)}
+                                    
                                 />
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
 

@@ -181,4 +181,12 @@ export class PublicShopService {
             geometry: route.geometry,
         };
     }
+
+    async findNearestShopsByCategory(
+        categoryId: string,
+        userLocation: { lat: number; lng: number },
+        limit = 10
+    ) {
+        return shopRepository.findNearestByCategory(categoryId, userLocation, limit);
+    }
 }

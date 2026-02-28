@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { handleGetAllCategories } from "@/lib/actions/category-action";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -70,8 +71,7 @@ interface Shop {
     avgRating?: number;
     ownerId?: string | { _id: string };
 }
-
-export default function ShopDetailPage() {
+export default function ShopDetailsPage() {
     const params = useParams();
     const shopId = params?.shopId as string;
     const { user } = useAuth();
@@ -80,6 +80,7 @@ export default function ShopDetailPage() {
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [categories, setCategories] = useState<any[]>([]);
     const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     const [isReviewed, setIsReviewed] = useState(false);
@@ -155,6 +156,20 @@ export default function ShopDetailPage() {
             loadShopDetails();
         }
     }, [shopId]);
+
+    useEffect(() => {
+        // Fetch categories on mount
+        const fetchCategories = async () => {
+            const result = await handleGetAllCategories();
+            if (result.success) {
+                const catsData = Array.isArray(result.data)
+                    ? result.data
+                    : result.data?.data || [];
+                setCategories(catsData);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const loadShopDetails = async () => {
         try {
@@ -602,6 +617,12 @@ export default function ShopDetailPage() {
         ? (reviews.reduce((sum, r) => sum + (r.starNum || 0), 0) / reviews.length).toFixed(1)
         : "0";
 
+    // Resolve category name
+    const categoryName =
+        typeof shop?.categoryId === "object"
+            ? shop?.categoryId?.name
+            : categories.find(cat => cat._id === shop?.categoryId)?.name || "";
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-[#2c2416]/95 to-[#1a1812] flex items-center justify-center">
@@ -799,7 +820,14 @@ export default function ShopDetailPage() {
                                             <span className="text-white/60 ml-2">({reviews.length} reviews)</span>
                                         </div>
                                     </div>
-
+                                    {/* Category */}
+                                    {categoryName && (
+                                        <div className="mb-2">
+                                            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                                                {categoryName}
+                                            </span>
+                                        </div>
+                                    )}
                                     {/* Description */}
                                     {shop.description && (
                                         <p className="text-white/80 text-lg leading-relaxed">

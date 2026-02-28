@@ -11,6 +11,7 @@ import { handleGetPublicShops } from "@/lib/actions/shop-action";
 import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { handleGetSavedShops } from "@/lib/actions/savedShop-action";
 import { handleGetFavourites } from "@/lib/actions/favourite-action";
+import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { API_CONFIG } from "@/lib/api/config";
 import { useAuth } from "../../context/AuthContext";
 import ShopCard from "../shops/_components/ShopCard";
@@ -46,6 +47,7 @@ export default function DashboardPage() {
     const [userReviews, setUserReviews] = useState<UserReview[]>([]);
     const [savedShopsCount, setSavedShopsCount] = useState(0);
     const [favouritesCount, setFavouritesCount] = useState(0);
+    const [categories, setCategories] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const roleRaw = typeof user?.role === "string"
         ? user.role
@@ -406,8 +408,13 @@ export default function DashboardPage() {
                     </Card>
                 ) : (
                     <div className="space-y-0">
-                        {topRatedShops.map((shop) => (
-                            <div key={shop._id} className="pb-5 last:pb-0">
+                        {topRatedShops.map((shop) => {
+                            const categoryName =
+                           typeof shop.categoryId === "object"
+                            ? shop.categoryId.name
+                            : categories.find(cat => cat._id === shop.categoryId)?.name || ""; 
+                            return(
+                                <div key={shop._id} className="pb-5 last:pb-0">
                                 <ShopCard
                                     shopId={shop.shopId || shop._id}
                                     shopName={shop.shopName}
@@ -415,6 +422,7 @@ export default function DashboardPage() {
                                     description={shop.description}
                                     contactNumber={shop.contactNumber}
                                     categoryId={shop.categoryId}
+                                    categoryName={categoryName}
                                     priceRange={shop.priceRange}
                                     photos={shop.photos || []}
                                     reviews={shop.reviews || []}
@@ -424,7 +432,8 @@ export default function DashboardPage() {
                                     isReviewed={isShopReviewed(shop.shopId || shop._id)}
                                 />
                             </div>
-                        ))}
+                            );              
+                       })}
                     </div>
                 )}
             </div>

@@ -5,6 +5,14 @@ import { RouteToShopQueryDto } from "../../dtos/map.dto";
 
 const publicShopService = new PublicShopService();
 
+
+const NearestShopQueryDto = z.object({
+    categoryId: z.string().min(1),
+    lat: z.coerce.number().min(-90).max(90),
+    lng: z.coerce.number().min(-180).max(180),
+    limit: z.coerce.number().min(1).max(50).optional(),
+});
+
 export class PublicShopController {
     async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
@@ -51,6 +59,24 @@ export class PublicShopController {
             }
 
             return res.status(200).json({ success: true, data: result });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+     async getNearestShops(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = NearestShopQueryDto.safeParse(req.query);
+            if (!parsed.success) {
+                return res.status(400).json({ success: false, message: z.prettifyError(parsed.error) });
+            }
+            const { categoryId, lat, lng, limit } = parsed.data;
+            const shops = await publicShopService.findNearestShopsByCategory(
+                categoryId,
+                { lat, lng },
+                limit
+            );
+            return res.status(200).json({ success: true, data: shops });
         } catch (error) {
             next(error);
         }

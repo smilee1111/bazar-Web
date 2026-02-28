@@ -204,3 +204,25 @@ export const deleteShop = async (id: string) => {
         );
     }
 }
+
+export const getNearestShops = async (
+    categoryId: string,
+    lat: number,
+    lng: number,
+    limit?: number
+) => {
+    try {
+        const response = await axios.get(
+            API.PUBLIC_SHOPS.GET_NEAREST,
+            {
+                params: { categoryId, lat, lng, ...(limit ? { limit } : {}) }
+            }
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message
+            || "Failed to fetch nearest shops"
+        );
+    }
+}

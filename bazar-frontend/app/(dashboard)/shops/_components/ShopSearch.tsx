@@ -20,6 +20,7 @@ interface ShopFilters {
     minPrice: string;
     maxPrice: string;
     minRating: string;
+    nearestOnly?: boolean;
 }
 
 interface ShopSearchProps {
@@ -35,11 +36,12 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
         minPrice: "",
         maxPrice: "",
         minRating: "",
+        nearestOnly: false,
     });
 
     const [showFilters, setShowFilters] = useState(false);
 
-    const handleChange = (field: keyof ShopFilters, value: string) => {
+    const handleChange = (field: keyof ShopFilters, value: string | boolean) => {
         const updatedFilters = {
             ...filters,
             [field]: value,
@@ -56,6 +58,7 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
             minPrice: "",
             maxPrice: "",
             minRating: "",
+            nearestOnly: false,
         };
         setFilters(emptyFilters);
         onFiltersChange(emptyFilters);
@@ -198,7 +201,16 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
                                 ))}
                             </div>
                         </div>
-
+                        <div>
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={filters.nearestOnly || false}
+                                onChange={e => handleChange("nearestOnly", e.target.checked)}
+                            />
+                            Show only nearest shops
+                        </label>
+                    </div>
                         {/* Apply Button */}
                         <div className="flex gap-2 mt-6">
                             <Button

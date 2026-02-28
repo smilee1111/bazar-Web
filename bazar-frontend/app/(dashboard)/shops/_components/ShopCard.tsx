@@ -25,6 +25,7 @@ interface ShopCardProps {
     isFavourited?: boolean;
     isSaved?: boolean;
     isReviewed?: boolean;
+    categoryName?: string;
 }
 
 export default function ShopCard({
@@ -41,12 +42,13 @@ export default function ShopCard({
     isFavourited = false,
     isSaved = false,
     isReviewed = false,
+    categoryName,
 }: ShopCardProps) {
     const [isFav, setIsFav] = useState(isFavourited);
     const [isSavedShop, setIsSavedShop] = useState(isSaved);
     const [isLoadingFav, setIsLoadingFav] = useState(false);
     const [isLoadingSave, setIsLoadingSave] = useState(false);
-
+    
     const handleFavouriteClick = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -140,7 +142,7 @@ export default function ShopCard({
                                 )}
                         </div>
                     </div>
-
+                 
                     {/* Shop Info */}
                     <div className="p-6 flex flex-col justify-between">
                         <div>
@@ -192,8 +194,15 @@ export default function ShopCard({
                                     </button>
                                 </div>
                             </div>
-
-                            {priceRange && (
+                               {categoryName && (
+                                <div className="mb-2">
+                                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                                    {categoryName}
+                                    </span>
+                                </div>
+                                )}
+                                
+                                {priceRange && (
                                 <div className="mb-2">
                                     <span className="rounded-full bg-[#f5efe3] px-3 py-1 text-xs font-semibold text-[#8f7e4f]">
                                         Price {priceRange}

@@ -67,6 +67,7 @@ export const API = {
         GET_FEED: 'shops/public',
         GET_BY_ID: (id: string) => `shops/public/${id}`,
         GET_ROUTE: (id: string) => `shops/public/${id}/route`,
+        GET_NEAREST: 'shops/nearest',
     },
     ADMIN_SHOPS: {
         GET_ALL_SHOPS: 'admin/shops',

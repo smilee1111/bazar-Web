@@ -13,6 +13,11 @@ export interface IShopRepository {
     getAllShops(): Promise<IShop[]>;
     updateShop(id: string, data: Partial<IShop>): Promise<IShop | null>;
     deleteShop(id: string): Promise<boolean | null>;
+    findNearestByCategory(
+        categoryId: string,
+        userLocation: { lat: number; lng: number },
+        limit?: number
+    ): Promise<IShop[]>;
 }
 
 export class ShopRepository implements IShopRepository {
@@ -204,5 +209,30 @@ export class ShopRepository implements IShopRepository {
     async deleteShop(id: string): Promise<boolean | null> {
         const result = await ShopModel.findByIdAndDelete(id);
         return result ? true : null;
+    }
+
+    async findNearestByCategory(
+        categoryId: string,
+        userLocation: { lat: number; lng: number },
+        limit = 10
+    ): Promise<IShop[]> {
+        // Assumes ShopModel.location is a GeoJSON Point: { type: "Point", coordinates: [lng, lat] }
+        const shops = await ShopModel.find({
+            categoryId,
+            isActive: true,
+            location: {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [userLocation.lng, userLocation.lat],
+                    },
+                    $maxDistance: 20000 // 10km
+                }
+            }
+        })
+        .limit(limit)
+        .lean();
+
+        return shops as IShop[];
     }
 }
