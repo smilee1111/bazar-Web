@@ -51,21 +51,27 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
     };
 
     const handleReset = () => {
-        const emptyFilters = {
-            search: "",
-            category: "",
-            location: "",
-            minPrice: "",
-            maxPrice: "",
-            minRating: "",
-            nearestOnly: false,
-        };
-        setFilters(emptyFilters);
-        onFiltersChange(emptyFilters);
-        setShowFilters(false);
+    const emptyFilters: ShopFilters = {
+        search: "",
+        category: "",
+        location: "",
+        minPrice: "",
+        maxPrice: "",
+        minRating: "",
+        nearestOnly: false,
     };
+    setFilters(emptyFilters);
+    onFiltersChange(emptyFilters);
+    setShowFilters(false);
+};
 
-    const activeFilterCount = Object.values(filters).filter((v) => v !== "").length;
+   
+    const activeFilterCount = Object.entries(filters).filter(([key, value]) => {
+        // Skip nearestOnly from count unless it's true
+        if (key === 'nearestOnly') return value === true;
+        // For strings, check if not empty
+        return value !== "" && value !== null && value !== undefined;
+    }).length;
 
     return (
         <div className="space-y-4">

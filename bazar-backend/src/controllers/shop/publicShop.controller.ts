@@ -41,7 +41,10 @@ export class PublicShopController {
             const { shopId } = req.params;
             const parsed = RouteToShopQueryDto.safeParse(req.query);
             if (!parsed.success) {
-                return res.status(400).json({ success: false, message: z.prettifyError(parsed.error) });
+                const errorMessages = parsed.error.issues
+                    .map(err => `${err.path.join('.')}: ${err.message}`)
+                    .join('; ');
+                return res.status(400).json({ success: false, message: `Validation error: ${errorMessages}` });
             }
 
             const result = await publicShopService.getRouteToShop(
@@ -68,7 +71,10 @@ export class PublicShopController {
         try {
             const parsed = NearestShopQueryDto.safeParse(req.query);
             if (!parsed.success) {
-                return res.status(400).json({ success: false, message: z.prettifyError(parsed.error) });
+                const errorMessages = parsed.error.issues
+                    .map(err => `${err.path.join('.')}: ${err.message}`)
+                    .join('; ');
+                return res.status(400).json({ success: false, message: `Validation error: ${errorMessages}` });
             }
             const { categoryId, lat, lng, limit } = parsed.data;
             const shops = await publicShopService.findNearestShopsByCategory(

@@ -100,24 +100,47 @@ export default function ShopsPage() {
     };
 
     const handleFiltersChange = (filters: ShopFilters) => {
-        console.log("Selected category for nearest:", filters.category);
         if (filters.nearestOnly && filters.category) {
-        // Get user location (prompt if needed)
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            const result = await handleGetNearestShops(filters.category, lat, lng);
-            if (result.success) {
-                setFilteredShops(result.data);
-                setCurrentPage(1);
-            } else {
-                toast.error(result?.message || "Could not fetch nearest shops.");
-            }
-        }, (err) => {
-             toast.error("Location access denied. Showing all shops instead.");
-        });
-    } else {
-        let filtered = [...shops];
+            // Get user location for nearest shops search
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                toast.info("Finding nearest shops...", { autoClose: 2000 });
+                
+                const result = await handleGetNearestShops(filters.category, lat, lng);
+                if (result.success) {
+                    const nearestShops = result.data || [];
+                    setFilteredShops(nearestShops);
+                    setCurrentPage(1);
+                    if (nearestShops.length === 0) {
+                        toast.warn("No shops found in this category within 10km. Try expanding your search.");
+                    } else {
+                        toast.success(`Found ${nearestShops.length} nearest shop(s)`);
+                    }
+                } else {
+                    toast.error(result?.message || "Could not fetch nearest shops.");
+                }
+            }, (err) => {
+                 toast.error("Location access denied. Please enable location access in your browser.");
+                 // Fall back to category filtering only
+                 let filtered = [...shops];
+                 if (filters.category) {
+                     filtered = filtered.filter((shop) => {
+                         const catId = typeof shop.categoryId === "string" ? shop.categoryId : shop.categoryId?._id;
+                         const catAltId = shop.categoryId?.categoryId;
+                         return (
+                             String(catId) === String(filters.category) ||
+                             String(catAltId) === String(filters.category) ||
+                             String(shop.categoryId) === String(filters.category)
+                         );
+                     });
+                 }
+                 setFilteredShops(filtered);
+                 setCurrentPage(1);
+            });
+        } else {
+            // Client-side filtering for search, category, location, price, rating
+            let filtered = [...shops];
 
         // Search filter
         if (filters.search) {
