@@ -319,7 +319,7 @@ export default function ApprovedShopsTab() {
         return (
             <div className="flex items-center justify-center py-8">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8f7e4f] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B6F47] mx-auto"></div>
                     <p className="mt-2 text-sm text-gray-600">Loading shops...</p>
                 </div>
             </div>
@@ -357,7 +357,7 @@ export default function ApprovedShopsTab() {
                 </div>
                 <Button
                     onClick={openCreateDialog}
-                    className="flex items-center gap-2 bg-[#8f7e4f] text-white hover:bg-[#7b6b43]"
+                    className="flex items-center gap-2 bg-[#8B6F47] text-white hover:bg-[#7D5A3F]"
                 >
                     <Plus className="h-4 w-4" />
                     Create Shop
@@ -486,7 +486,7 @@ export default function ApprovedShopsTab() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredShops.map((shop) => (
-                        <Card key={shop._id} className="hover:shadow-md transition-shadow bg-white/95 border border-[#e8e1cf]">
+                        <Card key={shop._id} className="hover:shadow-md transition-shadow bg-white border border-[#e8e1cf]">
                             <CardHeader className="pb-3">
                                 <div className="flex items-start justify-between">
                                     <div className="space-y-1">
@@ -676,7 +676,7 @@ export default function ApprovedShopsTab() {
                                                     <TabsContent value="reviews" className="space-y-4">
                                                         {detailsLoading ? (
                                                             <div className="flex justify-center py-8">
-                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8f7e4f]"></div>
+                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8B6F47]"></div>
                                                             </div>
                                                         ) : shopReviews.length === 0 ? (
                                                             <div className="text-center py-8 text-sm text-gray-500">
@@ -762,7 +762,7 @@ export default function ApprovedShopsTab() {
                                                     <TabsContent value="photos" className="space-y-4">
                                                         {detailsLoading ? (
                                                             <div className="flex justify-center py-8">
-                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8f7e4f]"></div>
+                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8B6F47]"></div>
                                                             </div>
                                                         ) : shopPhotos.length === 0 ? (
                                                             <div className="text-center py-8 text-sm text-gray-500">
@@ -831,7 +831,7 @@ export default function ApprovedShopsTab() {
                                                     <TabsContent value="details" className="space-y-4">
                                                         {detailsLoading ? (
                                                             <div className="flex justify-center py-8">
-                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8f7e4f]"></div>
+                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8B6F47]"></div>
                                                             </div>
                                                         ) : shopDetails.length === 0 ? (
                                                             <div className="text-center py-8 text-sm text-gray-500">

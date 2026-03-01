@@ -114,19 +114,19 @@ export default function ShopCard({
             <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer bg-white border-0">
                 <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-0">
                     {/* Photo Collage */}
-                    <div className="p-4 bg-gradient-to-br from-[#e6d8be] to-[#d4c5a0]">
+                    <div className="p-4 bg-gradient-to-br from-[#F5EFE7] to-[#d4c5a0]">
                         <div className="grid grid-cols-4 grid-rows-2 gap-2 h-64">
                             {collagePhotos[0]
                                 ? renderPhotoTile(collagePhotos[0], "col-span-2 row-span-2")
                                 : (
-                                    <div className="col-span-2 row-span-2 rounded-xl bg-white/70 flex items-center justify-center text-[#8f7e4f] text-sm">
+                                    <div className="col-span-2 row-span-2 rounded-xl bg-white/70 flex items-center justify-center text-[#8B6F47] text-sm">
                                         No photos yet
                                     </div>
                                 )}
                             {collagePhotos[1]
                                 ? renderPhotoTile(collagePhotos[1], "col-span-2 row-span-1")
                                 : (
-                                    <div className="col-span-2 row-span-1 rounded-xl bg-white/70 flex items-center justify-center text-[#8f7e4f] text-xs">
+                                    <div className="col-span-2 row-span-1 rounded-xl bg-white/70 flex items-center justify-center text-[#8B6F47] text-xs">
                                         No photos yet
                                     </div>
                                 )}
@@ -204,7 +204,7 @@ export default function ShopCard({
                                 
                                 {priceRange && (
                                 <div className="mb-2">
-                                    <span className="rounded-full bg-[#f5efe3] px-3 py-1 text-xs font-semibold text-[#8f7e4f]">
+                                    <span className="rounded-full bg-[#f5efe3] px-3 py-1 text-xs font-semibold text-[#8B6F47]">
                                         Price {priceRange}
                                     </span>
                                 </div>
@@ -233,7 +233,7 @@ export default function ShopCard({
                                         </span>
                                     ))}
                                 </div>
-                                <span className="text-sm font-semibold text-[#8f7e4f]">{avgReviewRating}</span>
+                                <span className="text-sm font-semibold text-[#8B6F47]">{avgReviewRating}</span>
                                 <span className="text-xs text-gray-600">({resolvedReviewCount})</span>
                             </div>
 
@@ -245,14 +245,14 @@ export default function ShopCard({
 
                             <div className="mt-4 space-y-2">
                                 <div className="flex items-start gap-2">
-                                    <MapPin className="h-4 w-4 text-[#8f7e4f] mt-0.5 flex-shrink-0" />
+                                    <MapPin className="h-4 w-4 text-[#8B6F47] mt-0.5 flex-shrink-0" />
                                     <p className="text-sm text-gray-700 line-clamp-2">
                                         {shopAddress}
                                     </p>
                                 </div>
                                 {contactNumber && (
                                     <div className="flex items-center gap-2 text-sm text-gray-600">
-                                        <Phone className="h-4 w-4 text-[#8f7e4f]" />
+                                        <Phone className="h-4 w-4 text-[#8B6F47]" />
                                         <span>{contactNumber}</span>
                                     </div>
                                 )}
@@ -261,7 +261,7 @@ export default function ShopCard({
 
                         {/* Review Snippets */}
                         <div className="mt-4 rounded-xl bg-[#faf7f1] p-4">
-                            <p className="text-xs uppercase tracking-[0.2em] text-[#8f7e4f]">Recent reviews</p>
+                            <p className="text-xs uppercase tracking-[0.2em] text-[#8B6F47]">Recent reviews</p>
                             {reviewSnippets.length > 0 ? (
                                 <div className="mt-3 space-y-2">
                                     {reviewSnippets.map((review: any, idx: number) => (
@@ -274,7 +274,7 @@ export default function ShopCard({
                                                         </span>
                                                     ))}
                                                 </div>
-                                                <span className="text-xs text-[#8f7e4f]">{review.starNum || 0}/5</span>
+                                                <span className="text-xs text-[#8B6F47]">{review.starNum || 0}/5</span>
                                             </div>
                                             <p className="line-clamp-2">
                                                 {review.reviewText || review.reviewName || "Great experience!"}

@@ -209,13 +209,13 @@ export default function LocationPicker({ value, onChange, height = 400, classNam
             {/* Search Box */}
             <div className="mb-3 relative z-20">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8f7e4f]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8B6F47]" />
                     <Input
                         type="text"
                         placeholder="Search location (e.g., Richmond Town, Bangalore)"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 pr-10 border-[#efe7d6] focus:border-[#c9a86a]"
+                        className="pl-10 pr-10 border-[#F5EFE7] focus:border-[#D4A574]"
                     />
                     {searchQuery && (
                         <button
@@ -226,21 +226,21 @@ export default function LocationPicker({ value, onChange, height = 400, classNam
                         </button>
                     )}
                     {isSearching && (
-                        <Loader2 className="absolute right-10 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8f7e4f] animate-spin" />
+                        <Loader2 className="absolute right-10 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8B6F47] animate-spin" />
                     )}
                 </div>
 
                 {/* Search Results Dropdown */}
                 {showResults && searchResults.length > 0 && (
-                    <Card className="absolute top-full mt-1 w-full z-50 max-h-60 overflow-y-auto border-[#efe7d6] shadow-lg bg-white">
+                    <Card className="absolute top-full mt-1 w-full z-50 max-h-60 overflow-y-auto border-[#F5EFE7] shadow-lg bg-white">
                         {searchResults.map((result, index) => (
                             <button
                                 key={index}
                                 onClick={() => handleSearchResultClick(result)}
-                                className="w-full text-left px-4 py-3 hover:bg-[#8f7e4f]/5 border-b border-[#efe7d6] last:border-b-0 transition-colors"
+                                className="w-full text-left px-4 py-3 hover:bg-[#8B6F47]/5 border-b border-[#F5EFE7] last:border-b-0 transition-colors"
                             >
                                 <div className="flex items-start gap-2">
-                                    <MapPin className="h-4 w-4 text-[#8f7e4f] mt-1 flex-shrink-0" />
+                                    <MapPin className="h-4 w-4 text-[#8B6F47] mt-1 flex-shrink-0" />
                                     <span className="text-sm text-gray-700">{result.displayName}</span>
                                 </div>
                             </button>
@@ -252,12 +252,12 @@ export default function LocationPicker({ value, onChange, height = 400, classNam
             {/* Map */}
             <div 
                 ref={containerRef}
-                className="rounded-2xl overflow-hidden border border-[#efe7d6] relative z-0"
+                className="rounded-2xl overflow-hidden border border-[#F5EFE7] relative z-0"
                 style={{ height: `${height}px`, width: '100%', minHeight: `${height}px` }}
             >
                 {!mapReady ? (
                     <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                        <Loader2 className="h-8 w-8 text-[#8f7e4f] animate-spin" />
+                        <Loader2 className="h-8 w-8 text-[#8B6F47] animate-spin" />
                     </div>
                 ) : (
                     <MapContainer
@@ -291,7 +291,7 @@ export default function LocationPicker({ value, onChange, height = 400, classNam
             </div>
 
             {isLoadingLocation && (
-                <p className="text-xs text-[#8f7e4f] mt-2 flex items-center gap-2">
+                <p className="text-xs text-[#8B6F47] mt-2 flex items-center gap-2">
                     <Loader2 className="h-3 w-3 animate-spin" />
                     Fetching your current location...
                 </p>

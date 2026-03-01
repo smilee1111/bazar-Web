@@ -61,7 +61,7 @@ export default function RejectedApplicationsTab() {
         return (
             <div className="flex items-center justify-center py-8">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8f7e4f] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B6F47] mx-auto"></div>
                     <p className="mt-2 text-sm text-gray-600">Loading rejected applications...</p>
                 </div>
             </div>
@@ -81,7 +81,7 @@ export default function RejectedApplicationsTab() {
     return (
         <div className="space-y-4">
             {applications.map((application) => (
-                <Card key={application._id} className="hover:shadow-md transition-shadow bg-white/95 border border-[#e8e1cf]">
+                <Card key={application._id} className="hover:shadow-md transition-shadow bg-white border border-[#e8e1cf]">
                     <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                             <div className="space-y-1">
@@ -136,12 +136,12 @@ export default function RejectedApplicationsTab() {
                         <div className="flex items-center gap-2">
                             <Dialog>
                                 <DialogTrigger asChild>
-                                    <button className="inline-flex items-center gap-2 text-sm text-[#4a4a4a] border border-[#e8e1cf] rounded-md px-3 py-1.5 hover:bg-[#f7f3ea]">
+                                    <button className="inline-flex items-center gap-2 text-sm text-[#5B3E2E] border border-[#e8e1cf] rounded-md px-3 py-1.5 hover:bg-[#f7f3ea]">
                                         <Eye className="h-4 w-4" />
                                         View Details
                                     </button>
                                 </DialogTrigger>
-                                <DialogContent className="max-w-2xl bg-white border-[1.2px] border-white/25 text-[#1a1a1a] rounded-lg p-6 shadow-xl">
+                                <DialogContent className="max-w-2xl bg-white border-[1.2px] border-gray-200 text-[#2D2318] rounded-lg p-6 shadow-xl">
                                     <DialogHeader className="mb-4">
                                         <DialogTitle className="flex items-center gap-2">
                                             <XCircle className="h-5 w-5 text-red-600" />
@@ -199,7 +199,7 @@ export default function RejectedApplicationsTab() {
                                                 href={application.documentUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-sm text-[#8f7e4f] hover:underline ml-2"
+                                                className="text-sm text-[#8B6F47] hover:underline ml-2"
                                             >
                                                 View Document
                                             </a>

@@ -251,19 +251,19 @@ export default function AccountSettingsPage() {
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-3">
-                <p className="text-sm uppercase tracking-[0.2em] text-white/70">Settings</p>
-                <h1 className="text-4xl font-bold text-white">Account</h1>
-                <p className="text-white/75 text-lg">Manage your account preferences and seller status.</p>
+                <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Settings</p>
+                <h1 className="text-4xl font-bold text-[#2D2318]">Account</h1>
+                <p className="text-gray-500 text-lg">Manage your account preferences and seller status.</p>
             </div>
 
-            <Card className="border-[1.2px] border-white/25 bg-white/95 shadow-xl backdrop-blur-sm">
+            <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
                 <CardHeader className="space-y-4">
                     <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8f7e4f]/15">
-                            <ShieldCheck className="h-5 w-5 text-[#8f7e4f]" />
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B6F47]/15">
+                            <ShieldCheck className="h-5 w-5 text-[#8B6F47]" />
                         </span>
                         <div>
-                            <CardTitle className="text-xl text-[#1a1a1a]">Seller Mode</CardTitle>
+                            <CardTitle className="text-xl text-[#2D2318]">Seller Mode</CardTitle>
                             <CardDescription>Apply to become a seller and manage your shop.</CardDescription>
                         </div>
                     </div>
@@ -281,12 +281,12 @@ export default function AccountSettingsPage() {
                                     setShowForm(checked === true);
                                 }}
                             />
-                            <Label htmlFor="sellerMode" className="text-sm font-medium text-[#4a4a4a]">
+                            <Label htmlFor="sellerMode" className="text-sm font-medium text-[#5B3E2E]">
                                 Enable seller mode
                             </Label>
                         </div>
                         {!canApply && (
-                            <span className="text-sm text-[#7a6b45]">Application already submitted.</span>
+                            <span className="text-sm text-[#7D5A3F]">Application already submitted.</span>
                         )}
                     </div>
                 </CardHeader>
@@ -295,35 +295,35 @@ export default function AccountSettingsPage() {
 
                 <CardContent className="space-y-6 pt-6">
                     {loading ? (
-                        <p className="text-sm text-[#4a4a4a]">Loading your application...</p>
+                        <p className="text-sm text-[#5B3E2E]">Loading your application...</p>
                     ) : application ? (
                         <div className="rounded-xl border border-[#e8e1cf] bg-[#faf7f0] p-5">
                             <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div className="flex items-center gap-2">
-                                    <FileCheck className="h-5 w-5 text-[#8f7e4f]" />
-                                    <h3 className="text-lg font-semibold text-[#1a1a1a]">Your Seller Application</h3>
+                                    <FileCheck className="h-5 w-5 text-[#8B6F47]" />
+                                    <h3 className="text-lg font-semibold text-[#2D2318]">Your Seller Application</h3>
                                 </div>
                                 <Badge className={statusStyles[application.status]}>{application.status}</Badge>
                             </div>
-                            <div className="mt-4 grid gap-3 text-sm text-[#4a4a4a] md:grid-cols-2">
+                            <div className="mt-4 grid gap-3 text-sm text-[#5B3E2E] md:grid-cols-2">
                                 <div>
-                                    <span className="font-medium text-[#1a1a1a]">Business</span>
+                                    <span className="font-medium text-[#2D2318]">Business</span>
                                     <p>{application.businessName}</p>
                                 </div>
                                 <div>
-                                    <span className="font-medium text-[#1a1a1a]">Category</span>
+                                    <span className="font-medium text-[#2D2318]">Category</span>
                                     <p>{application.categoryName || "Uncategorized"}</p>
                                 </div>
                                 <div>
-                                    <span className="font-medium text-[#1a1a1a]">Phone</span>
+                                    <span className="font-medium text-[#2D2318]">Phone</span>
                                     <p>{application.businessPhone}</p>
                                 </div>
                                 <div>
-                                    <span className="font-medium text-[#1a1a1a]">Address</span>
+                                    <span className="font-medium text-[#2D2318]">Address</span>
                                     <p>{application.businessAddress}</p>
                                 </div>
                                 <div>
-                                    <span className="font-medium text-[#1a1a1a]">Location</span>
+                                    <span className="font-medium text-[#2D2318]">Location</span>
                                     <p>
                                         {application.location?.coordinates
                                             ? `${application.location.coordinates[1].toFixed(5)}, ${application.location.coordinates[0].toFixed(5)}`
@@ -331,13 +331,13 @@ export default function AccountSettingsPage() {
                                     </p>
                                 </div>
                                 <div className="md:col-span-2">
-                                    <span className="font-medium text-[#1a1a1a]">Supporting Document</span>
+                                    <span className="font-medium text-[#2D2318]">Supporting Document</span>
                                     <p>
                                         <a 
                                             href={application.documentUrl} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
-                                            className="text-[#8f7e4f] hover:underline flex items-center gap-1"
+                                            className="text-[#8B6F47] hover:underline flex items-center gap-1"
                                         >
                                             <FileText className="h-4 w-4" />
                                             View Document
@@ -347,7 +347,7 @@ export default function AccountSettingsPage() {
                             </div>
                             {application.location?.coordinates && (
                                 <div className="mt-4">
-                                    <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                                    <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
                                         <MapPin className="h-4 w-4" />
                                         <span>Business location</span>
                                     </div>
@@ -361,12 +361,12 @@ export default function AccountSettingsPage() {
                                 </div>
                             )}
                             {application.adminRemark && (
-                                <p className="mt-3 text-sm text-[#7a6b45]">Admin remark: {application.adminRemark}</p>
+                                <p className="mt-3 text-sm text-[#7D5A3F]">Admin remark: {application.adminRemark}</p>
                             )}
                             {application.status === "rejected" && (
                                 <Button
                                     onClick={handleTryAgain}
-                                    className="mt-4 flex items-center gap-2 bg-[#8f7e4f] text-white hover:bg-[#7a6b45]"
+                                    className="mt-4 flex items-center gap-2 bg-[#8B6F47] text-white hover:bg-[#7D5A3F]"
                                 >
                                     <RefreshCw className="h-4 w-4" />
                                     Try Again
@@ -374,7 +374,7 @@ export default function AccountSettingsPage() {
                             )}
                         </div>
                     ) : (
-                        <div className="rounded-xl border border-dashed border-[#e8e1cf] bg-white p-5 text-sm text-[#4a4a4a]">
+                        <div className="rounded-xl border border-dashed border-[#e8e1cf] bg-white p-5 text-sm text-[#5B3E2E]">
                             No seller application submitted yet. Enable seller mode to start.
                         </div>
                     )}
@@ -382,7 +382,7 @@ export default function AccountSettingsPage() {
                     {showForm && canApply && (
                         <div className="space-y-4 rounded-xl border border-[#e8e1cf] bg-white p-5">
                             <div className="flex items-center gap-2">
-                                <Building2 className="h-5 w-5 text-[#8f7e4f]" />
+                                <Building2 className="h-5 w-5 text-[#8B6F47]" />
                                 <h3 className="text-lg font-semibold text-[#1a1a1a]">Seller Application</h3>
                             </div>
 
@@ -483,7 +483,7 @@ export default function AccountSettingsPage() {
                                                 className="cursor-pointer"
                                             />
                                             {uploadingDocument && (
-                                                <Upload className="h-4 w-4 animate-spin text-[#8f7e4f]" />
+                                                <Upload className="h-4 w-4 animate-spin text-[#8B6F47]" />
                                             )}
                                         </div>
                                         {selectedFile && (
@@ -504,7 +504,7 @@ export default function AccountSettingsPage() {
                                 <Button
                                     onClick={handleSubmit}
                                     disabled={actionLoading}
-                                    className="bg-[#8f7e4f] text-white hover:bg-[#7a6b45]"
+                                    className="bg-[#8B6F47] text-white hover:bg-[#7D5A3F]"
                                 >
                                     {actionLoading ? "Submitting..." : "Submit Application"}
                                 </Button>

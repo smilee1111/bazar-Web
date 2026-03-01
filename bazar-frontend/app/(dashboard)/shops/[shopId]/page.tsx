@@ -625,12 +625,12 @@ export default function ShopDetailsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-[#2c2416]/95 to-[#1a1812] flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="inline-block">
-                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#8f7e4f]/30 border-t-[#8f7e4f]"></div>
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#8B6F47]/30 border-t-[#8B6F47]"></div>
                     </div>
-                    <p className="mt-6 text-white/70 text-lg">Loading shop details...</p>
+                    <p className="mt-6 text-gray-500 text-lg">Loading shop details...</p>
                 </div>
             </div>
         );
@@ -638,14 +638,14 @@ export default function ShopDetailsPage() {
 
     if (error || !shop) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-[#2c2416]/95 to-[#1a1812] flex items-center justify-center p-4">
+            <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="text-center max-w-md">
-                    <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mb-6">
-                        <p className="text-red-300 text-lg font-medium">{error || "Shop not found"}</p>
-                        <p className="text-white/50 text-sm mt-2">The shop you're looking for doesn't exist or is no longer available.</p>
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
+                        <p className="text-red-600 text-lg font-medium">{error || "Shop not found"}</p>
+                        <p className="text-gray-500 text-sm mt-2">The shop you're looking for doesn't exist or is no longer available.</p>
                     </div>
                     <Link href="/shops">
-                        <Button className="bg-[#8f7e4f] hover:bg-[#7a6940] text-white px-8">
+                        <Button className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white px-8">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Shops
                         </Button>
@@ -656,11 +656,11 @@ export default function ShopDetailsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#2c2416] via-[#1a1812] to-[#0f0d0a]">
+        <div className="min-h-screen">
             {/* Back Button */}
             <div className="sticky top-4 z-40 flex justify-start px-4 md:px-8">
                 <Link href="/shops">
-                    <Button variant="outline" className="border-white/20 bg-black/40 text-white hover:bg-white/10 backdrop-blur-sm">
+                    <Button variant="outline" className="border-gray-200 bg-white text-[#2D2318] hover:bg-gray-50 shadow-sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back to Shops
                     </Button>
@@ -671,7 +671,7 @@ export default function ShopDetailsPage() {
                 {/* Photo Gallery Section */}
                 {photos.length > 0 && (
                     <div className="rounded-2xl overflow-hidden shadow-2xl">
-                        <div className="relative w-full h-96 md:h-[500px] bg-gradient-to-br from-[#e6d8be] to-[#d4c5a0]">
+                        <div className="relative w-full h-96 md:h-[500px] bg-gradient-to-br from-[#F5EFE7] to-[#C99A6E]">
                             <Image
                                 src={API_CONFIG.getImageUrl(photos[currentPhotoIndex].photoName)}
                                 alt={shop.shopName}
@@ -714,15 +714,15 @@ export default function ShopDetailsPage() {
 
                         {/* Photo Thumbnails */}
                         {photos.length > 1 && (
-                            <div className="p-4 bg-white/5 flex gap-3 overflow-x-auto backdrop-blur-sm">
+                            <div className="p-4 bg-gray-50 flex gap-3 overflow-x-auto">
                                 {photos.map((photo, idx) => (
                                     <button
                                         key={photo._id}
                                         onClick={() => setCurrentPhotoIndex(idx)}
                                         className={`relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition ${
                                             idx === currentPhotoIndex
-                                                ? "border-[#8f7e4f] shadow-lg"
-                                                : "border-white/20 hover:border-[#8f7e4f]"
+                                                ? "border-[#8B6F47] shadow-lg"
+                                                : "border-gray-200 hover:border-[#8B6F47]"
                                         }`}
                                     >
                                         <Image
@@ -743,20 +743,20 @@ export default function ShopDetailsPage() {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Shop Header Card */}
-                        <Card className="p-8 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl">
+                        <Card className="p-8 bg-white border border-gray-100 shadow-sm rounded-2xl">
                             <div className="space-y-6">
                                 {/* Title and Badge */}
                                 <div>
                                     <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
-                                        <h1 className="text-5xl font-bold text-white">{shop.shopName}</h1>
+                                        <h1 className="text-5xl font-bold text-[#2D2318]">{shop.shopName}</h1>
                                         <div className="flex flex-wrap items-center gap-3 justify-end">
                                             {shop.priceRange && (
-                                                <span className="rounded-full bg-[#8f7e4f]/20 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-[#d4c5a0] border border-[#8f7e4f]/30">
+                                                <span className="rounded-full bg-[#8B6F47]/10 px-4 py-2 text-sm font-semibold text-[#8B6F47] border border-[#8B6F47]/20">
                                                     Price Range: {shop.priceRange}
                                                 </span>
                                             )}
                                             {isReviewed && (
-                                                <span className="rounded-full bg-green-500/20 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-green-200 border border-green-400/30">
+                                                <span className="rounded-full bg-green-50 px-4 py-2 text-sm font-semibold text-green-700 border border-green-200">
                                                     ✓ You reviewed this
                                                 </span>
                                             )}
@@ -764,7 +764,7 @@ export default function ShopDetailsPage() {
                                                 <button
                                                     onClick={handleFavouriteToggle}
                                                     disabled={isLoadingFav}
-                                                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group relative border border-white/10"
+                                                    className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors group relative border border-gray-200"
                                                     title={isFav ? "Remove from Favourites" : "Add to Favourites"}
                                                 >
                                                     <Heart
@@ -772,7 +772,7 @@ export default function ShopDetailsPage() {
                                                         className={`transition-colors ${
                                                             isFav
                                                                 ? "fill-red-500 text-red-500"
-                                                                : "text-white/60 group-hover:text-red-400"
+                                                                : "text-gray-400 group-hover:text-red-400"
                                                         } ${isLoadingFav ? "opacity-50" : ""}`}
                                                     />
                                                     <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -782,7 +782,7 @@ export default function ShopDetailsPage() {
                                                 <button
                                                     onClick={handleSaveToggle}
                                                     disabled={isLoadingSave}
-                                                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group relative border border-white/10"
+                                                    className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors group relative border border-gray-200"
                                                     title={isSaved ? "Remove from Saved" : "Save Shop"}
                                                 >
                                                     <Bookmark
@@ -790,7 +790,7 @@ export default function ShopDetailsPage() {
                                                         className={`transition-colors ${
                                                             isSaved
                                                                 ? "fill-blue-400 text-blue-400"
-                                                                : "text-white/60 group-hover:text-blue-400"
+                                                                : "text-gray-400 group-hover:text-blue-400"
                                                         } ${isLoadingSave ? "opacity-50" : ""}`}
                                                     />
                                                     <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -803,21 +803,21 @@ export default function ShopDetailsPage() {
 
                                     {/* Rating */}
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="flex items-center gap-2 bg-white/5 rounded-full px-4 py-2 backdrop-blur-sm border border-white/10">
+                                        <div className="flex items-center gap-2 bg-gray-50 rounded-full px-4 py-2 border border-gray-200">
                                             {[...Array(5)].map((_, i) => (
                                                 <Star
                                                     key={i}
                                                     className={`h-5 w-5 ${
                                                         i < Math.round(parseFloat(avgRating))
                                                             ? "fill-yellow-400 text-yellow-400"
-                                                            : "text-white/30"
+                                                            : "text-gray-200"
                                                     }`}
                                                 />
                                             ))}
                                         </div>
-                                        <div className="text-white">
-                                            <span className="text-3xl font-bold text-[#d4c5a0]">{avgRating}</span>
-                                            <span className="text-white/60 ml-2">({reviews.length} reviews)</span>
+                                        <div>
+                                            <span className="text-3xl font-bold text-[#8B6F47]">{avgRating}</span>
+                                            <span className="text-gray-500 ml-2">({reviews.length} reviews)</span>
                                         </div>
                                     </div>
                                     {/* Category */}
@@ -830,34 +830,34 @@ export default function ShopDetailsPage() {
                                     )}
                                     {/* Description */}
                                     {shop.description && (
-                                        <p className="text-white/80 text-lg leading-relaxed">
+                                        <p className="text-gray-600 text-lg leading-relaxed">
                                             {shop.description}
                                         </p>
                                     )}
                                 </div>
 
                                 {/* Contact Info */}
-                                <div className="space-y-4 border-t border-white/10 pt-6">
-                                    <h3 className="text-white font-semibold text-lg">Contact Information</h3>
+                                <div className="space-y-4 border-t border-gray-100 pt-6">
+                                    <h3 className="text-[#2D2318] font-semibold text-lg">Contact Information</h3>
                                     <div className="space-y-3">
                                         {shop.shopAddress && (
-                                            <div className="flex items-start gap-4 p-3 rounded-xl bg-white/5 border border-white/10">
-                                                <MapPin className="h-5 w-5 text-[#8f7e4f] mt-0.5 flex-shrink-0" />
-                                                <span className="text-white/90">{shop.shopAddress}</span>
+                                            <div className="flex items-start gap-4 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                                                <MapPin className="h-5 w-5 text-[#8B6F47] mt-0.5 flex-shrink-0" />
+                                                <span className="text-gray-700">{shop.shopAddress}</span>
                                             </div>
                                         )}
                                         {shop.contactNumber && (
-                                            <div className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10">
-                                                <Phone className="h-5 w-5 text-[#8f7e4f] flex-shrink-0" />
-                                                <a href={`tel:${shop.contactNumber}`} className="text-white/90 hover:text-[#d4c5a0] transition">
+                                            <div className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                                                <Phone className="h-5 w-5 text-[#8B6F47] flex-shrink-0" />
+                                                <a href={`tel:${shop.contactNumber}`} className="text-gray-700 hover:text-[#8B6F47] transition">
                                                     {shop.contactNumber}
                                                 </a>
                                             </div>
                                         )}
                                         {shop.email && (
-                                            <div className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10">
-                                                <Mail className="h-5 w-5 text-[#8f7e4f] flex-shrink-0" />
-                                                <a href={`mailto:${shop.email}`} className="text-white/90 hover:text-[#d4c5a0] transition">
+                                            <div className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                                                <Mail className="h-5 w-5 text-[#8B6F47] flex-shrink-0" />
+                                                <a href={`mailto:${shop.email}`} className="text-gray-700 hover:text-[#8B6F47] transition">
                                                     {shop.email}
                                                 </a>
                                             </div>
@@ -866,22 +866,22 @@ export default function ShopDetailsPage() {
                                 </div>
 
                                 {shop.location?.coordinates && (
-                                    <div className="border-t border-white/10 pt-6">
+                                    <div className="border-t border-gray-100 pt-6">
                                         <div className="flex items-center justify-between gap-4 mb-4">
-                                            <h3 className="text-white font-semibold text-lg">Map & Route</h3>
+                                            <h3 className="text-[#2D2318] font-semibold text-lg">Map & Route</h3>
                                             <Button
                                                 type="button"
                                                 onClick={handleOpenDirections}
-                                                className="bg-[#8f7e4f] text-white hover:bg-[#7a6b45]"
+                                                className="bg-[#8B6F47] text-white hover:bg-[#7D5A3F]"
                                             >
                                                 <Navigation className="mr-2 h-4 w-4" />
                                                 Navigate
                                             </Button>
                                         </div>
 
-                                        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                                        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
                                             {routeLoading ? (
-                                                <div className="flex h-[320px] items-center justify-center text-white/70">
+                                                <div className="flex h-[320px] items-center justify-center text-gray-500">
                                                     Loading route...
                                                 </div>
                                             ) : routeData && userLocation ? (
@@ -905,15 +905,15 @@ export default function ShopDetailsPage() {
                                             )}
                                         </div>
 
-                                        <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-white/70">
+                                        <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">
                                             <span>
-                                                Distance: <span className="text-[#d4c5a0]">{formatDistance(routeData?.distance)}</span>
+                                                Distance: <span className="text-[#8B6F47]">{formatDistance(routeData?.distance)}</span>
                                             </span>
                                             <span>
-                                                ETA: <span className="text-[#d4c5a0]">{formatDuration(routeData?.duration)}</span>
+                                                ETA: <span className="text-[#8B6F47]">{formatDuration(routeData?.duration)}</span>
                                             </span>
                                             {!userLocation && (
-                                                <span className="text-white/50">Enable location to see route.</span>
+                                                <span className="text-gray-400">Enable location to see route.</span>
                                             )}
                                         </div>
                                     </div>
@@ -921,8 +921,8 @@ export default function ShopDetailsPage() {
 
                                 {/* Shop Links */}
                                 {shop.details && shop.details.length > 0 && (
-                                    <div className="border-t border-white/10 pt-6">
-                                        <h3 className="text-white font-semibold text-lg mb-4">Quick Links</h3>
+                                    <div className="border-t border-gray-100 pt-6">
+                                        <h3 className="text-[#2D2318] font-semibold text-lg mb-4">Quick Links</h3>
                                         <div className="flex flex-wrap gap-3">
                                             {shop.details.flatMap((detail: any) => [
                                                 detail.link1,
@@ -935,7 +935,7 @@ export default function ShopDetailsPage() {
                                                     href={link}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="px-4 py-2 rounded-lg bg-[#8f7e4f]/20 text-[#d4c5a0] hover:bg-[#8f7e4f]/40 transition border border-[#8f7e4f]/30 text-sm"
+                                                    className="px-4 py-2 rounded-lg bg-[#8B6F47]/10 text-[#8B6F47] hover:bg-[#8B6F47]/20 transition border border-[#8B6F47]/20 text-sm"
                                                 >
                                                     Link {idx + 1}
                                                 </a>
@@ -947,11 +947,11 @@ export default function ShopDetailsPage() {
                         </Card>
 
                         {/* Reviews Section */}
-                        <Card className="p-8 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl">
+                        <Card className="p-8 bg-white border border-gray-100 shadow-sm rounded-2xl">
                             <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-3xl font-bold text-white">Customer Reviews</h2>
+                                <h2 className="text-3xl font-bold text-[#2D2318]">Customer Reviews</h2>
                                 {reviews.length > 0 && (
-                                    <span className="text-white/60 text-sm">{reviews.length} reviews</span>
+                                    <span className="text-gray-500 text-sm">{reviews.length} reviews</span>
                                 )}
                             </div>
 
@@ -960,11 +960,11 @@ export default function ShopDetailsPage() {
                                     {reviews.map((review) => (
                                         <div
                                             key={review._id}
-                                            className="border-l-2 border-[#8f7e4f] pl-4 py-4 bg-white/5 p-4 rounded-lg hover:bg-white/10 transition"
+                                            className="border-l-2 border-[#8B6F47] pl-4 py-4 bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition"
                                         >
                                             <div className="mb-2 flex items-center justify-between gap-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/20 bg-white/10">
+                                                    <div className="relative h-10 w-10 overflow-hidden rounded-full border border-gray-200 bg-gray-100">
                                                         {getReviewerProfilePic(review.reviewedBy) ? (
                                                             <Image
                                                                 src={API_CONFIG.getImageUrl(getReviewerProfilePic(review.reviewedBy))}
@@ -973,21 +973,21 @@ export default function ShopDetailsPage() {
                                                                 className="object-cover"
                                                             />
                                                         ) : (
-                                                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-white/80">
+                                                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-[#2D2318]">
                                                                 {getReviewerName(review.reviewedBy, review.userId).slice(0, 2).toUpperCase()}
                                                             </div>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <p className="font-semibold text-white">
+                                                        <p className="font-semibold text-[#2D2318]">
                                                             {getReviewerName(review.reviewedBy, review.userId)}
                                                         </p>
-                                                        <p className="text-xs text-white/60">
+                                                        <p className="text-xs text-gray-500">
                                                             {getReviewerRole(review.reviewedBy)}
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <span className="text-sm text-white/60">
+                                                <span className="text-sm text-gray-500">
                                                     {formatDate(review.createdAt)}
                                                 </span>
                                             </div>
@@ -1000,7 +1000,7 @@ export default function ShopDetailsPage() {
                                                             className={`h-4 w-4 ${
                                                                 i < review.starNum
                                                                     ? "fill-yellow-400 text-yellow-400"
-                                                                    : "text-white/20"
+                                                                    : "text-gray-200"
                                                             }`}
                                                         />
                                                     ))}
@@ -1023,7 +1023,7 @@ export default function ShopDetailsPage() {
                                                                     className={`h-6 w-6 ${
                                                                         star <= editReviewRating
                                                                             ? "fill-yellow-400 text-yellow-400"
-                                                                            : "text-white/30 hover:text-yellow-400/50"
+                                                                            : "text-gray-200 hover:text-yellow-400/50"
                                                                     }`}
                                                                 />
                                                             </button>
@@ -1032,12 +1032,12 @@ export default function ShopDetailsPage() {
                                                     <Textarea
                                                         value={editReviewText}
                                                         onChange={(e) => setEditReviewText(e.target.value)}
-                                                        className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[100px]"
+                                                        className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 min-h-[100px]"
                                                         placeholder="Update your review..."
                                                     />
                                                 </div>
                                             ) : (
-                                                <p className="text-white/80 mb-4 leading-relaxed">
+                                                <p className="text-gray-700 mb-4 leading-relaxed">
                                                     {review.reviewText || review.reviewName || ""}
                                                 </p>
                                             )}
@@ -1048,14 +1048,14 @@ export default function ShopDetailsPage() {
                                                     <>
                                                         <button
                                                             onClick={() => handleSaveEditReview(review._id)}
-                                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 text-green-300 border border-green-500/50 hover:bg-green-500/30 transition"
+                                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition"
                                                         >
                                                             <Save className="h-4 w-4" />
                                                             <span className="text-sm">Save</span>
                                                         </button>
                                                         <button
                                                             onClick={handleCancelEdit}
-                                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 transition"
+                                                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 transition"
                                                         >
                                                             <XCircle className="h-4 w-4" />
                                                             <span className="text-sm">Cancel</span>
@@ -1068,8 +1068,8 @@ export default function ShopDetailsPage() {
                                                             disabled={loadingLikeStates.has(review._id)}
                                                             className={`flex items-center gap-2 px-3 py-1 rounded-full transition ${
                                                                 likedReviews.has(review._id)
-                                                                    ? "bg-blue-500/30 text-blue-300 border border-blue-500/50"
-                                                                    : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                                                                    ? "bg-blue-50 text-blue-600 border border-blue-200"
+                                                                    : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"
                                                             } ${loadingLikeStates.has(review._id) ? "opacity-50 cursor-not-allowed" : ""}`}
                                                             title={likedReviews.has(review._id) ? "Unlike review" : "Like review"}
                                                         >
@@ -1081,8 +1081,8 @@ export default function ShopDetailsPage() {
                                                             disabled={loadingDislikeStates.has(review._id)}
                                                             className={`flex items-center gap-2 px-3 py-1 rounded-full transition ${
                                                                 dislikedReviews.has(review._id)
-                                                                    ? "bg-red-500/30 text-red-300 border border-red-500/50"
-                                                                    : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                                                                    ? "bg-red-50 text-red-600 border border-red-200"
+                                                                    : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"
                                                             } ${loadingDislikeStates.has(review._id) ? "opacity-50 cursor-not-allowed" : ""}`}
                                                             title={dislikedReviews.has(review._id) ? "Undislike review" : "Dislike review"}
                                                         >
@@ -1093,7 +1093,7 @@ export default function ShopDetailsPage() {
                                                             <>
                                                                 <button
                                                                     onClick={() => handleStartEditReview(review)}
-                                                                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 transition ml-auto"
+                                                                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition ml-auto"
                                                                     title="Edit your review"
                                                                 >
                                                                     <Edit2 className="h-4 w-4" />
@@ -1101,7 +1101,7 @@ export default function ShopDetailsPage() {
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleDeleteReview(review._id)}
-                                                                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/50 hover:bg-red-500/30 transition"
+                                                                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition"
                                                                     title="Delete your review"
                                                                 >
                                                                     <Trash2 className="h-4 w-4" />
@@ -1117,9 +1117,9 @@ export default function ShopDetailsPage() {
                                 </div>
                             ) : (
                                 <div className="text-center py-12">
-                                    <Star className="h-12 w-12 text-white/20 mx-auto mb-4" />
-                                    <p className="text-white/60 text-lg">No reviews yet</p>
-                                    <p className="text-white/40 text-sm mt-2">Be the first to share your experience!</p>
+                                    <Star className="h-12 w-12 text-gray-200 mx-auto mb-4" />
+                                    <p className="text-gray-500 text-lg">No reviews yet</p>
+                                    <p className="text-gray-400 text-sm mt-2">Be the first to share your experience!</p>
                                 </div>
                             )}
                         </Card>
@@ -1167,15 +1167,15 @@ export default function ShopDetailsPage() {
                     width: 6px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.05);
+                    background: rgba(0, 0, 0, 0.03);
                     border-radius: 3px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(143, 126, 79, 0.3);
+                    background: rgba(139, 111, 71, 0.2);
                     border-radius: 3px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(143, 126, 79, 0.5);
+                    background: rgba(139, 111, 71, 0.4);
                 }
             `}</style>
 

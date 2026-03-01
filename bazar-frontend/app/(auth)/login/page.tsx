@@ -22,7 +22,7 @@ export default function Page() {
     return (
         <div className="relative w-full min-h-screen bg-neutral-50 flex">
             {/* Left Panel */}
-            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#8f7e4f] via-[#7a6b45] to-[#6b5d3c] overflow-hidden">
+            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#8B6F47] via-[#7D5A3F] to-[#5B3E2E] overflow-hidden">
                 <div
                     className="absolute inset-0 w-full h-full bg-cover bg-center"
                     style={{ backgroundImage: "url('/images/auth-background.svg')" }}
@@ -83,8 +83,8 @@ export default function Page() {
                             variant="ghost"
                             className="flex items-center gap-2 mb-12 h-auto p-0 hover:bg-transparent"
                         >
-                            <ChevronLeft className="w-5 h-5 text-[#4a4a4a]" />
-                            <span className="font-normal text-[#4a4a4a] text-base">
+                            <ChevronLeft className="w-5 h-5 text-[#5B3E2E]" />
+                            <span className="font-normal text-[#5B3E2E] text-base">
                                 Back to Home
                             </span>
                         </Button>

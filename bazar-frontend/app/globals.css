@@ -3,68 +3,68 @@
 
 :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    --foreground: 24 35% 12%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 36 25% 96%;
+    --muted-foreground: 24 15% 45%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 24 35% 12%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 30 15% 88%;
+    --input: 30 15% 88%;
 
-    --card: transparent;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 24 35% 12%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 25 51% 28%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 36 25% 96%;
+    --secondary-foreground: 24 35% 12%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 32 40% 94%;
+    --accent-foreground: 25 51% 28%;
 
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 215 20.2% 65.1%;
+    --ring: 25 51% 28%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 }
 
 .dark {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
+    --background: 24 20% 8%;
+    --foreground: 36 25% 96%;
 
-    --muted: 223 47% 11%;
-    --muted-foreground: 215.4 16.3% 56.9%;
+    --muted: 24 15% 15%;
+    --muted-foreground: 30 15% 60%;
 
-    --accent: 216 34% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 25 30% 18%;
+    --accent-foreground: 36 25% 96%;
 
-    --popover: 224 71% 4%;
-    --popover-foreground: 215 20.2% 65.1%;
+    --popover: 24 20% 10%;
+    --popover-foreground: 36 25% 96%;
 
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
+    --border: 24 15% 20%;
+    --input: 24 15% 15%;
 
-    --card: transparent;
-    --card-foreground: 213 31% 91%;
+    --card: 24 20% 10%;
+    --card-foreground: 36 25% 96%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 1.2%;
+    --primary: 30 45% 55%;
+    --primary-foreground: 24 20% 8%;
 
-    --secondary: 222.2 47.4% 11.2%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 24 15% 15%;
+    --secondary-foreground: 36 25% 96%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 36 25% 96%;
 
-    --ring: 216 34% 17%;
+    --ring: 30 45% 55%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 }
 
 @theme inline {
@@ -163,7 +163,7 @@ body {
 
 /* Leaflet map container fixes to ensure tiles load completely */
 .leaflet-container {
-    background: #f5f5f5 !important;
+    background: #FAF4EC !important;
     outline: none !important;
 }
 

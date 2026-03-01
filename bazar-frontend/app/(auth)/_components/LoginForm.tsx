@@ -54,10 +54,10 @@ export default function LoginForm() {
             <CardContent className="p-8 lg:p-[49.2px]">
                 <div className="flex flex-col gap-8">
                     <div className="flex flex-col gap-3 animate-fade-up">
-                        <h2 className="font-light text-[#1a1a1a] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
+                        <h2 className="font-light text-[#2D2318] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
                             Welcome Back
                         </h2>
-                        <p className="font-normal text-[#4a4a4a] text-sm md:text-base leading-relaxed">
+                        <p className="font-normal text-[#5B3E2E] text-sm md:text-base leading-relaxed">
                             Sign in to your Bazar account
                         </p>
                     </div>
@@ -71,16 +71,16 @@ export default function LoginForm() {
                     <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-6">
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="email" className="font-normal text-[#524632] text-sm md:text-base">
-                                Email<span className="text-[#8f7e4f]">*</span>
+                                Email<span className="text-[#8B6F47]">*</span>
                             </Label>
                             <div className="relative group">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8f7e4f] transition-colors" />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8B6F47] transition-colors" />
                                 <Input
                                     id="email"
                                     type="email"
                                     placeholder="your.email@example.com"
                                     {...register("email")}
-                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8f7e4f] focus:ring-2 focus:ring-[#8f7e4f]/20 transition-all"
+                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
                                 />
                             </div>
                             {errors.email?.message && (
@@ -90,16 +90,16 @@ export default function LoginForm() {
 
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="password" className="font-normal text-[#524632] text-sm md:text-base">
-                                Password<span className="text-[#8f7e4f]">*</span>
+                                Password<span className="text-[#8B6F47]">*</span>
                             </Label>
                             <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8f7e4f] transition-colors" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8B6F47] transition-colors" />
                                 <Input
                                     id="password"
                                     type="password"
                                     placeholder="Enter your password"
                                     {...register("password")}
-                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8f7e4f] focus:ring-2 focus:ring-[#8f7e4f]/20 transition-all"
+                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
                                 />
                             </div>
                             {errors.password?.message && (
@@ -108,7 +108,7 @@ export default function LoginForm() {
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <Link href="/forget-password" className="text-[#8f7e4f] text-sm hover:underline hover:text-[#7a6b45] transition-colors">
+                            <Link href="/forget-password" className="text-[#8B6F47] text-sm hover:underline hover:text-[#7D5A3F] transition-colors">
                                 Forgot password?
                             </Link>
                         </div>
@@ -116,7 +116,7 @@ export default function LoginForm() {
                         <Button
                             type="submit"
                             disabled={isSubmitting || pending}
-                            className="w-full h-12 md:h-14 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                            className="w-full h-12 md:h-14 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
                         >
                             {isSubmitting || pending ? "Logging in..." : "Log in"}
                         </Button>
@@ -125,7 +125,7 @@ export default function LoginForm() {
                     <div className="relative">
                         <Separator className="bg-[#efefef]" />
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4">
-                            <span className="font-normal text-[#4a4a4a] text-sm md:text-base">Or continue with</span>
+                            <span className="font-normal text-[#5B3E2E] text-sm md:text-base">Or continue with</span>
                         </div>
                     </div>
 
@@ -155,9 +155,9 @@ export default function LoginForm() {
                         Sign in with Google
                     </Button>
 
-                    <p className="text-center font-normal text-[#4a4a4a] text-sm md:text-base">
+                    <p className="text-center font-normal text-[#5B3E2E] text-sm md:text-base">
                         Don't have an account?{" "}
-                        <Link href="/register" className="text-[#8f7e4f] hover:underline hover:text-[#7a6b45] transition-colors">
+                        <Link href="/register" className="text-[#8B6F47] hover:underline hover:text-[#7D5A3F] transition-colors">
                             Sign up
                         </Link>
                     </p>

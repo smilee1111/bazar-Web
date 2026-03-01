@@ -147,40 +147,40 @@ const handleSubmit = async (values: UserFormValues) => {
   const { register, handleSubmit: rhfSubmit, formState: { errors } } = form;
 
   return (
-    <Card className="border-[1.2px] border-white/25 bg-white/95 shadow-xl backdrop-blur-sm">
+    <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
       <CardContent className="space-y-6 p-8">
         <form className="space-y-6" onSubmit={rhfSubmit(handleSubmit)}>
           <div className="space-y-2">
             <Label htmlFor="fullName">Full Name</Label>
             <Input id="fullName" placeholder="Jane Doe" {...register("fullName")}
-              className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]" />
+              className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]" />
             {errors.fullName && <p className="text-sm text-red-600">{errors.fullName.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" placeholder="name@example.com" {...register("email")}
-              className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]" />
+              className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]" />
             {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input id="username" placeholder="username" {...register("username")}
-              className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]" />
+              className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]" />
             {errors.username && <p className="text-sm text-red-600">{errors.username.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phoneNumber">Phone</Label>
             <Input id="phoneNumber" placeholder="Optional" {...register("phoneNumber")}
-              className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]" />
+              className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]" />
             {errors.phoneNumber && <p className="text-sm text-red-600">{errors.phoneNumber.message}</p>}
           </div>
 
           {/* Profile Image Section */}
           <div className="space-y-4">
-            <Label className="text-base font-semibold text-[#1a1a1a]">Profile Picture</Label>
+            <Label className="text-base font-semibold text-[#2D2318]">Profile Picture</Label>
             <div className="flex items-center gap-8">
               <div className="relative">
                 <Avatar className="h-28 w-28">
@@ -188,13 +188,13 @@ const handleSubmit = async (values: UserFormValues) => {
                     src={previewImage || (userId && typeof defaultValues?.image === 'string' ? API_CONFIG.getImageUrl(defaultValues.image) || undefined : undefined)}
                     alt="Profile"
                   />
-                  <AvatarFallback className="bg-[#8f7e4f] text-white text-xl font-semibold">
+                  <AvatarFallback className="bg-[#8B6F47] text-white text-xl font-semibold">
                     {(defaultValues?.fullName || defaultValues?.email || "U").charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <label
                   htmlFor="image-upload"
-                  className="absolute -bottom-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#8f7e4f] text-white hover:bg-[#7a6b45] cursor-pointer transition-colors shadow-lg"
+                  className="absolute -bottom-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#8B6F47] text-white hover:bg-[#7D5A3F] cursor-pointer transition-colors shadow-lg"
                 >
                   <Camera className="h-5 w-5" />
                   <input
@@ -207,7 +207,7 @@ const handleSubmit = async (values: UserFormValues) => {
                 </label>
               </div>
               <div className="flex-1">
-                <p className="text-sm text-[#6a5c38] mb-2">
+                <p className="text-sm text-[#5B3E2E] mb-2">
                   Upload a profile picture. Recommended size: 400x400px
                 </p>
                 <div className="flex gap-2">
@@ -216,7 +216,7 @@ const handleSubmit = async (values: UserFormValues) => {
                     variant="outline"
                     size="sm"
                     onClick={() => document.getElementById("image-upload")?.click()}
-                    className="gap-2 border-[#8f7e4f] text-[#8f7e4f] hover:bg-[#8f7e4f] hover:text-white"
+                    className="gap-2 border-[#8B6F47] text-[#8B6F47] hover:bg-[#8B6F47] hover:text-white"
                   >
                     <Upload className="h-4 w-4" />
                     Choose File
@@ -251,22 +251,22 @@ const handleSubmit = async (values: UserFormValues) => {
           />
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password {mode === "edit" && <span className="text-xs text-[#8f7e4f]">(leave blank to keep)</span>}</Label>
+            <Label htmlFor="password">Password {mode === "edit" && <span className="text-xs text-[#8B6F47]">(leave blank to keep)</span>}</Label>
             <Input id="password" type="password" placeholder="••••••" {...register("password")}
-              className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]" />
+              className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]" />
             {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
             <Input id="confirmPassword" type="password" placeholder="••••••" {...register("confirmPassword")}
-              className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]" />
+              className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]" />
             {errors.confirmPassword && <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>}
           </div>
 
           <div className="pt-2">
             <Button type="submit" disabled={submitting}
-              className="w-full bg-[#8f7e4f] text-white hover:bg-[#7a6b45] disabled:opacity-60">
+              className="w-full bg-[#8B6F47] text-white hover:bg-[#7D5A3F] disabled:opacity-60">
               {submitting ? "Saving..." : ctaLabel || (mode === "create" ? "Create user" : "Save changes")}
             </Button>
           </div>

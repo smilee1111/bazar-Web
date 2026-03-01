@@ -11,47 +11,47 @@ const navItems = [
 
 export default function Header() {
     return (
-        <header className="w-full bg-[#8f7e4f]/80 backdrop-blur-sm border-b border-white/10 sticky top-0 z-50">
-            <div className="w-full px-8 py-4 flex items-center justify-between">
+        <header className="w-full bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+            <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <div className="flex w-10 h-10 items-center justify-center bg-white/20 rounded-xl border-[1.2px] border-white/30 hover:bg-white/30 transition-colors">
+                        <div className="flex w-10 h-10 items-center justify-center bg-[#2D2318] rounded-xl">
                             <img
                                 className="w-6 h-6 object-contain"
                                 alt="Bazar logo"
                                 src="/images/logo.svg"
                             />
                         </div>
-                        <h1 className="font-normal text-white text-2xl tracking-[-0.32px]">
+                        <h1 className="font-semibold text-[#2D2318] text-xl tracking-tight">
                             Bazar
                         </h1>
                     </Link>
                 </div>
 
                 {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center gap-6">
+                <nav className="hidden md:flex items-center gap-8">
                     {navItems.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
-                            className="text-white/80 hover:text-white transition-colors font-medium"
+                            className="text-gray-500 hover:text-[#2D2318] transition-colors font-medium text-sm"
                         >
                             {item.label}
                         </Link>
                     ))}
                 </nav>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <Link href="/login">
                         <Button
                             variant="ghost"
-                            className="text-white hover:bg-white/20 transition-all duration-200"
+                            className="text-[#2D2318] hover:bg-gray-100 transition-all duration-200 font-medium"
                         >
                             Login
                         </Button>
                     </Link>
                     <Link href="/register">
-                        <Button className="bg-white text-[#8f7e4f] hover:bg-white/90 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <Button className="bg-[#2D2318] text-white hover:bg-[#3D2F22] rounded-full shadow-sm hover:shadow-md transition-all duration-300 font-medium px-6">
                             Sign Up
                         </Button>
                     </Link>
@@ -59,14 +59,14 @@ export default function Header() {
             </div>
 
             {/* Mobile Navigation */}
-            <div className="md:hidden px-8 pb-4">
-                <Separator className="mb-4 bg-white/20" />
+            <div className="md:hidden px-6 pb-4">
+                <Separator className="mb-4 bg-gray-100" />
                 <nav className="flex justify-center gap-6">
                     {navItems.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
-                            className="text-white/80 hover:text-white transition-colors text-sm font-medium"
+                            className="text-gray-500 hover:text-[#2D2318] transition-colors text-sm font-medium"
                         >
                             {item.label}
                         </Link>

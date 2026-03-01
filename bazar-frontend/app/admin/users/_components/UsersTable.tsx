@@ -65,8 +65,8 @@ export default function UsersTable({
       `/admin/users?page=${p}&size=${pagination.size}` + (searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : "");
 
     const baseBtn = "px-3 py-1 rounded-md border transition-all duration-150 text-sm";
-    const enabledClass = "bg-[#8f7e4f]/10 text-[#7a6b45] border-[#8f7e4f]/20 hover:bg-[#8f7e4f]/20";
-    const activeClass = "bg-[#8f7e4f] text-white border-[#8f7e4f] shadow";
+    const enabledClass = "bg-[#8B6F47]/10 text-[#7D5A3F] border-[#8B6F47]/20 hover:bg-[#8B6F47]/20";
+    const activeClass = "bg-[#8B6F47] text-white border-[#8B6F47] shadow";
     const disabledClass = "bg-white text-gray-300 border-gray-200 cursor-not-allowed";
 
     // Prev
@@ -174,8 +174,8 @@ export default function UsersTable({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="flex items-center gap-3 text-[#4a4a4a]">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#8f7e4f] border-t-transparent"></div>
+        <div className="flex items-center gap-3 text-[#5B3E2E]">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#8B6F47] border-t-transparent"></div>
           <span className="text-sm font-medium">Loading users...</span>
         </div>
       </div>
@@ -195,11 +195,11 @@ export default function UsersTable({
   if (!users.length) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#8f7e4f]/10 mb-4">
-          <User className="h-8 w-8 text-[#8f7e4f]" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#8B6F47]/10 mb-4">
+          <User className="h-8 w-8 text-[#8B6F47]" />
         </div>
-        <h3 className="text-lg font-semibold text-[#1a1a1a] mb-2">No users found</h3>
-        <p className="text-sm text-[#4a4a4a]">Start by adding your first user to the system.</p>
+        <h3 className="text-lg font-semibold text-[#2D2318] mb-2">No users found</h3>
+        <p className="text-sm text-[#5B3E2E]">Start by adding your first user to the system.</p>
       </div>
     );
   }
@@ -217,25 +217,25 @@ export default function UsersTable({
       {users.map((user, index) => (
         <div
           key={user._id}
-          className="group relative overflow-hidden rounded-xl border border-white/20 bg-white/90 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/95"
+          className="group relative overflow-hidden rounded-xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-all duration-300"
           style={{ animationDelay: `${index * 50}ms` }}
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4 flex-1 min-w-0">
-              <Avatar className="h-12 w-12 ring-2 ring-[#8f7e4f]/20 shadow-md">
+              <Avatar className="h-12 w-12 ring-2 ring-[#8B6F47]/20 shadow-md">
                 <AvatarImage src={API_CONFIG.getImageUrl(user?.profilePic) || undefined} alt={user.fullName || "User"} />
-                <AvatarFallback className="bg-gradient-to-br from-[#8f7e4f] to-[#7a6b45] text-white font-semibold">
+                <AvatarFallback className="bg-gradient-to-br from-[#8B6F47] to-[#7D5A3F] text-white font-semibold">
                   {(user.fullName || "U").charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
 
               <div className="flex-1 min-w-0 space-y-2">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-                  <h3 className="text-lg font-semibold text-[#1a1a1a] truncate">{user.fullName || "Unnamed User"}</h3>
-                  <Badge variant="secondary" className="bg-[#8f7e4f]/10 text-[#7a6b45] border-[#8f7e4f]/20 w-fit">
+                  <h3 className="text-lg font-semibold text-[#2D2318] truncate">{user.fullName || "Unnamed User"}</h3>
+                  <Badge variant="secondary" className="bg-[#8B6F47]/10 text-[#7D5A3F] border-[#8B6F47]/20 w-fit">
                     {rolesLoading ? (
                       <div className="flex items-center gap-2">
-                        <div className="h-3 w-3 animate-spin rounded-full border border-[#8f7e4f] border-t-transparent" />
+                        <div className="h-3 w-3 animate-spin rounded-full border border-[#8B6F47] border-t-transparent" />
                         Loading...
                       </div>
                     ) : (
@@ -244,20 +244,20 @@ export default function UsersTable({
                   </Badge>
                 </div>
 
-                <div className="flex flex-wrap gap-4 text-sm text-[#4a4a4a]">
+                <div className="flex flex-wrap gap-4 text-sm text-[#5B3E2E]">
                   <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-[#8f7e4f]" />
+                    <Mail className="h-4 w-4 text-[#8B6F47]" />
                     <span className="truncate">{user.email || "No email"}</span>
                   </div>
                   {user.username && (
                     <div className="flex items-center gap-2">
-                      <AtSign className="h-4 w-4 text-[#8f7e4f]" />
+                      <AtSign className="h-4 w-4 text-[#8B6F47]" />
                       <span>@{user.username}</span>
                     </div>
                   )}
                   {user.phoneNumber && (
                     <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-[#8f7e4f]" />
+                      <Shield className="h-4 w-4 text-[#8B6F47]" />
                       <span>{user.phoneNumber}</span>
                     </div>
                   )}
@@ -268,13 +268,13 @@ export default function UsersTable({
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="hidden sm:flex gap-2">
                 <Link href={`/admin/users/${user._id}`}>
-                  <Button variant="outline" size="sm" className="border-[#8f7e4f]/40 text-[#8f7e4f] hover:bg-[#8f7e4f]/10 hover:border-[#7a6b45] transition-all duration-300">
+                  <Button variant="outline" size="sm" className="border-[#8B6F47]/40 text-[#8B6F47] hover:bg-[#8B6F47]/10 hover:border-[#7D5A3F] transition-all duration-300">
                     <Eye className="h-4 w-4" />
                   </Button>
                 </Link>
 
                 <Link href={`/admin/users/${user._id}/edit`}>
-                  <Button variant="outline" size="sm" className="border-[#8f7e4f]/40 text-[#8f7e4f] hover:bg-[#8f7e4f]/10 hover:border-[#7a6b45] transition-all duration-300">
+                  <Button variant="outline" size="sm" className="border-[#8B6F47]/40 text-[#8B6F47] hover:bg-[#8B6F47]/10 hover:border-[#7D5A3F] transition-all duration-300">
                     <Pencil className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -292,7 +292,7 @@ export default function UsersTable({
               <div className="sm:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="border-[#8f7e4f]/40 text-[#8f7e4f] hover:bg-[#8f7e4f]/10">
+                    <Button variant="outline" size="sm" className="border-[#8B6F47]/40 text-[#8B6F47] hover:bg-[#8B6F47]/10">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -331,8 +331,8 @@ export default function UsersTable({
       ))}
 
       {pagination && (
-        <div className="flex items-center justify-between p-4 bg-white/80 rounded-md">
-          <div className="text-sm text-[#4a4a4a]">
+        <div className="flex items-center justify-between p-4 bg-white rounded-md">
+          <div className="text-sm text-[#5B3E2E]">
             Page {pagination.page} of {pagination.totalPages}
           </div>
           <div className="flex items-center gap-2">{makePagination()}</div>

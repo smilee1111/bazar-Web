@@ -59,8 +59,8 @@ export default function ViewUserPage() {
     loadRoles();
   }, []);
 
-  if (loading) return <div className="text-white/80">Loading user...</div>;
-  if (!user) return <div className="text-white/80">User not found</div>;
+  if (loading) return <div className="text-gray-500">Loading user...</div>;
+  if (!user) return <div className="text-gray-500">User not found</div>;
 
   const roleValue = typeof user.roleId === "object" ? user.roleId?.roleName || user.roleId?.roleId : user.roleId;
   const roleLabel = roles.find((r) => r.value === roleValue)?.label || normalizeRole(roleValue) || "unknown";
@@ -71,12 +71,12 @@ export default function ViewUserPage() {
       <div className="flex flex-col gap-4 animate-fade-up">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-white/70">Admin Panel</p>
-            <h1 className="text-4xl font-bold text-white">User Profile</h1>
-            <p className="text-white/75 text-lg">View detailed user information and manage account settings.</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Admin Panel</p>
+            <h1 className="text-4xl font-bold text-[#2D2318]">User Profile</h1>
+            <p className="text-gray-500 text-lg">View detailed user information and manage account settings.</p>
           </div>
           <Link href="/admin/users">
-            <Button variant="outline" className="gap-2 border-white/25 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300">
+            <Button variant="outline" className="gap-2 border-gray-300 text-[#2D2318] hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
               <ArrowLeft className="h-4 w-4" />
               Back to Users
             </Button>
@@ -85,35 +85,35 @@ export default function ViewUserPage() {
       </div>
 
       {/* Profile Overview Card */}
-      <Card className="border-[1.2px] border-white/25 bg-white/95 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-shadow duration-300">
+      <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
         <CardHeader className="space-y-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#8f7e4f] to-[#7a6b45] shadow-lg group-hover:shadow-xl transition-all duration-300">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B6F47] to-[#7D5A3F] shadow-lg group-hover:shadow-xl transition-all duration-300">
               <Avatar className="h-18 w-18">
                 <AvatarImage
                   src={API_CONFIG.getImageUrl(user?.profilePic) || undefined}
                   alt={user.fullName || "Profile"}
                 />
-                <AvatarFallback className="bg-[#8f7e4f] text-white text-xl font-semibold">
+                <AvatarFallback className="bg-[#8B6F47] text-white text-xl font-semibold">
                   {(user.fullName || user.email || "U").charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </div>
             <div>
-              <CardTitle className="text-xl text-[#1a1a1a]">Profile Overview</CardTitle>
-              <CardDescription className="text-[#4a4a4a]">
+              <CardTitle className="text-xl text-[#2D2318]">Profile Overview</CardTitle>
+              <CardDescription className="text-[#5B3E2E]">
                 Complete user account information
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <Separator className="bg-[#efefef]" />
+        <Separator className="bg-[#F5EFE7]" />
         <CardContent className="p-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {/* Personal Information */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-[#1a1a1a] flex items-center gap-3">
-                <User className="h-6 w-6 text-[#8f7e4f]" />
+              <h3 className="text-xl font-semibold text-[#2D2318] flex items-center gap-3">
+                <User className="h-6 w-6 text-[#8B6F47]" />
                 Personal Information
               </h3>
               <div className="space-y-4">
@@ -126,19 +126,19 @@ export default function ViewUserPage() {
 
             {/* Account Information */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-[#1a1a1a] flex items-center gap-3">
-                <Shield className="h-6 w-6 text-[#8f7e4f]" />
+              <h3 className="text-xl font-semibold text-[#2D2318] flex items-center gap-3">
+                <Shield className="h-6 w-6 text-[#8B6F47]" />
                 Account Information
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#6a5c38]">Role:</span>
-                  <Badge variant="secondary" className="bg-[#8f7e4f]/10 text-[#7a6b45] capitalize">
+                  <span className="text-sm font-medium text-[#5B3E2E]">Role:</span>
+                  <Badge variant="secondary" className="bg-[#8B6F47]/10 text-[#7D5A3F] capitalize">
                     {roleLabel}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#6a5c38]">Status:</span>
+                  <span className="text-sm font-medium text-[#5B3E2E]">Status:</span>
                   <Badge
                     variant={user.roleId?.status === "active" ? "default" : "secondary"}
                     className={user.roleId?.status === "active"
@@ -159,7 +159,7 @@ export default function ViewUserPage() {
       {/* Action Buttons */}
       <div className="flex gap-4">
         <Link href={`/admin/users/${userId}/edit`}>
-          <Button className="gap-2 bg-gradient-to-r from-[#8f7e4f] to-[#7a6b45] text-white hover:from-[#7a6b45] hover:to-[#6b5d3c] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+          <Button className="gap-2 bg-gradient-to-r from-[#8B6F47] to-[#7D5A3F] text-white hover:from-[#7D5A3F] hover:to-[#5B3E2E] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
             <Edit className="h-4 w-4" />
             Edit User
           </Button>
@@ -171,12 +171,12 @@ export default function ViewUserPage() {
 
 function InfoItem({ label, value, icon }: { label: string; value?: string; icon?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between p-4 rounded-lg border border-[#f0f0f0] bg-white/60 hover:bg-white/80 transition-colors shadow-sm">
+    <div className="flex items-center justify-between p-4 rounded-lg border border-[#F5EFE7] bg-white/60 hover:bg-white/80 transition-colors shadow-sm">
       <div className="flex items-center gap-3">
-        {icon && <span className="text-[#8f7e4f]">{icon}</span>}
-        <span className="text-sm font-semibold text-[#6a5c38]">{label}:</span>
+        {icon && <span className="text-[#8B6F47]">{icon}</span>}
+        <span className="text-sm font-semibold text-[#5B3E2E]">{label}:</span>
       </div>
-      <span className="text-base text-[#1a1a1a] font-medium">{value || "-"}</span>
+      <span className="text-base text-[#2D2318] font-medium">{value || "-"}</span>
     </div>
   );
 }

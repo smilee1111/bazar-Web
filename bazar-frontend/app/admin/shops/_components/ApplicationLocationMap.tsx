@@ -80,7 +80,7 @@ export default function ApplicationLocationMap({
                 {coords ? (
                     <ShopLocationMap lat={coords.lat} lng={coords.lng} height={height} />
                 ) : (
-                    <div className="rounded-2xl border border-[#efe7d6] bg-[#faf7f0] px-4 py-3 text-sm text-gray-600">
+                    <div className="rounded-2xl border border-[#F5EFE7] bg-[#FAF4EC] px-4 py-3 text-sm text-gray-600">
                         {loading ? "Loading map..." : "Location not available for this application."}
                     </div>
                 )}

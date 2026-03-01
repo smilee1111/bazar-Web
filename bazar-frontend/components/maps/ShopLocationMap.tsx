@@ -56,7 +56,7 @@ export default function ShopLocationMap({ lat, lng, height = 280, className }: S
                 zoom={15}
                 scrollWheelZoom={false}
                 style={{ height: "100%", width: "100%" }}
-                className="rounded-2xl border border-[#efe7d6]"
+                className="rounded-2xl border border-[#F5EFE7]"
                 zoomControl={true}
             >
                 <MapInitializer />

@@ -23,10 +23,10 @@ export default function ReviewForm({ shopId, onReviewSubmitted, isShopOwner = fa
     // If user is shop owner, show a message instead of the form
     if (isShopOwner) {
         return (
-            <Card className="p-8 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl sticky top-24">
-                <h3 className="text-2xl font-bold text-white mb-6">Write a Review</h3>
-                <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-                    <p className="text-white/70 text-base">
+            <Card className="p-8 bg-white border border-gray-100 shadow-sm rounded-2xl sticky top-24">
+                <h3 className="text-2xl font-bold text-[#2D2318] mb-6">Write a Review</h3>
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+                    <p className="text-gray-500 text-base">
                         You cannot review your own shop.
                     </p>
                 </div>
@@ -74,13 +74,13 @@ export default function ReviewForm({ shopId, onReviewSubmitted, isShopOwner = fa
     };
 
     return (
-        <Card className="p-8 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl sticky top-24">
-            <h3 className="text-2xl font-bold text-white mb-6">Write a Review</h3>
+        <Card className="p-8 bg-white border border-gray-100 shadow-sm rounded-2xl sticky top-24">
+            <h3 className="text-2xl font-bold text-[#2D2318] mb-6">Write a Review</h3>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Star Rating */}
                 <div>
-                    <label className="block text-sm font-semibold text-white/90 mb-3">Your Rating</label>
+                    <label className="block text-sm font-semibold text-[#2D2318] mb-3">Your Rating</label>
                     <div className="flex gap-4">
                         {[1, 2, 3, 4, 5].map((star) => (
                             <button
@@ -95,27 +95,27 @@ export default function ReviewForm({ shopId, onReviewSubmitted, isShopOwner = fa
                                     className={`h-10 w-10 ${
                                         star <= (hoveredRating || rating)
                                             ? "fill-yellow-400 text-yellow-400"
-                                            : "text-white/20"
+                                            : "text-gray-300"
                                     } transition-all`}
                                 />
                             </button>
                         ))}
                     </div>
                     {rating > 0 && (
-                        <p className="text-sm text-[#d4c5a0] mt-2 font-medium">★ {rating} out of 5 stars</p>
+                        <p className="text-sm text-[#C99A6E] mt-2 font-medium">★ {rating} out of 5 stars</p>
                     )}
                 </div>
 
                 {/* Review Text */}
                 <div>
-                    <label className="block text-sm font-semibold text-white/90 mb-2">Your Review</label>
+                    <label className="block text-sm font-semibold text-[#2D2318] mb-2">Your Review</label>
                     <Textarea
                         placeholder="Share your experience with this shop... (minimum 10 characters)"
                         value={reviewText}
                         onChange={(e) => setReviewText(e.target.value)}
-                        className="min-h-[120px] bg-white/5 border border-white/10 text-white placeholder:text-white/50 focus:border-[#8f7e4f] focus:bg-white/10 resize-none rounded-xl transition"
+                        className="min-h-[120px] bg-gray-50 border border-gray-200 text-[#2D2318] placeholder:text-gray-400 focus:border-[#8B6F47] focus:bg-white resize-none rounded-xl transition"
                     />
-                    <p className="text-xs text-white/50 mt-2">
+                    <p className="text-xs text-gray-400 mt-2">
                         {reviewText.length}/500 characters
                     </p>
                 </div>
@@ -124,7 +124,7 @@ export default function ReviewForm({ shopId, onReviewSubmitted, isShopOwner = fa
                 <Button
                     type="submit"
                     disabled={loading || rating === 0 || reviewText.length < 10}
-                    className="w-full bg-[#8f7e4f] hover:bg-[#9d8c5d] text-white rounded-full py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 text-base"
+                    className="w-full bg-[#8B6F47] hover:bg-[#7D5A3F] text-white rounded-full py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 text-base"
                 >
                     <Send className="h-4 w-4" />
                     {loading ? "Submitting..." : "Submit Review"}
