@@ -2,6 +2,7 @@ import { SellerApplicationRepository } from "../../repositories/sellerApplicatio
 import { UserRepository } from "../../repositories/user.repository";
 import { RoleRepository } from "../../repositories/role.repository";
 import { ShopRepository } from "../../repositories/shop.repository";
+import { CategoryRepository } from "../../repositories/category.repository";
 import { CreateSellerApplicationDto, UpdateSellerApplicationDto } from "../../dtos/sellerApplication.dto";
 import { HttpError } from "../../errors/http-error";
 
@@ -9,6 +10,7 @@ let sellerApplicationRepository = new SellerApplicationRepository();
 let userRepository = new UserRepository();
 let roleRepository = new RoleRepository();
 let shopRepository = new ShopRepository();
+let categoryRepository = new CategoryRepository();
 
 export class AdminSellerApplicationService {
     async createSellerApplication(data: CreateSellerApplicationDto) {
@@ -94,6 +96,13 @@ export class AdminSellerApplicationService {
         const ownerId = application.userId.toString();
         const existingShop = await shopRepository.getShopByOwnerId(ownerId);
         if (!existingShop) {
+            // Fetch category by name to get categoryId
+            let categoryId: string | undefined;
+            if (application.categoryName) {
+                const category = await categoryRepository.getCategoryByCategoryName(application.categoryName);
+                categoryId = category?._id.toString();
+            }
+
             const baseName = (application.businessName || "").trim() || `Shop-${application._id.toString().slice(-6)}`;
             const baseSlug = baseName
                 .toLowerCase()
@@ -113,6 +122,7 @@ export class AdminSellerApplicationService {
                         shopContact: application.businessPhone,
                         location: (application as any).location,
                         description: application.description,
+                        ...(categoryId && { categoryId }),
                     });
                     break;
                 } catch (err: any) {
