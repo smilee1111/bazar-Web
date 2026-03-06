@@ -33,7 +33,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/modals/DeleteModal";
 import { handleGetMyShop, handleUpdateShop } from "@/lib/actions/shop-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { handleGetShopReviewsByShopId } from "@/lib/actions/shopReview-action";

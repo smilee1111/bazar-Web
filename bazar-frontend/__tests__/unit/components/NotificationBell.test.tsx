@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { NotificationBell } from '@/components/NotificationBell';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 
 // Mock the notification actions
 jest.mock('@/lib/actions/notification-action', () => ({

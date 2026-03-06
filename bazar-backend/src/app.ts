@@ -80,24 +80,24 @@ import adminUserRoutes from './routes/admin/user/user.route';
 app.use('/api/admin/users', adminUserRoutes);
 
 //ADMIN-SELLER-APPLICATION-ROUTES
-import adminSellerApplicationRoutes from './routes/admin/sellerApplication';
+import adminSellerApplicationRoutes from './routes/admin/sellerApplication.route';
 //defining the path for usage of admin seller application routes
 app.use('/api/admin/seller-applications', adminSellerApplicationRoutes);
 
 //ADMIN-SHOP-ROUTES
-import adminShopRoutes from './routes/admin/shop';
+import adminShopRoutes from './routes/admin/shop.route';
 app.use('/api/admin/shops', adminShopRoutes);
 
 //ADMIN-SHOP-PHOTO-ROUTES
-import adminShopPhotoRoutes from './routes/admin/shopPhoto';
+import adminShopPhotoRoutes from './routes/admin/shopPhoto.route';
 app.use('/api/admin/shop-photos', adminShopPhotoRoutes);
 
 //ADMIN-SHOP-REVIEW-ROUTES
-import adminShopReviewRoutes from './routes/admin/shopReview';
+import adminShopReviewRoutes from './routes/admin/shopReview.route';
 app.use('/api/admin/shop-reviews', adminShopReviewRoutes);
 
 //ADMIN-SHOP-DETAIL-ROUTES
-import adminShopDetailRoutes from './routes/admin/shopDetail';
+import adminShopDetailRoutes from './routes/admin/shopDetail.route';
 app.use('/api/admin/shop-details', adminShopDetailRoutes);
 
 //USER SELF ROUTES 
@@ -120,7 +120,7 @@ app.use('/api/user/reviews', userReviewRoutes);
 app.use('/api/user/notifications', notificationRoutes);
 
 //SELLER ROUTES
-import sellerShopRoutes from './routes/seller/shop';
+import sellerShopRoutes from './routes/seller/shop.route';
 app.use('/api/seller/shops', sellerShopRoutes);
 
 //SHOP PUBLIC ROUTES

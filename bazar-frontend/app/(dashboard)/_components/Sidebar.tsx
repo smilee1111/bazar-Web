@@ -9,7 +9,7 @@ import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store, Setting
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/app/context/AuthContext";
+import { useAuth } from "@/app/providers/AuthContext";
 
 const baseNavItems = [
     { label: "Home", href: "/dashboard", icon: Home },

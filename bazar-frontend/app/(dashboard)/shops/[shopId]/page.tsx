@@ -10,8 +10,8 @@ import { ArrowLeft, MapPin, Phone, Mail, Star, ThumbsUp, ThumbsDown, X, ZoomIn, 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import ReviewForm from "@/components/ReviewForm";
-import DeleteModal from "@/components/DeleteModal";
+import ReviewForm from "@/components/reviews/ReviewForm";
+import DeleteModal from "@/components/modals/DeleteModal";
 import { API_CONFIG } from "@/lib/api/config";
 import { handleGetPublicShopById, handleGetRouteToShop } from "@/lib/actions/shop-action";
 import { handleLikeShopReview, handleUnlikeShopReview, handleIsReviewLiked, handleDislikeShopReview, handleUndislikeShopReview, handleIsReviewDisliked, handleDeleteShopReview } from "@/lib/actions/shopReview-action";
@@ -19,7 +19,7 @@ import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { handleAddFavourite, handleRemoveFavourite, handleGetFavourites } from "@/lib/actions/favourite-action";
 import { handleSaveShop, handleRemoveSavedShop, handleGetSavedShops } from "@/lib/actions/savedShop-action";
 import { toast } from "react-toastify";
-import { useAuth } from "@/app/context/AuthContext";
+import { useAuth } from "@/app/providers/AuthContext";
 
 const RouteMap = dynamic(() => import("@/components/maps/RouteMap"), { ssr: false });
 const ShopLocationMap = dynamic(() => import("@/components/maps/ShopLocationMap"), { ssr: false });

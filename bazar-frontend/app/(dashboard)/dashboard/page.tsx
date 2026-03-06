@@ -13,7 +13,7 @@ import { handleGetSavedShops } from "@/lib/actions/savedShop-action";
 import { handleGetFavourites } from "@/lib/actions/favourite-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { API_CONFIG } from "@/lib/api/config";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../providers/AuthContext";
 import ShopCard from "../shops/_components/ShopCard";
 
 interface Shop {

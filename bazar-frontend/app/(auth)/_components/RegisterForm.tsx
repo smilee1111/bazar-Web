@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { getRolesAction } from "@/lib/actions/role-action";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../providers/AuthContext";
 import { getRoleHomePath } from "@/lib/utils";
 
 const formFields = [

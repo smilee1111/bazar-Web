@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Eye, Pencil, Trash2, User, Mail, AtSign, Shield, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/modals/DeleteModal";
 import {
   DropdownMenu,
   DropdownMenuContent,

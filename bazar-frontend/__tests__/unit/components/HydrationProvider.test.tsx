@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { HydrationProvider } from '@/components/HydrationProvider';
+import { HydrationProvider } from '@/components/providers/HydrationProvider';
 
 describe('HydrationProvider Component', () => {
     test('1. should render children without errors', () => {

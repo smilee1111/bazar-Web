@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import DeleteModal from '@/components/DeleteModal';
+import DeleteModal from '@/components/modals/DeleteModal';
 
 describe('DeleteModal Component', () => {
     const mockOnConfirm = jest.fn();
