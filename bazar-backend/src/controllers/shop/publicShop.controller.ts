@@ -1,7 +1,17 @@
 import { Request, Response, NextFunction } from "express";
+import z from "zod";
 import { PublicShopService } from "../../services/shop/publicShop.service";
+import { RouteToShopQueryDto } from "../../dtos/map.dto";
 
 const publicShopService = new PublicShopService();
+
+
+const NearestShopQueryDto = z.object({
+    categoryId: z.string().min(1),
+    lat: z.coerce.number().min(-90).max(90),
+    lng: z.coerce.number().min(-180).max(180),
+    limit: z.coerce.number().min(1).max(50).optional(),
+});
 
 export class PublicShopController {
     async getPublicFeed(req: Request, res: Response, next: NextFunction) {
@@ -21,6 +31,58 @@ export class PublicShopController {
                 return res.status(404).json({ success: false, message: "Shop not found" });
             }
             return res.status(200).json({ success: true, data: result });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getRouteToShop(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { shopId } = req.params;
+            const parsed = RouteToShopQueryDto.safeParse(req.query);
+            if (!parsed.success) {
+                const errorMessages = parsed.error.issues
+                    .map(err => `${err.path.join('.')}: ${err.message}`)
+                    .join('; ');
+                return res.status(400).json({ success: false, message: `Validation error: ${errorMessages}` });
+            }
+
+            const result = await publicShopService.getRouteToShop(
+                shopId,
+                parsed.data.fromLat,
+                parsed.data.fromLng
+            );
+
+            if (!result) {
+                return res.status(404).json({ success: false, message: "Shop not found" });
+            }
+
+            if ((result as any).error) {
+                return res.status(400).json({ success: false, message: (result as any).error });
+            }
+
+            return res.status(200).json({ success: true, data: result });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+     async getNearestShops(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = NearestShopQueryDto.safeParse(req.query);
+            if (!parsed.success) {
+                const errorMessages = parsed.error.issues
+                    .map(err => `${err.path.join('.')}: ${err.message}`)
+                    .join('; ');
+                return res.status(400).json({ success: false, message: `Validation error: ${errorMessages}` });
+            }
+            const { categoryId, lat, lng, limit } = parsed.data;
+            const shops = await publicShopService.findNearestShopsByCategory(
+                categoryId,
+                { lat, lng },
+                limit
+            );
+            return res.status(200).json({ success: true, data: shops });
         } catch (error) {
             next(error);
         }

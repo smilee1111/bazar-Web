@@ -9,9 +9,17 @@ import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store, Setting
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/app/context/AuthContext";
+import { useAuth } from "@/app/providers/AuthContext";
 
 const baseNavItems = [
+    { label: "Home", href: "/dashboard", icon: Home },
+    { label: "Browse Shops", href: "/shops", icon: MapPin },
+    { label: "Saved Shops", href: "/dashboard/saved-shops", icon: Bookmark },
+    { label: "Favourites", href: "/dashboard/favourites", icon: Heart },
+    { label: "Profile", href: "/profile", icon: UserRound },
+];
+
+const userNavItems = [
     { label: "Home", href: "/dashboard", icon: Home },
     { label: "Browse Shops", href: "/shops", icon: MapPin },
     { label: "Saved Shops", href: "/dashboard/saved-shops", icon: Bookmark },
@@ -51,15 +59,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
         ]
         : isSeller
             ? [
-                ...baseNavItems,
+                ...userNavItems,
                 { label: "My Shop", href: "/my-shop", icon: Store }
             ]
-            : baseNavItems;
+            : userNavItems;
 
     return (
         <aside
             className={cn(
-                "sticky top-0 flex h-screen flex-none flex-col overflow-hidden bg-white/10 text-white shadow-[0_10px_40px_rgba(0,0,0,0.25)] backdrop-blur-2xl transition-[width] duration-300 ease-in-out will-change-[width]",
+                "sticky top-0 flex h-screen flex-none flex-col overflow-hidden bg-[#2D2318] text-white shadow-xl transition-[width] duration-300 ease-in-out will-change-[width]",
                 isCollapsed ? "w-20" : "w-72"
             )}
         >
@@ -74,7 +82,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                         <button
                             type="button"
                             onClick={onToggleCollapse}
-                            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/40 bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition hover:bg-white/15"
+                            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-[#8B6F47] shadow-md transition hover:bg-[#7D5A3F]"
                             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                         >
                             <Image
@@ -88,10 +96,10 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                         </button>
                         {!isCollapsed && (
                             <div className="leading-tight">
-                                <p className="text-[11px] uppercase tracking-[0.2em] text-white/60">Bazar</p>
+                                <p className="text-[11px] uppercase tracking-[0.2em] text-white/50">Bazar</p>
                                 <div className="flex items-center gap-2">
                                     <p className="text-xl font-semibold">Dashboard</p>
-                                    <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-[3px] text-[11px] font-medium text-white/90">
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-[#8B6F47] px-2 py-[3px] text-[11px] font-medium text-white/90">
                                         <Shield className="h-3 w-3" />
                                         {roleBadgeLabel}
                                     </span>
@@ -113,11 +121,11 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                 </div>
             </div>
 
-            <Separator className="bg-white/15" />
+            <Separator className="bg-white/10" />
 
             <nav className={cn("flex-1 px-3 py-5", isCollapsed && "px-2")}> 
                 {!isCollapsed && (
-                    <p className="px-3 pb-3 text-xs uppercase tracking-[0.25em] text-white/50">Menu</p>
+                    <p className="px-3 pb-3 text-xs uppercase tracking-[0.25em] text-white/40">Menu</p>
                 )}
                 <div className="space-y-1">
                     {navItems.map(({ label, href, icon: Icon }) => {
@@ -130,9 +138,9 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                                 <Button
                                     variant="ghost"
                                     className={cn(
-                                        "group relative flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/80 transition hover:bg-white/15 hover:text-white",
+                                        "group relative flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/70 transition-all duration-200 hover:bg-[#8B6F47]/30 hover:text-white",
                                         isCollapsed && "justify-center px-2",
-                                        isActive && "bg-white/15 text-white shadow-inner"
+                                        isActive && "bg-[#8B6F47] text-white shadow-md"
                                     )}
                                 >
                                     <span
@@ -141,7 +149,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                                             isActive && "bg-white"
                                         )}
                                     />
-                                    <Icon className="h-[18px] w-[18px] text-white/70 group-hover:text-white" />
+                                    <Icon className="h-[18px] w-[18px] text-white/60 group-hover:text-white" />
                                     {!isCollapsed && <span>{label}</span>}
                                 </Button>
                             </Link>
@@ -151,17 +159,17 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
             </nav>
 
             <div className={cn("px-4 pb-8 pt-4", isCollapsed && "px-2")}> 
-                <Separator className="mb-4 bg-white/10" />
+                <Separator className="mb-4 bg-white/8" />
                 <div className="mb-3">
                     <Button
                         onClick={() => setSettingsOpen((prev) => !prev)}
                         variant="ghost"
                         className={cn(
-                            "flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/80 transition hover:bg-white/15 hover:text-white",
+                            "flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/70 transition-all duration-200 hover:bg-[#8B6F47]/30 hover:text-white",
                             isCollapsed && "justify-center px-2"
                         )}
                     >
-                        <Settings className="h-[18px] w-[18px] text-white/70" />
+                        <Settings className="h-[18px] w-[18px] text-white/60" />
                         {!isCollapsed && (
                             <>
                                 <span>Settings</span>
@@ -185,7 +193,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                                 <Link href="/settings/account">
                                     <Button
                                         variant="ghost"
-                                        className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/75 hover:bg-white/10 hover:text-white"
+                                        className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/60 hover:bg-[#8B6F47]/20 hover:text-white"
                                     >
                                         Account
                                     </Button>
@@ -193,7 +201,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                                 <Link href="/settings/security">
                                     <Button
                                         variant="ghost"
-                                        className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/75 hover:bg-white/10 hover:text-white"
+                                        className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/60 hover:bg-[#8B6F47]/20 hover:text-white"
                                     >
                                         Security
                                     </Button>
@@ -206,11 +214,11 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                     onClick={handleLogout}
                     variant="ghost"
                     className={cn(
-                        "flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/80 transition hover:bg-white/15 hover:text-white",
+                        "flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/70 transition-all duration-200 hover:bg-red-500/20 hover:text-red-300",
                         isCollapsed && "justify-center px-2"
                     )}
                 >
-                    <LogOut className="h-[18px] w-[18px] text-white/70" />
+                    <LogOut className="h-[18px] w-[18px] text-white/60" />
                     {!isCollapsed && <span>Logout</span>}
                 </Button>
             </div>

@@ -12,6 +12,12 @@ export interface IShopReviewRepository {
 }
 
 export class ShopReviewRepository implements IShopReviewRepository {
+    private readonly reviewerPopulate = {
+        path: "reviewedBy",
+        select: "fullName email profilePic roleId sellerStatus",
+        populate: { path: "roleId", select: "roleName" },
+    };
+
     async createReview(data: Partial<IShopReview>): Promise<IShopReview> {
         const newReview = new ShopReviewModel(data);
         await newReview.save();
@@ -22,7 +28,7 @@ export class ShopReviewRepository implements IShopReviewRepository {
         const query = isObjectIdString(id)
             ? { $or: [{ _id: id }, { reviewId: id }] }
             : { reviewId: id };
-        const review = await ShopReviewModel.findOne(query).populate('reviewedBy', 'fullName email');
+        const review = await ShopReviewModel.findOne(query).populate(this.reviewerPopulate);
         return review;
     }
 
@@ -31,7 +37,7 @@ export class ShopReviewRepository implements IShopReviewRepository {
         if (uniqueIds.length === 0) {
             return [];
         }
-        return ShopReviewModel.find({ shopId: { $in: uniqueIds }, isActive: true }).populate('reviewedBy', 'fullName email');
+        return ShopReviewModel.find({ shopId: { $in: uniqueIds }, isActive: true }).populate(this.reviewerPopulate);
     }
 
     async getReviewsByUserId(userId: string): Promise<IShopReview[]> {

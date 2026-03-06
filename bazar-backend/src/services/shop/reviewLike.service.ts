@@ -1,9 +1,13 @@
 import { HttpError } from "../../errors/http-error";
 import { ReviewLikeRepository } from "../../repositories/reviewLike.repository";
 import { ShopReviewRepository } from "../../repositories/shopReview.repository";
+import { ShopRepository } from "../../repositories/shop.repository";
+import { NotificationHelperService } from "../user/notificationHelper.service";
 
 const reviewLikeRepository = new ReviewLikeRepository();
 const shopReviewRepository = new ShopReviewRepository();
+const shopRepository = new ShopRepository();
+const notificationHelper = new NotificationHelperService();
 
 export class ReviewLikeService {
     /**
@@ -30,6 +34,27 @@ export class ReviewLikeService {
         const updated = await shopReviewRepository.updateReview(reviewId, {
             likesCount: currentLikes + 1
         } as any);
+
+        // Send notification to review owner
+        try {
+            const reviewOwnerId = typeof review.reviewedBy === 'object' && review.reviewedBy?._id
+                ? review.reviewedBy._id.toString()
+                : review.reviewedBy?.toString();
+
+            // Get shop name for better notification context
+            let shopName: string | undefined;
+            try {
+                const shop = await shopRepository.getShopByIdOrShopId(review.shopId);
+                shopName = shop?.shopName;
+            } catch (e) {
+                // Ignore if shop not found
+            }
+
+            await notificationHelper.notifyReviewLiked(reviewOwnerId, userId, reviewId, shopName);
+        } catch (error) {
+            console.error('Failed to send review like notification:', error);
+            // Don't fail the like operation if notification fails
+        }
 
         return updated;
     }

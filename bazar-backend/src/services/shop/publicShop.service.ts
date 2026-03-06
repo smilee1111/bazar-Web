@@ -2,9 +2,17 @@ import { ShopRepository } from "../../repositories/shop.repository";
 import { ShopPhotoModel } from "../../models/shopPhoto.model";
 import { ShopReviewModel } from "../../models/shopReview.model";
 import { ShopDetailModel } from "../../models/shopDetail.model";
+import { CategoryModel, ICategory } from "../../models/category.model";
 import { IShop } from "../../models/shop.model";
+import { OsrmService } from "../maps/osrm.service";
 
 const shopRepository = new ShopRepository();
+const osrmService = new OsrmService();
+const reviewerPopulate = {
+    path: "reviewedBy",
+    select: "fullName email profilePic roleId sellerStatus",
+    populate: { path: "roleId", select: "roleName" },
+};
 
 const mapReview = (review: any) => ({
     ...review,
@@ -39,7 +47,7 @@ export class PublicShopService {
         const [photos, reviews, details] = await Promise.all([
             ShopPhotoModel.find({ shopId: { $in: shopIds }, isActive: true }).lean(),
             ShopReviewModel.find({ shopId: { $in: shopIds }, isActive: true })
-                .populate("reviewedBy", "fullName email")
+                .populate(reviewerPopulate)
                 .lean(),
             ShopDetailModel.find({ shopId: { $in: shopIds } }).lean(),
         ]);
@@ -129,7 +137,7 @@ export class PublicShopService {
         const [photos, reviews, details] = await Promise.all([
             ShopPhotoModel.find({ shopId, isActive: true }).lean(),
             ShopReviewModel.find({ shopId, isActive: true })
-                .populate("reviewedBy", "fullName email")
+                .populate(reviewerPopulate)
                 .lean(),
             ShopDetailModel.find({ shopId }).lean(),
         ]);
@@ -149,5 +157,115 @@ export class PublicShopService {
             avgRating,
             reviewCount: mappedReviews.length,
         };
+    }
+
+    async getRouteToShop(shopId: string, fromLat: number, fromLng: number) {
+        const shop = await shopRepository.getShopByIdOrShopId(shopId);
+        if (!shop || (shop as any).isActive === false) {
+            return null;
+        }
+
+        const location = (shop as any).location;
+        if (!location || !Array.isArray(location.coordinates) || location.coordinates.length !== 2) {
+            return { error: "Shop location is not available" };
+        }
+
+        const [toLng, toLat] = location.coordinates;
+        const route = await osrmService.getRoute(fromLng, fromLat, toLng, toLat);
+
+        return {
+            shopId: (shop as any).shopId || String((shop as any)._id || ""),
+            from: { lat: fromLat, lng: fromLng },
+            to: { lat: toLat, lng: toLng },
+            distance: route.distance,
+            duration: route.duration,
+            geometry: route.geometry,
+        };
+    }
+
+    async findNearestShopsByCategory(
+        categoryId: string,
+        userLocation: { lat: number; lng: number },
+        limit = 10
+    ) {
+        // Get raw nearest shops from repository
+        const shops = await shopRepository.findNearestByCategory(categoryId, userLocation, limit);
+        
+        if (shops.length === 0) {
+            return [];
+        }
+
+        // Get shop IDs for enrichment
+        const shopIds = shops
+            .map((shop: any) => shop.shopId || String(shop._id || ""))
+            .filter((id: string) => id.length > 0);
+
+        // Fetch photos, reviews, and details
+        const [photos, reviews, details, categories] = await Promise.all([
+            ShopPhotoModel.find({ shopId: { $in: shopIds }, isActive: true }).lean(),
+            ShopReviewModel.find({ shopId: { $in: shopIds }, isActive: true })
+                .populate(reviewerPopulate)
+                .lean(),
+            ShopDetailModel.find({ shopId: { $in: shopIds } }).lean(),
+            CategoryModel.find({}).lean(),
+        ]);
+
+        // Build lookup maps
+        const photosByShop = new Map<string, any[]>();
+        photos.forEach((photo: any) => {
+            const list = photosByShop.get(photo.shopId) || [];
+            list.push(photo);
+            photosByShop.set(photo.shopId, list);
+        });
+
+        const reviewsByShop = new Map<string, any[]>();
+        reviews.forEach((review: any) => {
+            const list = reviewsByShop.get(review.shopId) || [];
+            list.push(mapReview(review));
+            reviewsByShop.set(review.shopId, list);
+        });
+
+        const detailsByShop = new Map<string, any[]>();
+        details.forEach((detail: any) => {
+            const list = detailsByShop.get(detail.shopId) || [];
+            list.push(detail);
+            detailsByShop.set(detail.shopId, list);
+        });
+
+        const categoryByIdMap = new Map<string, any>();
+        const categoryByObjectIdMap = new Map<string, any>();
+        categories.forEach((c: ICategory) => {
+            categoryByIdMap.set(String(c.categoryId), c);
+            categoryByObjectIdMap.set(String(c._id), c);
+        });
+
+        // Enrich shops with related data
+        return shops.map((shop: any) => {
+            const resolvedShopId = shop?.shopId || String(shop?._id || "");
+            const reviewsForShop = reviewsByShop.get(resolvedShopId) || [];
+            const avgRating = reviewsForShop.length > 0
+                ? reviewsForShop.reduce((sum, r) => sum + (r.starNum || 0), 0) / reviewsForShop.length
+                : 0;
+
+            // Enrich categoryId
+            const rawCatId = shop?.categoryId ? String(shop.categoryId) : null;
+            let enrichedCategoryId = { _id: null, name: '' };
+            if (rawCatId) {
+                const cat = categoryByIdMap.get(rawCatId) || categoryByObjectIdMap.get(rawCatId);
+                enrichedCategoryId = cat ? { _id: cat._id, name: cat.categoryName } : { _id: null, name: '' };
+            }
+
+            return {
+                ...shop,
+                shopId: resolvedShopId,
+                categoryId: enrichedCategoryId,
+                contactNumber: shop.contactNumber || shop.shopContact,
+                photos: photosByShop.get(resolvedShopId) || [],
+                reviews: reviewsForShop,
+                details: detailsByShop.get(resolvedShopId) || [],
+                avgRating,
+                reviewCount: reviewsForShop.length,
+            };
+        });
     }
 }

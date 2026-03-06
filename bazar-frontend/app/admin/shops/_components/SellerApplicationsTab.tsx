@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { CheckCircle, XCircle, Eye, FileText, Calendar, User, Phone, MapPin, Building } from "lucide-react";
 import { handleGetPendingSellerApplications, handleApproveSellerApplication, handleRejectSellerApplication } from "@/lib/actions/sellerApplication-action";
 import { toast } from "react-toastify";
+import ApplicationLocationMap from "./ApplicationLocationMap";
 
 interface SellerApplication {
     _id: string;
@@ -24,6 +25,7 @@ interface SellerApplication {
     categoryName?: string;
     businessPhone: string;
     businessAddress: string;
+    location?: { type: "Point"; coordinates: [number, number] };
     description: string;
     documentUrl: string;
     status: 'pending' | 'approved' | 'rejected';
@@ -97,7 +99,7 @@ export default function SellerApplicationsTab() {
         return (
             <div className="flex items-center justify-center py-8">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8f7e4f] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B6F47] mx-auto"></div>
                     <p className="mt-2 text-sm text-gray-600">Loading applications...</p>
                 </div>
             </div>
@@ -117,7 +119,7 @@ export default function SellerApplicationsTab() {
     return (
         <div className="space-y-4">
             {applications.map((application) => (
-                <Card key={application._id} className="hover:shadow-md transition-shadow bg-white/95 border border-[#e8e1cf]">
+                <Card key={application._id} className="hover:shadow-md transition-shadow bg-white border border-[#e8e1cf]">
                     <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                             <div className="space-y-1">
@@ -177,7 +179,7 @@ export default function SellerApplicationsTab() {
                                         View Details
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="max-w-2xl bg-white border-[1.2px] border-white/25 text-[#1a1a1a] rounded-lg p-6 shadow-xl">
+                                <DialogContent className="max-w-2xl bg-white border-[1.2px] border-gray-100 text-[#2D2318] rounded-lg p-6 shadow-xl">
                                     <DialogHeader className="mb-4">
                                         <DialogTitle className="flex items-center gap-2">
                                             <Building className="h-5 w-5" />
@@ -218,13 +220,18 @@ export default function SellerApplicationsTab() {
                                             <Label className="text-sm font-medium">Description</Label>
                                             <p className="text-sm text-gray-700 mt-1">{application.description}</p>
                                         </div>
+                                        <ApplicationLocationMap
+                                            location={application.location}
+                                            businessAddress={application.businessAddress}
+                                            height={220}
+                                        />
                                         <div>
                                             <Label className="text-sm font-medium">Document</Label>
                                             <a
                                                 href={application.documentUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-sm text-[#8f7e4f] hover:underline ml-2"
+                                                className="text-sm text-[#8B6F47] hover:underline ml-2"
                                             >
                                                 View Document
                                             </a>

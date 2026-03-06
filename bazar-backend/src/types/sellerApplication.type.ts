@@ -12,6 +12,13 @@ export const sellerApplicationSchema = z.object({
             message: "Phone number must be exactly 10 digits",
         }),
     businessAddress: z.string().min(10).max(1024),
+    location: z.object({
+        type: z.literal('Point'),
+        coordinates: z.tuple([
+            z.number().min(-180).max(180),
+            z.number().min(-90).max(90),
+        ]),
+    }).optional(),
     description: z.string().optional(),
     documentUrl: z.string().url(),
     status: z.enum(["pending", "approved", "rejected"]).default("pending"),

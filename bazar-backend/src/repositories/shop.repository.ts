@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { IShop, ShopModel } from "../models/shop.model";
 import { CategoryModel } from "../models/category.model";
 import { UserModel } from "../models/user.model";
@@ -13,6 +14,11 @@ export interface IShopRepository {
     getAllShops(): Promise<IShop[]>;
     updateShop(id: string, data: Partial<IShop>): Promise<IShop | null>;
     deleteShop(id: string): Promise<boolean | null>;
+    findNearestByCategory(
+        categoryId: string,
+        userLocation: { lat: number; lng: number },
+        limit?: number
+    ): Promise<IShop[]>;
 }
 
 export class ShopRepository implements IShopRepository {
@@ -204,5 +210,87 @@ export class ShopRepository implements IShopRepository {
     async deleteShop(id: string): Promise<boolean | null> {
         const result = await ShopModel.findByIdAndDelete(id);
         return result ? true : null;
+    }
+
+    async findNearestByCategory(
+        categoryId: string,
+        userLocation: { lat: number; lng: number },
+        limit = 10
+    ): Promise<IShop[]> {
+        try {
+            // First, resolve the category ID - the input could be either _id or categoryId
+            let category = await CategoryModel.findOne({
+                $or: [
+                    { _id: categoryId },
+                    { categoryId: categoryId },
+                    { _id: new mongoose.Types.ObjectId(categoryId) }
+                ]
+            }).lean();
+
+            if (!category) {
+                console.log(`[findNearestByCategory] Category not found for input: ${categoryId}`);
+                return [];
+            }
+
+            // Use the category's categoryId field for shop lookup
+            const actualCategoryId = category.categoryId || String(category._id);
+            
+            // Get shops within the distance limit, ordered by distance
+            const shops = await ShopModel.find({
+                categoryId: actualCategoryId,
+                isActive: true,
+                location: {
+                    $near: {
+                        $geometry: {
+                            type: "Point",
+                            coordinates: [userLocation.lng, userLocation.lat],
+                        },
+                        $maxDistance: 7000 // 7km straight-line (roughly 10km road distance)
+                    }
+                }
+            })
+            .limit(limit)
+            .lean();
+
+            // Calculate and log actual distances for debugging
+            console.log(`[findNearestByCategory] User location: [${userLocation.lng}, ${userLocation.lat}]`);
+            shops.forEach((shop: any) => {
+                if (shop.location && shop.location.coordinates) {
+                    const shopLng = shop.location.coordinates[0];
+                    const shopLat = shop.location.coordinates[1];
+                    const distance = this.calculateDistance(
+                        userLocation.lat, 
+                        userLocation.lng,
+                        shopLat, 
+                        shopLng
+                    );
+                    console.log(`[findNearestByCategory] Shop: ${shop.name || shop.shopId}`);
+                    console.log(`  - Coordinates: [${shopLng}, ${shopLat}]`);
+                    console.log(`  - Distance: ${distance.toFixed(2)} km`);
+                }
+            });
+
+            return shops as IShop[];
+        } catch (error) {
+            console.error(`[findNearestByCategory] Error:`, error);
+            throw error;
+        }
+    }
+
+    // Helper method to calculate distance using Haversine formula
+    private calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+        const R = 6371; // Earth's radius in km
+        const dLat = this.toRad(lat2 - lat1);
+        const dLng = this.toRad(lng2 - lng1);
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    private toRad(degrees: number): number {
+        return degrees * (Math.PI / 180);
     }
 }

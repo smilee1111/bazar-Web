@@ -3,29 +3,29 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Store, Users, MapPin, TrendingUp, Star, Heart, Globe } from "lucide-react";
+import { Store, Users, MapPin, TrendingUp, Star, Heart, Globe, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Header from "./_components/Header";
 
 const features = [
     {
         title: "Discover Local Shops",
-        description: "Find unique businesses in your neighborhood",
+        description: "Find unique businesses in your neighborhood and explore hidden gems around every corner.",
         icon: Store,
     },
     {
         title: "Community Driven",
-        description: "Read and share trusted reviews",
+        description: "Read and share trusted reviews from real people who love their local shops.",
         icon: Users,
     },
     {
         title: "Explore Locations",
-        description: "Browse shops across multiple cities",
+        description: "Browse shops across multiple cities with interactive maps and directions.",
         icon: MapPin,
     },
     {
         title: "Trending Places",
-        description: "Stay updated with popular spots",
+        description: "Stay updated with popular spots and discover what's hot in your area.",
         icon: TrendingUp,
     },
 ];
@@ -39,75 +39,71 @@ const stats = [
 
 export default function Home() {
     return (
-        <>
-            {/* Background Pattern */}
-            <div 
-                className="fixed inset-0 w-full h-full bg-gradient-to-br from-[#8f7e4f] via-[#7a6b45] to-[#6b5d3c] bg-cover bg-center -z-10"
-                style={{ backgroundImage: "url('/images/auth-background.svg')" }}
-            />
-
+        <div className="min-h-screen bg-white">
             {/* Header */}
             <Header />
 
             {/* Hero Section */}
-            <section className="w-full px-8 py-20 text-center">
-                <div className="max-w-4xl mx-auto animate-fade-up">
-                    <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
-                        Discover Your Local
-                        <br />
-                        Business Community
-                    </h1>
-                    <p className="text-xl text-white/90 mb-10 leading-relaxed max-w-2xl mx-auto">
-                        Connect with the best local shops, share experiences, and build your
-                        favorite places collection. Join thousands of community members today.
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/shops">
-                            <Button className="bg-[#8f7e4f] text-white hover:bg-[#7a6b45] rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                                Browse Shops
-                            </Button>
-                        </Link>
-                        <Link href="/register">
-                            <Button className="bg-white text-[#8f7e4f] hover:bg-white/90 rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                                Get Started
-                            </Button>
-                        </Link>
-                        <Link href="#features">
-                            <Button
-                                variant="outline"
-                                className="border-2 border-white text-white hover:bg-white/20 rounded-full px-8 py-6 text-lg font-semibold backdrop-blur-sm"
-                            >
-                                Learn More
-                            </Button>
-                        </Link>
+            <section className="relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2D2318] via-[#3D2F22] to-[#5B3E2E]" />
+                <div
+                    className="absolute inset-0 w-full h-full bg-cover bg-center opacity-5"
+                    style={{ backgroundImage: "url('/images/auth-background.svg')" }}
+                />
+                <div className="relative w-full max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
+                    <div className="max-w-3xl animate-fade-up">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-[#8B6F47]/20 px-4 py-1.5 text-sm font-medium text-[#D4A574] mb-6">
+                            <Sparkle /> Welcome to Bazar
+                        </span>
+                        <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 tracking-tight leading-[1.1]">
+                            Discover Your
+                            <br />
+                            <span className="text-[#D4A574]">Local Favorites</span>
+                        </h1>
+                        <p className="text-lg text-white/70 mb-10 leading-relaxed max-w-xl">
+                            Connect with the best local shops, share experiences, and build your
+                            favorite places collection. Join thousands of community members today.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-start gap-4">
+                            <Link href="/shops">
+                                <Button className="bg-[#8B6F47] text-white hover:bg-[#7D5A3F] rounded-full px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group">
+                                    Browse Shops
+                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                </Button>
+                            </Link>
+                            <Link href="/register">
+                                <Button className="bg-white text-[#2D2318] hover:bg-white/90 rounded-full px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                                    Get Started Free
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* Stats Section */}
-            <section className="w-full px-8 py-12">
-                <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <section className="w-full bg-white border-b border-gray-100">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
                         {stats.map((stat, index) => (
-                            <Card key={index} className="bg-white/10 backdrop-blur-md border-white/20 text-center">
-                                <CardContent className="p-6">
-                                    <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
-                                    <div className="text-white/80">{stat.label}</div>
-                                </CardContent>
-                            </Card>
+                            <div key={index} className="text-center">
+                                <div className="text-4xl font-bold text-[#2D2318] mb-1">{stat.value}</div>
+                                <div className="text-sm text-gray-500 font-medium">{stat.label}</div>
+                            </div>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* Features Section */}
-            <section id="features" className="w-full px-8 py-16">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+            <section id="features" className="w-full bg-[#FAF8F5]">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-24">
+                    <div className="text-center mb-16">
+                        <span className="inline-block text-sm font-semibold text-[#8B6F47] uppercase tracking-[0.2em] mb-3">Features</span>
+                        <h2 className="text-3xl lg:text-5xl font-bold text-[#2D2318] mb-4">
                             Why Choose Bazar?
                         </h2>
-                        <p className="text-xl text-white/80 max-w-2xl mx-auto">
+                        <p className="text-lg text-gray-500 max-w-2xl mx-auto">
                             Experience the best way to discover and connect with local businesses
                         </p>
                     </div>
@@ -117,16 +113,16 @@ export default function Home() {
                             return (
                                 <Card
                                     key={index}
-                                    className="bg-white/95 backdrop-blur-sm border-[1.2px] border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
+                                    className="bg-white border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
                                 >
-                                    <CardContent className="p-6 text-center">
-                                        <div className="inline-flex p-4 bg-[#8f7e4f]/10 rounded-2xl mb-4 group-hover:bg-[#8f7e4f]/20 transition-colors">
-                                            <Icon className="w-8 h-8 text-[#8f7e4f]" />
+                                    <CardContent className="p-8">
+                                        <div className="inline-flex p-3.5 bg-[#FAF4EC] rounded-2xl mb-5 group-hover:bg-[#8B6F47]/15 transition-colors duration-300">
+                                            <Icon className="w-7 h-7 text-[#8B6F47]" />
                                         </div>
-                                        <h3 className="text-xl font-semibold text-[#1a1a1a] mb-2">
+                                        <h3 className="text-lg font-semibold text-[#2D2318] mb-2">
                                             {feature.title}
                                         </h3>
-                                        <p className="text-[#4a4a4a]">{feature.description}</p>
+                                        <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
                                     </CardContent>
                                 </Card>
                             );
@@ -136,40 +132,43 @@ export default function Home() {
             </section>
 
             {/* CTA Section */}
-            <section className="w-full px-8 py-20">
-                <div className="max-w-4xl mx-auto">
-                    <Card className="bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-sm border-[1.2px] border-white/30 shadow-xl hover:shadow-2xl transition-shadow">
-                        <CardContent className="p-12 text-center">
-                            <h2 className="text-4xl font-bold text-[#1a1a1a] mb-4">
+            <section className="w-full bg-white">
+                <div className="max-w-4xl mx-auto px-6 lg:px-8 py-24">
+                    <div className="relative rounded-3xl bg-gradient-to-br from-[#2D2318] to-[#5B3E2E] p-12 lg:p-16 text-center overflow-hidden">
+                        <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-[#8B6F47]/20 blur-3xl" />
+                        <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#D4A574]/10 blur-3xl" />
+                        <div className="relative z-10">
+                            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
                                 Ready to Get Started?
                             </h2>
-                            <p className="text-xl text-[#4a4a4a] mb-8 max-w-2xl mx-auto">
+                            <p className="text-lg text-white/70 mb-8 max-w-xl mx-auto">
                                 Join our growing community and start discovering amazing local businesses today.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                                 <Link href="/shops">
-                                    <Button className="bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full px-10 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                    <Button className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white rounded-full px-10 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group">
                                         Browse Shops
+                                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
                                 <Link href="/register">
-                                    <Button className="bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full px-10 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                    <Button className="bg-white text-[#2D2318] hover:bg-white/90 rounded-full px-10 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                                         Create Your Account
                                     </Button>
                                 </Link>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="w-full bg-[#1a1a1a] text-white">
-                <div className="max-w-7xl mx-auto px-8 py-12">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <footer className="w-full bg-[#1A1410] text-white">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                         <div className="col-span-1 md:col-span-2">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="flex w-10 h-10 items-center justify-center bg-[#8f7e4f] rounded-xl">
+                            <div className="flex items-center gap-3 mb-5">
+                                <div className="flex w-10 h-10 items-center justify-center bg-[#8B6F47] rounded-xl">
                                     <img
                                         className="w-6 h-6 object-contain"
                                         alt="Bazar logo"
@@ -178,25 +177,25 @@ export default function Home() {
                                 </div>
                                 <h3 className="font-semibold text-xl">Bazar</h3>
                             </div>
-                            <p className="text-gray-400 mb-4 max-w-md">
+                            <p className="text-gray-400 mb-6 max-w-md leading-relaxed">
                                 Discover and connect with amazing local businesses in your community.
                                 Share experiences and build your favorite places collection.
                             </p>
-                            <div className="flex gap-4">
-                                <div className="w-8 h-8 bg-[#8f7e4f] rounded-full flex items-center justify-center">
+                            <div className="flex gap-3">
+                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#8B6F47] transition-colors cursor-pointer">
                                     <Globe className="w-4 h-4" />
                                 </div>
-                                <div className="w-8 h-8 bg-[#8f7e4f] rounded-full flex items-center justify-center">
+                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#8B6F47] transition-colors cursor-pointer">
                                     <Heart className="w-4 h-4" />
                                 </div>
-                                <div className="w-8 h-8 bg-[#8f7e4f] rounded-full flex items-center justify-center">
+                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#8B6F47] transition-colors cursor-pointer">
                                     <Star className="w-4 h-4" />
                                 </div>
                             </div>
                         </div>
                         <div>
-                            <h4 className="font-semibold mb-4">Quick Links</h4>
-                            <ul className="space-y-2 text-gray-400">
+                            <h4 className="font-semibold mb-5 text-white/90">Quick Links</h4>
+                            <ul className="space-y-3 text-gray-400">
                                 <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
                                 <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
                                 <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
@@ -204,8 +203,8 @@ export default function Home() {
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-semibold mb-4">Support</h4>
-                            <ul className="space-y-2 text-gray-400">
+                            <h4 className="font-semibold mb-5 text-white/90">Support</h4>
+                            <ul className="space-y-3 text-gray-400">
                                 <li><Link href="/help" className="hover:text-white transition-colors">Help Center</Link></li>
                                 <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
                                 <li><Link href="/feedback" className="hover:text-white transition-colors">Feedback</Link></li>
@@ -213,13 +212,21 @@ export default function Home() {
                             </ul>
                         </div>
                     </div>
-                    <Separator className="my-8 bg-gray-700" />
-                    <div className="flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
+                    <Separator className="my-10 bg-white/10" />
+                    <div className="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
                         <p>&copy; 2024 Bazar. All rights reserved.</p>
                         <p>Made with ❤️ for local communities</p>
                     </div>
                 </div>
             </footer>
-        </>
+        </div>
+    );
+}
+
+function Sparkle() {
+    return (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 0L9.79 6.21L16 8L9.79 9.79L8 16L6.21 9.79L0 8L6.21 6.21L8 0Z" fill="currentColor" />
+        </svg>
     );
 }

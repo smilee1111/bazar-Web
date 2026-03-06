@@ -20,6 +20,7 @@ interface ShopFilters {
     minPrice: string;
     maxPrice: string;
     minRating: string;
+    nearestOnly?: boolean;
 }
 
 interface ShopSearchProps {
@@ -35,11 +36,12 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
         minPrice: "",
         maxPrice: "",
         minRating: "",
+        nearestOnly: false,
     });
 
     const [showFilters, setShowFilters] = useState(false);
 
-    const handleChange = (field: keyof ShopFilters, value: string) => {
+    const handleChange = (field: keyof ShopFilters, value: string | boolean) => {
         const updatedFilters = {
             ...filters,
             [field]: value,
@@ -49,20 +51,27 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
     };
 
     const handleReset = () => {
-        const emptyFilters = {
-            search: "",
-            category: "",
-            location: "",
-            minPrice: "",
-            maxPrice: "",
-            minRating: "",
-        };
-        setFilters(emptyFilters);
-        onFiltersChange(emptyFilters);
-        setShowFilters(false);
+    const emptyFilters: ShopFilters = {
+        search: "",
+        category: "",
+        location: "",
+        minPrice: "",
+        maxPrice: "",
+        minRating: "",
+        nearestOnly: false,
     };
+    setFilters(emptyFilters);
+    onFiltersChange(emptyFilters);
+    setShowFilters(false);
+};
 
-    const activeFilterCount = Object.values(filters).filter((v) => v !== "").length;
+   
+    const activeFilterCount = Object.entries(filters).filter(([key, value]) => {
+        // Skip nearestOnly from count unless it's true
+        if (key === 'nearestOnly') return value === true;
+        // For strings, check if not empty
+        return value !== "" && value !== null && value !== undefined;
+    }).length;
 
     return (
         <div className="space-y-4">
@@ -74,18 +83,18 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
                         placeholder="Search shops by name or description..."
                         value={filters.search}
                         onChange={(e) => handleChange("search", e.target.value)}
-                        className="pl-12 pr-4 py-3 rounded-full bg-white border-2 border-transparent focus:border-[#8f7e4f] text-base"
+                        className="pl-12 pr-4 py-3 rounded-full bg-white border-2 border-transparent focus:border-[#8B6F47] text-base"
                     />
                 </div>
                 <Button
                     onClick={() => setShowFilters(!showFilters)}
                     variant="outline"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full border-[#8f7e4f] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full border-[#8B6F47] text-[#8B6F47] hover:bg-[#8B6F47]/10"
                 >
                     <Filter className="h-4 w-4 mr-2" />
                     Filters
                     {activeFilterCount > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#8f7e4f] text-white text-xs rounded-full">
+                        <span className="ml-2 px-2 py-0.5 bg-[#8B6F47] text-white text-xs rounded-full">
                             {activeFilterCount}
                         </span>
                     )}
@@ -94,14 +103,14 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
 
             {/* Filter Panel */}
             {showFilters && (
-                <Card className="p-6 bg-white/95 backdrop-blur-sm border border-[#efefef]">
+                <Card className="p-6 bg-white border border-gray-100 shadow-sm">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-bold text-[#2c2416]">Filters</h3>
                             <Button
                                 onClick={handleReset}
                                 variant="ghost"
-                                className="text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                className="text-[#8B6F47] hover:bg-[#8B6F47]/10"
                             >
                                 <X className="h-4 w-4 mr-1" />
                                 Reset All
@@ -114,7 +123,7 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
                                 Category
                             </label>
                             <Select value={filters.category} onValueChange={(value) => handleChange("category", value)}>
-                                <SelectTrigger className="border-[#d4c5a0] focus:border-[#8f7e4f]">
+                                <SelectTrigger className="border-[#C99A6E] focus:border-[#8B6F47]">
                                     <SelectValue placeholder="Select category" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -143,7 +152,7 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
                                 placeholder="Search by location..."
                                 value={filters.location}
                                 onChange={(e) => handleChange("location", e.target.value)}
-                                className="border-[#d4c5a0] focus:border-[#8f7e4f]"
+                                className="border-[#C99A6E] focus:border-[#8B6F47]"
                             />
                         </div>
 
@@ -158,7 +167,7 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
                                     placeholder="0"
                                     value={filters.minPrice}
                                     onChange={(e) => handleChange("minPrice", e.target.value)}
-                                    className="border-[#d4c5a0] focus:border-[#8f7e4f]"
+                                    className="border-[#C99A6E] focus:border-[#8B6F47]"
                                 />
                             </div>
                             <div>
@@ -170,7 +179,7 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
                                     placeholder="∞"
                                     value={filters.maxPrice}
                                     onChange={(e) => handleChange("maxPrice", e.target.value)}
-                                    className="border-[#d4c5a0] focus:border-[#8f7e4f]"
+                                    className="border-[#C99A6E] focus:border-[#8B6F47]"
                                 />
                             </div>
                         </div>
@@ -188,8 +197,8 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
                                         variant={filters.minRating === rating.toString() ? "default" : "outline"}
                                         className={`w-12 h-12 rounded-full flex items-center justify-center ${
                                             filters.minRating === rating.toString()
-                                                ? "bg-[#8f7e4f] text-white"
-                                                : "border-[#d4c5a0] text-[#2c2416] hover:bg-[#8f7e4f]/10"
+                                                ? "bg-[#8B6F47] text-white"
+                                                : "border-[#C99A6E] text-[#2c2416] hover:bg-[#8B6F47]/10"
                                         }`}
                                     >
                                         <span className="text-yellow-400 text-lg">★</span>
@@ -198,12 +207,21 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
                                 ))}
                             </div>
                         </div>
-
+                        <div>
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={filters.nearestOnly || false}
+                                onChange={e => handleChange("nearestOnly", e.target.checked)}
+                            />
+                            Show only nearest shops
+                        </label>
+                    </div>
                         {/* Apply Button */}
                         <div className="flex gap-2 mt-6">
                             <Button
                                 onClick={() => setShowFilters(false)}
-                                className="flex-1 bg-[#8f7e4f] text-white hover:bg-[#7a6b45] rounded-full"
+                                className="flex-1 bg-[#8B6F47] text-white hover:bg-[#7D5A3F] rounded-full"
                             >
                                 Apply Filters
                             </Button>

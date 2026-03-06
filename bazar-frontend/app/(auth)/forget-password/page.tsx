@@ -38,7 +38,7 @@ export default function Page() {
     return (
         <div className="relative w-full min-h-screen bg-neutral-50 flex">
             {/* Left Panel */}
-            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#8f7e4f] via-[#7a6b45] to-[#6b5d3c] overflow-hidden">
+            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#8B6F47] via-[#7D5A3F] to-[#5B3E2E] overflow-hidden">
                 <div
                     className="absolute inset-0 w-full h-full bg-cover bg-center"
                     style={{ backgroundImage: "url('/images/auth-background.svg')" }}
@@ -79,7 +79,7 @@ export default function Page() {
                     <Link href="/login">
                         <Button
                             variant="ghost"
-                            className="flex items-center gap-2 mb-12 h-auto p-0 hover:bg-transparent text-[#4a4a4a] hover:text-[#8f7e4f] transition-colors"
+                            className="flex items-center gap-2 mb-12 h-auto p-0 hover:bg-transparent text-[#5B3E2E] hover:text-[#8B6F47] transition-colors"
                         >
                             <ArrowLeft className="w-5 h-5" />
                             <span className="font-normal text-base">
@@ -92,10 +92,10 @@ export default function Page() {
                         <CardContent className="p-8 lg:p-[49.2px]">
                             <div className="flex flex-col gap-8">
                                 <div className="flex flex-col gap-3 animate-fade-up">
-                                    <h2 className="font-light text-[#1a1a1a] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
+                                    <h2 className="font-light text-[#2D2318] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
                                         Reset Password
                                     </h2>
-                                    <p className="font-normal text-[#4a4a4a] text-sm md:text-base leading-relaxed">
+                                    <p className="font-normal text-[#5B3E2E] text-sm md:text-base leading-relaxed">
                                         Enter your email to receive a reset link
                                     </p>
                                 </div>
@@ -103,16 +103,16 @@ export default function Page() {
                                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
                                     <div className="flex flex-col gap-2">
                                         <Label htmlFor="email" className="font-normal text-[#524632] text-sm md:text-base">
-                                            Email<span className="text-[#8f7e4f]">*</span>
+                                            Email<span className="text-[#8B6F47]">*</span>
                                         </Label>
                                         <div className="relative group">
-                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8f7e4f] transition-colors" />
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8B6F47] transition-colors" />
                                             <Input
                                                 id="email"
                                                 type="email"
                                                 placeholder="your.email@example.com"
                                                 {...register("email")}
-                                                className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8f7e4f] focus:ring-2 focus:ring-[#8f7e4f]/20 transition-all"
+                                                className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
                                             />
                                         </div>
                                         {errors.email && (
@@ -123,15 +123,15 @@ export default function Page() {
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full h-12 md:h-14 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                                        className="w-full h-12 md:h-14 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
                                     >
                                         {isSubmitting ? "Sending..." : "Send Reset Link"}
                                     </Button>
                                 </form>
 
-                                <p className="text-center font-normal text-[#4a4a4a] text-sm md:text-base">
+                                <p className="text-center font-normal text-[#5B3E2E] text-sm md:text-base">
                                     Remember your password? {" "}
-                                    <Link href="/login" className="text-[#8f7e4f] hover:underline hover:text-[#7a6b45] transition-colors">
+                                    <Link href="/login" className="text-[#8B6F47] hover:underline hover:text-[#7D5A3F] transition-colors">
                                         Sign in
                                     </Link>
                                 </p>

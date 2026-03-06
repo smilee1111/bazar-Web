@@ -29,3 +29,6 @@ export const MONGO_URI: string =
 export const JWT_SECRET: string = 
 process.env.JWT_SECRET || "";
 //Application level CONSTANTS
+
+export const OSRM_BASE_URL: string =
+    process.env.OSRM_BASE_URL || "https://router.project-osrm.org";

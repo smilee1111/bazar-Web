@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./providers/AuthContext";
 import { toast, ToastContainer} from "react-toastify";
-import { HydrationProvider } from "@/components/HydrationProvider";
+import { HydrationProvider } from "@/components/providers/HydrationProvider";
 const poppins = localFont({
   src: [
     {

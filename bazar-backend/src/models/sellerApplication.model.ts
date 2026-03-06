@@ -16,6 +16,10 @@ const SellerApplicationSchema: Schema = new Schema(
         categoryName: { type: String, required: true },
         businessPhone: { type: String, required: true, unique: true },
         businessAddress: { type: String, required: true },
+        location: {
+            type: { type: String, enum: ['Point'], default: 'Point' },
+            coordinates: { type: [Number], required: false }, // [lng, lat]
+        },
         description: { type: String, required: false },
         documentUrl: { type: String, required: true },
         status: { type: String, enum: ['pending','approved','rejected'], default: 'pending' },
@@ -26,5 +30,7 @@ const SellerApplicationSchema: Schema = new Schema(
         collection: 'seller_applications'
     }
 );
+
+SellerApplicationSchema.index({ location: '2dsphere' });
 
 export const SellerApplicationModel = mongoose.model<ISellerApplication>('SellerApplication', SellerApplicationSchema);

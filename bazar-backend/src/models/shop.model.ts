@@ -22,6 +22,10 @@ const ShopSchema: Schema = new Schema(
         email: { type: String, required: false },
         categoryId: { type: String, required: false },
         priceRange: { type: String, required: false },
+        location: {
+            type: { type: String, enum: ['Point'], default: 'Point' },
+            coordinates: { type: [Number], required: false }, // [lng, lat]
+        },
         isActive: { type: Boolean, default: true }
     },
     {
@@ -29,5 +33,8 @@ const ShopSchema: Schema = new Schema(
         collection: 'shops'
     }
 );
+
+// Geo index for map queries/routing
+ShopSchema.index({ location: '2dsphere' });
 
 export const ShopModel = mongoose.model<IShop>('Shop', ShopSchema);

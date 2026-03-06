@@ -53,7 +53,7 @@ export function RoleSelect({
       {label && (
         <Label
           htmlFor={id}
-          className={cn("font-normal text-[#524632] text-base", labelClassName)}
+          className={cn("font-normal text-[#5B3E2E] text-base", labelClassName)}
         >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
@@ -67,7 +67,7 @@ export function RoleSelect({
         <SelectTrigger
           id={id}
           disabled={disabled || loading || !roles.length}
-          className={cn("h-[50px] rounded-[10px] border-[1.2px] focus:border-[#8f7e4f] focus:ring-2 focus:ring-[#8f7e4f]/20 transition-all", triggerClassName)}
+          className={cn("h-[50px] rounded-[10px] border-[1.2px] focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all", triggerClassName)}
         >
           <SelectValue placeholder={loading ? "Loading roles..." : placeholder} />
         </SelectTrigger>

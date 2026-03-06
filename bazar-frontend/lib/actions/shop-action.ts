@@ -9,12 +9,14 @@ import {
     getMyShop,
     getShopById,
     getPublicShopById,
+    getRouteToShop,
     updateShop,
     deleteShop,
     createAdminShop,
     getAdminShopById,
     updateAdminShop,
-    deleteAdminShop
+    deleteAdminShop,
+    getNearestShops
 } from "../api/shop";
 import { revalidatePath } from "next/cache";
 
@@ -307,6 +309,55 @@ export const handleDeleteAdminShop = async (id: string) => {
         return {
             success: false,
             message: err.message || "Failed to delete shop"
+        };
+    }
+}
+
+export const handleGetRouteToShop = async (id: string, fromLat: number, fromLng: number) => {
+    try {
+        const result = await getRouteToShop(id, fromLat, fromLng);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Route fetched successfully",
+                data: result.data,
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to fetch route",
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to fetch route",
+        };
+    }
+}
+
+export const handleGetNearestShops = async (
+    categoryId: string,
+    lat: number,
+    lng: number,
+    limit?: number
+) => {
+    try {
+        const result = await getNearestShops(categoryId, lat, lng, limit);
+        if (result.success) {
+            return {
+                success: true,
+                message: "Nearest shops fetched successfully",
+                data: result.data
+            };
+        }
+        return {
+            success: false,
+            message: result.message || "Failed to fetch nearest shops"
+        };
+    } catch (err: Error | any) {
+        return {
+            success: false,
+            message: err.message || "Failed to fetch nearest shops"
         };
     }
 }

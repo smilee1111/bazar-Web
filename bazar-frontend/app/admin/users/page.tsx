@@ -120,22 +120,22 @@ export default function AdminUsersPage() {
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-3">
-                <p className="text-sm uppercase tracking-[0.2em] text-white/70">Admin</p>
-                <h1 className="text-4xl font-bold text-white">Users</h1>
-                <p className="text-white/75 text-lg">Manage platform users and their roles.</p>
+                <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Admin</p>
+                <h1 className="text-4xl font-bold text-[#2D2318]">Users</h1>
+                <p className="text-gray-500 text-lg">Manage platform users and their roles.</p>
             </div>
 
-            <Card className="border-[1.2px] border-white/25 bg-white/95 shadow-xl backdrop-blur-sm">
+            <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
                 <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8f7e4f]/15">
-                            <Users className="h-5 w-5 text-[#8f7e4f]" />
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B6F47]/15">
+                            <Users className="h-5 w-5 text-[#8B6F47]" />
                         </span>
-                        <CardTitle className="text-xl text-[#1a1a1a]">All Users</CardTitle>
+                        <CardTitle className="text-xl text-[#2D2318]">All Users</CardTitle>
                     </div>
                     <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                         <div className="relative w-full sm:w-72">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8f7e4f]" />
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8B6F47]" />
                             <Input
                                 placeholder="Search users"
                                 value={search}
@@ -144,14 +144,14 @@ export default function AdminUsersPage() {
                             />
                         </div>
                         <Link href="/admin/users/create">
-                            <Button className="gap-2 bg-[#8f7e4f] text-white hover:bg-[#7a6b45]">
+                            <Button className="gap-2 bg-[#8B6F47] text-white hover:bg-[#7D5A3F]">
                                 <UserPlus className="h-4 w-4" />
                                 Add User
                             </Button>
                         </Link>
                     </div>
                 </CardHeader>
-                <Separator className="bg-[#efefef]" />
+                <Separator className="bg-[#F5EFE7]" />
                 <CardContent className="p-0">
                     <UsersTable
                         users={filteredUsers}

@@ -76,7 +76,7 @@ export default function EditUserPage() {
   if (loading || !initialValues) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/80 text-lg">Loading user...</div>
+        <div className="text-gray-500 text-lg">Loading user...</div>
       </div>
     );
   }
@@ -87,12 +87,12 @@ export default function EditUserPage() {
       <div className="flex flex-col gap-4 animate-fade-up">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-white/70">Admin Panel</p>
-            <h1 className="text-4xl font-bold text-white">Edit User</h1>
-            <p className="text-white/75 text-lg">Update user information and profile settings.</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Admin Panel</p>
+            <h1 className="text-4xl font-bold text-[#2D2318]">Edit User</h1>
+            <p className="text-gray-500 text-lg">Update user information and profile settings.</p>
           </div>
           <Link href={`/admin/users/${userId}`}>
-            <Button variant="outline" className="gap-2 border-white/25 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300">
+            <Button variant="outline" className="gap-2 border-gray-300 text-[#2D2318] hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
               <ArrowLeft className="h-4 w-4" />
               Back to Profile
             </Button>

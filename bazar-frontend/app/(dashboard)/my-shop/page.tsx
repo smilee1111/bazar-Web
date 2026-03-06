@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import {
     Building2,
     Store,
@@ -32,7 +33,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/modals/DeleteModal";
 import { handleGetMyShop, handleUpdateShop } from "@/lib/actions/shop-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { handleGetShopReviewsByShopId } from "@/lib/actions/shopReview-action";
@@ -40,6 +41,9 @@ import { handleGetShopPhotosByShopId, handleCreateShopPhoto, handleDeleteShopPho
 import { handleGetShopDetailByShopId, handleCreateShopDetail, handleUpdateShopDetail, handleDeleteShopDetail } from "@/lib/actions/shopDetail-action";
 import { API_CONFIG } from "@/lib/api/config";
 import { toast } from "react-toastify";
+
+const ShopLocationMap = dynamic(() => import("@/components/maps/ShopLocationMap"), { ssr: false });
+const LocationPicker = dynamic(() => import("@/components/maps/LocationPicker"), { ssr: false });
 
 interface Category {
     _id: string;
@@ -53,6 +57,7 @@ interface Shop {
     shopName: string;
     shopAddress: string;
     shopContact: string;
+    location?: { type: "Point"; coordinates: [number, number] };
     description?: string;
     categoryId: { _id: string; name: string };
     slug?: string;
@@ -71,7 +76,13 @@ interface ShopReview {
     reviewId?: string;
     reviewName?: string;
     shopId?: string;
-    reviewedBy?: string | { fullName?: string; email?: string };
+    reviewedBy?: string | {
+        fullName?: string;
+        email?: string;
+        profilePic?: string;
+        sellerStatus?: string;
+        roleId?: { roleName?: string } | string;
+    };
     starNum?: number;
     likesCount?: number;
     dislikeCount?: number;
@@ -127,6 +138,8 @@ export default function MyShopPage() {
         shopName: "",
         shopAddress: "",
         shopContact: "",
+        locationLat: "",
+        locationLng: "",
         description: "",
         categoryId: "",
         slug: "",
@@ -146,10 +159,14 @@ export default function MyShopPage() {
             if (result.success) {
                 setShop(result.data || null);
                 if (result.data) {
+                    const coords = result.data.location?.coordinates || [];
+                    const [lng, lat] = coords.length === 2 ? coords : ["", ""];
                     setFormData({
                         shopName: result.data.shopName || "",
                         shopAddress: result.data.shopAddress || "",
                         shopContact: result.data.shopContact || "",
+                        locationLat: lat ? String(lat) : "",
+                        locationLng: lng ? String(lng) : "",
                         description: result.data.description || "",
                         categoryId: "",
                         slug: result.data.slug || "",
@@ -422,14 +439,19 @@ export default function MyShopPage() {
 
     const getReviewerMeta = (reviewedBy?: ShopReview["reviewedBy"]) => {
         if (!reviewedBy) {
-            return { name: "Anonymous", detail: "" };
+            return { name: "Anonymous", detail: "User", profilePic: "" };
         }
         if (typeof reviewedBy === "string") {
-            const shortId = reviewedBy.slice(-6).toUpperCase();
-            return { name: "Customer", detail: shortId ? `ID ${shortId}` : "" };
+            return { name: "Customer", detail: "User", profilePic: "" };
         }
         const name = reviewedBy.fullName || (typeof reviewedBy.email === "string" ? reviewedBy.email.split("@")[0] : "Customer");
-        return { name, detail: reviewedBy.email || "" };
+        const roleSource = typeof reviewedBy.roleId === "string"
+            ? reviewedBy.roleId
+            : reviewedBy.roleId?.roleName;
+        const detail = reviewedBy.sellerStatus === "approved" || roleSource?.toLowerCase() === "seller"
+            ? "Seller"
+            : "User";
+        return { name, detail, profilePic: reviewedBy.profilePic || "" };
     };
 
     const formatDate = (value?: string) => {
@@ -443,14 +465,63 @@ export default function MyShopPage() {
         });
     };
 
+    const locationLatValue = Number(formData.locationLat);
+    const locationLngValue = Number(formData.locationLng);
+    const hasValidLocation = Number.isFinite(locationLatValue) && Number.isFinite(locationLngValue);
+
+    const handleUseMyLocation = () => {
+        if (!navigator.geolocation) {
+            toast.error("Geolocation is not supported by your browser");
+            return;
+        }
+
+        toast.info("Fetching your location...", { autoClose: 2000 });
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setFormData((prev) => ({
+                    ...prev,
+                    locationLat: position.coords.latitude.toFixed(6),
+                    locationLng: position.coords.longitude.toFixed(6),
+                }));
+                toast.success("Location fetched successfully!");
+            },
+            (error) => {
+                let errorMessage = "Unable to fetch your location";
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = "Location permission denied. Please enable location access in your browser settings.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = "Location information is unavailable. Please try again.";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = "Location request timed out. Please try again.";
+                        break;
+                }
+                toast.error(errorMessage);
+                console.error("Geolocation error:", error);
+            },
+            { 
+                enableHighAccuracy: true, 
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    };
+
     const handleSave = async () => {
         if (!shop) return;
         setSaving(true);
         try {
+            const location = hasValidLocation
+                ? { type: "Point", coordinates: [locationLngValue, locationLatValue] as [number, number] }
+                : undefined;
             const payload = {
                 shopName: formData.shopName,
                 shopAddress: formData.shopAddress,
                 shopContact: formData.shopContact,
+                location,
                 description: formData.description,
                 categoryId: formData.categoryId || "",
                 slug: formData.slug,
@@ -474,7 +545,7 @@ export default function MyShopPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-10">
-                <div className="text-sm text-white/80">Loading your shop...</div>
+                <div className="text-sm text-gray-500">Loading your shop...</div>
             </div>
         );
     }
@@ -483,12 +554,12 @@ export default function MyShopPage() {
         return (
             <div className="space-y-6">
                 <div className="flex flex-col gap-3">
-                    <p className="text-sm uppercase tracking-[0.2em] text-white/70">Seller</p>
-                    <h1 className="text-4xl font-bold text-white">My Shop</h1>
-                    <p className="text-white/75 text-lg">We could not find a shop for your account yet.</p>
+                    <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Seller</p>
+                    <h1 className="text-4xl font-bold text-[#2D2318]">My Shop</h1>
+                    <p className="text-gray-500 text-lg">We could not find a shop for your account yet.</p>
                 </div>
-                <Card className="border-[1.2px] border-white/25 bg-white/95 shadow-xl backdrop-blur-sm">
-                    <CardContent className="py-10 text-center text-sm text-[#4a4a4a]">
+                <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
+                    <CardContent className="py-10 text-center text-sm text-[#5B3E2E]">
                         Your shop will appear here once it is created from an approved seller application.
                     </CardContent>
                 </Card>
@@ -499,42 +570,42 @@ export default function MyShopPage() {
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-3">
-                <p className="text-sm uppercase tracking-[0.2em] text-white/70">Seller</p>
-                <h1 className="text-4xl font-bold text-white">My Shop</h1>
-                <p className="text-white/75 text-lg">Manage your shop details and keep them up to date.</p>
+                <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Seller</p>
+                <h1 className="text-4xl font-bold text-[#2D2318]">My Shop</h1>
+                <p className="text-gray-500 text-lg">Manage your shop details and keep them up to date.</p>
             </div>
 
-            <Card className="border-[1.2px] border-white/25 bg-white/95 shadow-xl backdrop-blur-sm">
+            <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
                 <CardHeader className="space-y-4">
                     <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8f7e4f]/15">
-                            <Store className="h-5 w-5 text-[#8f7e4f]" />
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B6F47]/15">
+                            <Store className="h-5 w-5 text-[#8B6F47]" />
                         </span>
                         <div>
-                            <CardTitle className="text-xl text-[#1a1a1a]">Shop Overview</CardTitle>
+                            <CardTitle className="text-xl text-[#2D2318]">Shop Overview</CardTitle>
                             <CardDescription>Review and update your shop information.</CardDescription>
                         </div>
                     </div>
 
-                    <div className="grid gap-3 text-sm text-[#4a4a4a] md:grid-cols-2">
+                    <div className="grid gap-3 text-sm text-[#5B3E2E] md:grid-cols-2">
                         <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-[#8f7e4f]" />
-                            <span className="font-medium text-[#1a1a1a]">Owner:</span>
+                            <User className="h-4 w-4 text-[#8B6F47]" />
+                            <span className="font-medium text-[#2D2318]">Owner:</span>
                             <span>{shop.ownerId.fullName}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-[#8f7e4f]" />
-                            <span className="font-medium text-[#1a1a1a]">Email:</span>
+                            <Mail className="h-4 w-4 text-[#8B6F47]" />
+                            <span className="font-medium text-[#2D2318]">Email:</span>
                             <span>{shop.ownerId.email}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-[#8f7e4f]" />
-                            <span className="font-medium text-[#1a1a1a]">Phone:</span>
+                            <Phone className="h-4 w-4 text-[#8B6F47]" />
+                            <span className="font-medium text-[#2D2318]">Phone:</span>
                             <span>{shop.ownerId.phoneNumber}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-[#8f7e4f]" />
-                            <span className="font-medium text-[#1a1a1a]">Address:</span>
+                            <MapPin className="h-4 w-4 text-[#8B6F47]" />
+                            <span className="font-medium text-[#2D2318]">Address:</span>
                             <span>{shop.shopAddress}</span>
                         </div>
                     </div>
@@ -544,8 +615,8 @@ export default function MyShopPage() {
 
                 <CardContent className="space-y-6 pt-6">
                     <div className="flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-[#8f7e4f]" />
-                        <h2 className="text-lg font-semibold text-[#1a1a1a]">Shop Details</h2>
+                        <Building2 className="h-5 w-5 text-[#8B6F47]" />
+                        <h2 className="text-lg font-semibold text-[#2D2318]">Shop Details</h2>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -618,6 +689,32 @@ export default function MyShopPage() {
                                 placeholder="Shop address"
                             />
                         </div>
+                    </div>
+
+                    {/* Interactive Location Picker */}
+                    <div className="space-y-2">
+                        <Label>Shop Location</Label>
+                        <LocationPicker
+                            value={
+                                formData.locationLat && formData.locationLng
+                                    ? {
+                                          lat: Number(formData.locationLat),
+                                          lng: Number(formData.locationLng),
+                                      }
+                                    : undefined
+                            }
+                            onChange={(location) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    locationLat: location.lat.toFixed(6),
+                                    locationLng: location.lng.toFixed(6),
+                                }));
+                            }}
+                            height={350}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2 md:col-span-2">
                             <Label htmlFor="description">Description</Label>
                             <Textarea
@@ -637,7 +734,7 @@ export default function MyShopPage() {
                                         setFormData((prev) => ({ ...prev, isActive: checked === true }))
                                     }
                                 />
-                                <span className="text-sm text-[#4a4a4a]">Shop is active</span>
+                                <span className="text-sm text-[#5B3E2E]">Shop is active</span>
                             </div>
                         </div>
                     </div>
@@ -646,7 +743,7 @@ export default function MyShopPage() {
                         <Button
                             onClick={handleSave}
                             disabled={saving}
-                            className="bg-[#8f7e4f] text-white hover:bg-[#7a6b45]"
+                            className="bg-[#8B6F47] text-white hover:bg-[#7D5A3F]"
                         >
                             {saving ? "Saving..." : "Save Changes"}
                         </Button>
@@ -654,25 +751,25 @@ export default function MyShopPage() {
                 </CardContent>
             </Card>
 
-            <Card className="border-[1.2px] border-white/25 bg-white/95 shadow-xl backdrop-blur-sm">
+            <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
                 <CardHeader className="space-y-4">
                     <div className="flex items-center justify-between gap-4 flex-wrap">
                         <div className="flex items-center gap-3">
-                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8f7e4f]/15">
-                                <MessageCircle className="h-5 w-5 text-[#8f7e4f]" />
+                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B6F47]/15">
+                                <MessageCircle className="h-5 w-5 text-[#8B6F47]" />
                             </span>
                             <div>
-                                <CardTitle className="text-xl text-[#1a1a1a]">Reviews & Photos</CardTitle>
+                                <CardTitle className="text-xl text-[#2D2318]">Reviews & Photos</CardTitle>
                                 <CardDescription>
                                     Highlight what customers love and curate shop moments.
                                 </CardDescription>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Badge className="bg-[#f0e7d6] text-[#6f5f3a] border border-[#e6d8be]">
+                            <Badge className="bg-[#f0e7d6] text-[#6f5f3a] border border-[#F5EFE7]">
                                 {shop.categoryId?.name || "Shop"}
                             </Badge>
-                            <Badge variant="outline" className="border-[#e6d8be] text-[#7a6b45]">
+                            <Badge variant="outline" className="border-[#F5EFE7] text-[#7D5A3F]">
                                 {shop.shopAddress}
                             </Badge>
                         </div>
@@ -683,8 +780,8 @@ export default function MyShopPage() {
 
                 <CardContent className="space-y-6 pt-6">
                     <div className="grid gap-4 md:grid-cols-3">
-                        <div className="rounded-2xl border border-[#efe7d6] bg-[#fbf8f1] p-5">
-                            <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                        <div className="rounded-2xl border border-[#efe7d6] bg-[#FAF4EC] p-5">
+                            <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
                                 <Star className="h-4 w-4" />
                                 <span>Average rating</span>
                             </div>
@@ -692,7 +789,7 @@ export default function MyShopPage() {
                                 <span className="text-3xl font-semibold text-[#1f1a14]">
                                     {reviewStats.average.toFixed(1)}
                                 </span>
-                                <span className="text-sm text-[#7a6b45]">out of 5</span>
+                                <span className="text-sm text-[#7D5A3F]">out of 5</span>
                             </div>
                             <div className="mt-3 flex items-center gap-1">
                                 {Array.from({ length: 5 }).map((_, index) => (
@@ -701,24 +798,24 @@ export default function MyShopPage() {
                                         className={`h-4 w-4 ${
                                             index < Math.round(reviewStats.average)
                                                 ? "text-[#d1a547]"
-                                                : "text-[#e6d8be]"
+                                                : "text-[#F5EFE7]"
                                         }`}
                                         fill="currentColor"
                                     />
                                 ))}
-                                <span className="ml-2 text-xs text-[#7a6b45]">
+                                <span className="ml-2 text-xs text-[#7D5A3F]">
                                     {reviewStats.total} reviews
                                 </span>
                             </div>
                         </div>
                         <div className="rounded-2xl border border-[#efe7d6] bg-white p-5">
-                            <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                            <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
                                 <Camera className="h-4 w-4" />
                                 <span>Photo highlights</span>
                             </div>
                             <div className="mt-3 grid grid-cols-3 gap-2">
                                 {photos.length === 0 && (
-                                    <div className="col-span-3 rounded-xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-3 py-4 text-center text-xs text-[#7a6b45]">
+                                    <div className="col-span-3 rounded-xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-3 py-4 text-center text-xs text-[#7D5A3F]">
                                         No photos yet. Upload moments to showcase your shop.
                                     </div>
                                 )}
@@ -743,7 +840,7 @@ export default function MyShopPage() {
                                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <ZoomIn className="h-5 w-5 text-white drop-shadow-lg" />
                                             </div>
-                                            <div className="absolute bottom-1 left-1 right-1 rounded-md bg-white/80 px-1 py-0.5 text-[10px] text-[#7a6b45]">
+                                            <div className="absolute bottom-1 left-1 right-1 rounded-md bg-white/80 px-1 py-0.5 text-[10px] text-[#7D5A3F]">
                                                 {formatDate(photo.createdAt)}
                                             </div>
                                         </div>
@@ -752,7 +849,7 @@ export default function MyShopPage() {
                             </div>
                         </div>
                         <div className="rounded-2xl border border-[#efe7d6] bg-white p-5">
-                            <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                            <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
                                 <Heart className="h-4 w-4" />
                                 <span>Customer sentiment</span>
                             </div>
@@ -766,7 +863,7 @@ export default function MyShopPage() {
                                                 style={{ width: `${item.percent}%` }}
                                             />
                                         </div>
-                                        <span className="w-10 text-right text-[#7a6b45]">{item.percent}%</span>
+                                        <span className="w-10 text-right text-[#7D5A3F]">{item.percent}%</span>
                                     </div>
                                 ))}
                             </div>
@@ -789,12 +886,12 @@ export default function MyShopPage() {
                         <TabsContent value="reviews" className="mt-6">
                             <div className="space-y-4">
                                 {reviewsLoading && (
-                                    <div className="rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                    <div className="rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
                                         Loading reviews...
                                     </div>
                                 )}
                                 {!reviewsLoading && sortedReviews.length === 0 && (
-                                    <div className="rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                    <div className="rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
                                         No reviews yet. Encourage customers to leave feedback.
                                     </div>
                                 )}
@@ -812,19 +909,22 @@ export default function MyShopPage() {
                                             <div className="flex flex-wrap items-center justify-between gap-4">
                                                 <div className="flex items-center gap-3">
                                                     <Avatar>
-                                                        <AvatarImage src="" alt={reviewer.name} />
+                                                        <AvatarImage
+                                                            src={reviewer.profilePic ? API_CONFIG.getImageUrl(reviewer.profilePic) : undefined}
+                                                            alt={reviewer.name}
+                                                        />
                                                         <AvatarFallback>{initials || "CU"}</AvatarFallback>
                                                     </Avatar>
                                                     <div>
                                                         <div className="font-semibold text-[#1f1a14]">
                                                             {reviewer.name}
                                                         </div>
-                                                        <div className="text-xs text-[#7a6b45]">
-                                                            {reviewer.detail || "Verified visitor"}
+                                                        <div className="text-xs text-[#7D5A3F]">
+                                                            {reviewer.detail || "User"}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-xs text-[#7a6b45]">
+                                                <div className="text-xs text-[#7D5A3F]">
                                                     {formatDate(review.createdAt)}
                                                 </div>
                                             </div>
@@ -836,12 +936,12 @@ export default function MyShopPage() {
                                                         className={`h-4 w-4 ${
                                                             index < (review.starNum || 0)
                                                                 ? "text-[#d1a547]"
-                                                                : "text-[#e6d8be]"
+                                                                : "text-[#F5EFE7]"
                                                         }`}
                                                         fill="currentColor"
                                                     />
                                                 ))}
-                                                <span className="ml-2 text-xs text-[#7a6b45]">
+                                                <span className="ml-2 text-xs text-[#7D5A3F]">
                                                     {(review.starNum || 0).toFixed(1)}
                                                 </span>
                                             </div>
@@ -851,13 +951,13 @@ export default function MyShopPage() {
                                             <div className="mt-4 flex flex-wrap items-center gap-2">
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-[#e6d8be] text-[#7a6b45]"
+                                                    className="border-[#F5EFE7] text-[#7D5A3F]"
                                                 >
                                                     {review.likesCount || 0} likes
                                                 </Badge>
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-[#e6d8be] text-[#7a6b45]"
+                                                    className="border-[#F5EFE7] text-[#7D5A3F]"
                                                 >
                                                     {review.dislikeCount || 0} dislikes
                                                 </Badge>
@@ -880,7 +980,7 @@ export default function MyShopPage() {
                                 <Button
                                     onClick={() => document.getElementById("photo-upload")?.click()}
                                     disabled={uploading}
-                                    className="gap-2 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white"
+                                    className="gap-2 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white"
                                 >
                                     <Upload className="h-4 w-4" />
                                     {uploading ? "Uploading..." : "Upload Photo"}
@@ -889,12 +989,12 @@ export default function MyShopPage() {
 
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {photosLoading && (
-                                    <div className="col-span-full rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                    <div className="col-span-full rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
                                         Loading photos...
                                     </div>
                                 )}
                                 {!photosLoading && photos.length === 0 && (
-                                    <div className="col-span-full rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                    <div className="col-span-full rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
                                         No photos uploaded yet. Add photos to bring your shop to life.
                                     </div>
                                 )}
@@ -957,13 +1057,13 @@ export default function MyShopPage() {
 
                         <TabsContent value="links" className="mt-6">
                             {detailsLoading ? (
-                                <div className="rounded-2xl border border-dashed border-[#e6d8be] bg-[#fbf8f1] px-4 py-6 text-center text-sm text-[#7a6b45]">
+                                <div className="rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
                                     Loading links...
                                 </div>
                             ) : (
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-sm text-[#7a6b45]">
+                                        <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
                                             <LinkIcon className="h-4 w-4" />
                                             <span>Social Media & Website Links</span>
                                         </div>
@@ -985,7 +1085,7 @@ export default function MyShopPage() {
                                                             }
                                                         }}
                                                         disabled={detailsSaving}
-                                                        className="border-[#8f7e4f] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                        className="border-[#8B6F47] text-[#8B6F47] hover:bg-[#8B6F47]/10"
                                                     >
                                                         Cancel
                                                     </Button>
@@ -993,7 +1093,7 @@ export default function MyShopPage() {
                                                         size="sm"
                                                         onClick={handleDetailsSave}
                                                         disabled={detailsSaving}
-                                                        className="gap-2 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white"
+                                                        className="gap-2 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white"
                                                     >
                                                         <Save className="h-4 w-4" />
                                                         {detailsSaving ? "Saving..." : "Save"}
@@ -1015,7 +1115,7 @@ export default function MyShopPage() {
                                                     <Button
                                                         size="sm"
                                                         onClick={() => setDetailsEditing(true)}
-                                                        className="gap-2 bg-[#8f7e4f] hover:bg-[#7a6b45] text-white"
+                                                        className="gap-2 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white"
                                                     >
                                                         {shopDetail ? (
                                                             <>
@@ -1046,7 +1146,7 @@ export default function MyShopPage() {
                                                             placeholder="https://example.com"
                                                             value={detailFormData.link1}
                                                             onChange={(e) => setDetailFormData({ ...detailFormData, link1: e.target.value })}
-                                                            className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]"
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]"
                                                         />
                                                         {detailFormData.link1 && (
                                                             <Button
@@ -1054,7 +1154,7 @@ export default function MyShopPage() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => setDetailFormData({ ...detailFormData, link1: "" })}
-                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8B6F47] hover:bg-[#8B6F47]/10"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -1070,7 +1170,7 @@ export default function MyShopPage() {
                                                             placeholder="https://example.com"
                                                             value={detailFormData.link2}
                                                             onChange={(e) => setDetailFormData({ ...detailFormData, link2: e.target.value })}
-                                                            className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]"
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]"
                                                         />
                                                         {detailFormData.link2 && (
                                                             <Button
@@ -1078,7 +1178,7 @@ export default function MyShopPage() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => setDetailFormData({ ...detailFormData, link2: "" })}
-                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8B6F47] hover:bg-[#8B6F47]/10"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -1094,7 +1194,7 @@ export default function MyShopPage() {
                                                             placeholder="https://example.com"
                                                             value={detailFormData.link3}
                                                             onChange={(e) => setDetailFormData({ ...detailFormData, link3: e.target.value })}
-                                                            className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]"
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]"
                                                         />
                                                         {detailFormData.link3 && (
                                                             <Button
@@ -1102,7 +1202,7 @@ export default function MyShopPage() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => setDetailFormData({ ...detailFormData, link3: "" })}
-                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8B6F47] hover:bg-[#8B6F47]/10"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -1118,7 +1218,7 @@ export default function MyShopPage() {
                                                             placeholder="https://example.com"
                                                             value={detailFormData.link4}
                                                             onChange={(e) => setDetailFormData({ ...detailFormData, link4: e.target.value })}
-                                                            className="border-[#e5e5e5] focus-visible:ring-[#8f7e4f]"
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]"
                                                         />
                                                         {detailFormData.link4 && (
                                                             <Button
@@ -1126,7 +1226,7 @@ export default function MyShopPage() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => setDetailFormData({ ...detailFormData, link4: "" })}
-                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8f7e4f] hover:bg-[#8f7e4f]/10"
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8B6F47] hover:bg-[#8B6F47]/10"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -1139,12 +1239,12 @@ export default function MyShopPage() {
                                                 {shopDetail.link1 && (
                                                     <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <LinkIcon className="h-4 w-4 text-[#8f7e4f] flex-shrink-0" />
+                                                            <LinkIcon className="h-4 w-4 text-[#8B6F47] flex-shrink-0" />
                                                             <a
                                                                 href={shopDetail.link1}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-[#1f1a14] hover:text-[#8f7e4f] underline break-all"
+                                                                className="text-sm text-[#1f1a14] hover:text-[#8B6F47] underline break-all"
                                                             >
                                                                 {shopDetail.link1}
                                                             </a>
@@ -1164,12 +1264,12 @@ export default function MyShopPage() {
                                                 {shopDetail.link2 && (
                                                     <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <LinkIcon className="h-4 w-4 text-[#8f7e4f] flex-shrink-0" />
+                                                            <LinkIcon className="h-4 w-4 text-[#8B6F47] flex-shrink-0" />
                                                             <a
                                                                 href={shopDetail.link2}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-[#1f1a14] hover:text-[#8f7e4f] underline break-all"
+                                                                className="text-sm text-[#1f1a14] hover:text-[#8B6F47] underline break-all"
                                                             >
                                                                 {shopDetail.link2}
                                                             </a>
@@ -1189,12 +1289,12 @@ export default function MyShopPage() {
                                                 {shopDetail.link3 && (
                                                     <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <LinkIcon className="h-4 w-4 text-[#8f7e4f] flex-shrink-0" />
+                                                            <LinkIcon className="h-4 w-4 text-[#8B6F47] flex-shrink-0" />
                                                             <a
                                                                 href={shopDetail.link3}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-[#1f1a14] hover:text-[#8f7e4f] underline break-all"
+                                                                className="text-sm text-[#1f1a14] hover:text-[#8B6F47] underline break-all"
                                                             >
                                                                 {shopDetail.link3}
                                                             </a>
@@ -1214,12 +1314,12 @@ export default function MyShopPage() {
                                                 {shopDetail.link4 && (
                                                     <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <LinkIcon className="h-4 w-4 text-[#8f7e4f] flex-shrink-0" />
+                                                            <LinkIcon className="h-4 w-4 text-[#8B6F47] flex-shrink-0" />
                                                             <a
                                                                 href={shopDetail.link4}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-[#1f1a14] hover:text-[#8f7e4f] underline break-all"
+                                                                className="text-sm text-[#1f1a14] hover:text-[#8B6F47] underline break-all"
                                                             >
                                                                 {shopDetail.link4}
                                                             </a>
@@ -1238,7 +1338,7 @@ export default function MyShopPage() {
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className="text-center py-8 text-sm text-[#7a6b45]">
+                                            <div className="text-center py-8 text-sm text-[#7D5A3F]">
                                                 No links added yet. Click "Add Links" to get started.
                                             </div>
                                         )}

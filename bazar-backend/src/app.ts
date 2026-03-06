@@ -10,7 +10,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: "./config/config.env" });
 
 // Import rate limiting middleware
-import { generalLimiter } from './middlewares/rateLimiter.middleware';
+import { generalLimiter, readLimiter, writeLimiter } from './middlewares/rateLimiter.middleware';
 
 //can use env variables below this 
 console.log(process.env.PORT);
@@ -35,8 +35,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //origin: "*", //allow all domains
 app.use(cors(corsOptions));
 
-// Apply general rate limiter to all routes
+// Apply rate limiters to all routes
+// These work together to allow normal browsing while protecting against abuse:
+// - generalLimiter: 500 requests per 15 min (overall cap)
+// - readLimiter: 300 GET requests per 5 min (browsing)
+// - writeLimiter: 50 write operations per 15 min (POST/PUT/DELETE/PATCH)
 app.use(generalLimiter);
+app.use(readLimiter);
+app.use(writeLimiter);
 
 // Serve uploaded files with CORS headers
 app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, '../uploads')));
@@ -74,24 +80,24 @@ import adminUserRoutes from './routes/admin/user/user.route';
 app.use('/api/admin/users', adminUserRoutes);
 
 //ADMIN-SELLER-APPLICATION-ROUTES
-import adminSellerApplicationRoutes from './routes/admin/sellerApplication';
+import adminSellerApplicationRoutes from './routes/admin/sellerApplication.route';
 //defining the path for usage of admin seller application routes
 app.use('/api/admin/seller-applications', adminSellerApplicationRoutes);
 
 //ADMIN-SHOP-ROUTES
-import adminShopRoutes from './routes/admin/shop';
+import adminShopRoutes from './routes/admin/shop.route';
 app.use('/api/admin/shops', adminShopRoutes);
 
 //ADMIN-SHOP-PHOTO-ROUTES
-import adminShopPhotoRoutes from './routes/admin/shopPhoto';
+import adminShopPhotoRoutes from './routes/admin/shopPhoto.route';
 app.use('/api/admin/shop-photos', adminShopPhotoRoutes);
 
 //ADMIN-SHOP-REVIEW-ROUTES
-import adminShopReviewRoutes from './routes/admin/shopReview';
+import adminShopReviewRoutes from './routes/admin/shopReview.route';
 app.use('/api/admin/shop-reviews', adminShopReviewRoutes);
 
 //ADMIN-SHOP-DETAIL-ROUTES
-import adminShopDetailRoutes from './routes/admin/shopDetail';
+import adminShopDetailRoutes from './routes/admin/shopDetail.route';
 app.use('/api/admin/shop-details', adminShopDetailRoutes);
 
 //USER SELF ROUTES 
@@ -107,12 +113,14 @@ app.use('/api/user/seller-applications', userSellerApplicationRoutes);
 import userSavedShopRoutes from './routes/user/savedShop.route';
 import userFavouriteRoutes from './routes/user/favourite.route';
 import userReviewRoutes from './routes/user/review.route';
+import notificationRoutes from './routes/user/notification.route';
 app.use('/api/user/saved-shops', userSavedShopRoutes);
 app.use('/api/user/favourites', userFavouriteRoutes);
 app.use('/api/user/reviews', userReviewRoutes);
+app.use('/api/user/notifications', notificationRoutes);
 
 //SELLER ROUTES
-import sellerShopRoutes from './routes/seller/shop';
+import sellerShopRoutes from './routes/seller/shop.route';
 app.use('/api/seller/shops', sellerShopRoutes);
 
 //SHOP PUBLIC ROUTES
@@ -124,6 +132,10 @@ app.use('/api/shops', shopPublicRoutes);
 app.use('/api/shops', shopPhotoRoutes);
 app.use('/api/shops', shopReviewRoutes);
 app.use('/api/shops', shopDetailRoutes);
+
+//MAPS ROUTES
+import geocodingRoutes from './routes/maps/geocoding';
+app.use('/api/maps', geocodingRoutes);
 
 // Global error handler - return JSON for known error types (HttpError, MulterError)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
