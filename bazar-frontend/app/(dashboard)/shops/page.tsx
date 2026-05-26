@@ -10,6 +10,7 @@ import { handleGetNearestShops, handleGetPublicShops } from "@/lib/actions/shop-
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { toast } from "react-toastify";
+import { cacheUserLocation } from "@/lib/services/userLocation.service";
 
 interface Shop {
     _id: string;
@@ -105,6 +106,7 @@ export default function ShopsPage() {
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const lat = pos.coords.latitude;
                 const lng = pos.coords.longitude;
+                cacheUserLocation({ lat, lng });
                 toast.info("Finding nearest shops...", { autoClose: 2000 });
                 
                 const result = await handleGetNearestShops(filters.category, lat, lng);

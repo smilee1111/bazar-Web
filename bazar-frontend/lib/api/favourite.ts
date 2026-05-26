@@ -15,9 +15,15 @@ export const getFavourites = async () => {
     }
 };
 
-export const createFavourite = async (shopId: string) => {
+export const createFavourite = async (
+    shopId: string,
+    userLocation?: { lat: number; lng: number }
+) => {
     try {
-        const response = await axios.post(API.USER_FAVOURITES.CREATE, { shopId });
+        const response = await axios.post(API.USER_FAVOURITES.CREATE, {
+            shopId,
+            userLocation,
+        });
         return response.data;
     } catch (err: unknown) {
         throw new Error(getAxiosMessage(err, "Failed to add favourite"));

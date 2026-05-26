@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { API_CONFIG } from "@/lib/api/config";
 import { handleAddFavourite, handleRemoveFavourite } from "@/lib/actions/favourite-action";
 import { handleSaveShop, handleRemoveSavedShop } from "@/lib/actions/savedShop-action";
+import { getCachedUserLocation } from "@/lib/services/userLocation.service";
 
 interface ShopCardProps {
     shopId: string;
@@ -60,7 +61,8 @@ export default function ShopCard({
                     setIsFav(false);
                 }
             } else {
-                const result = await handleAddFavourite(shopId);
+                const userLocation = getCachedUserLocation() || undefined;
+                const result = await handleAddFavourite(shopId, userLocation);
                 if (result.success) {
                     setIsFav(true);
                 }
@@ -81,7 +83,8 @@ export default function ShopCard({
                     setIsSavedShop(false);
                 }
             } else {
-                const result = await handleSaveShop(shopId);
+                const userLocation = getCachedUserLocation() || undefined;
+                const result = await handleSaveShop(shopId, userLocation);
                 if (result.success) {
                     setIsSavedShop(true);
                 }

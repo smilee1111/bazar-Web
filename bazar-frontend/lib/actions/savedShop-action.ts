@@ -23,9 +23,12 @@ export const handleGetSavedShops = async () => {
     }
 };
 
-export const handleSaveShop = async (shopId: string) => {
+export const handleSaveShop = async (
+    shopId: string,
+    userLocation?: { lat: number; lng: number }
+) => {
     try {
-        const result = await createSavedShop(shopId);
+        const result = await createSavedShop(shopId, userLocation);
         if (result.success) {
             return {
                 success: true,

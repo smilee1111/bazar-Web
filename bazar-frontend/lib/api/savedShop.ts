@@ -15,9 +15,15 @@ export const getSavedShops = async () => {
     }
 };
 
-export const createSavedShop = async (shopId: string) => {
+export const createSavedShop = async (
+    shopId: string,
+    userLocation?: { lat: number; lng: number }
+) => {
     try {
-        const response = await axios.post(API.USER_SAVED_SHOPS.CREATE, { shopId });
+        const response = await axios.post(API.USER_SAVED_SHOPS.CREATE, {
+            shopId,
+            userLocation,
+        });
         return response.data;
     } catch (err: unknown) {
         throw new Error(getAxiosMessage(err, "Failed to save shop"));

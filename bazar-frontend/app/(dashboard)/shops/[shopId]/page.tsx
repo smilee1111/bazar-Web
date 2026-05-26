@@ -20,6 +20,7 @@ import { handleAddFavourite, handleRemoveFavourite, handleGetFavourites } from "
 import { handleSaveShop, handleRemoveSavedShop, handleGetSavedShops } from "@/lib/actions/savedShop-action";
 import { toast } from "react-toastify";
 import { useAuth } from "@/app/providers/AuthContext";
+import { cacheUserLocation, getCachedUserLocation } from "@/lib/services/userLocation.service";
 
 const RouteMap = dynamic(() => import("@/components/maps/RouteMap"), { ssr: false });
 const ShopLocationMap = dynamic(() => import("@/components/maps/ShopLocationMap"), { ssr: false });
@@ -176,7 +177,8 @@ export default function ShopDetailsPage() {
             setLoading(true);
             setError(null);
             console.log("Loading shop details for shopId:", shopId);
-            const result = await handleGetPublicShopById(shopId);
+            const cachedLocation = getCachedUserLocation() || undefined;
+            const result = await handleGetPublicShopById(shopId, cachedLocation);
             console.log("Shop API response:", result);
 
             if (result.success && result.data) {
@@ -284,6 +286,7 @@ export default function ShopDetailsPage() {
                 const fromLat = position.coords.latitude;
                 const fromLng = position.coords.longitude;
                 setUserLocation({ lat: fromLat, lng: fromLng });
+                cacheUserLocation({ lat: fromLat, lng: fromLng });
                 fetchRoute(fromLat, fromLng, shop.shopId || shop._id || shopId);
             },
             (error) => {
@@ -326,7 +329,8 @@ export default function ShopDetailsPage() {
                     setIsFav(false);
                 }
             } else {
-                const result = await handleAddFavourite(targetId);
+                const cachedLocation = getCachedUserLocation() || undefined;
+                const result = await handleAddFavourite(targetId, cachedLocation);
                 if (result.success) {
                     setIsFav(true);
                 }
@@ -347,7 +351,8 @@ export default function ShopDetailsPage() {
                     setIsSaved(false);
                 }
             } else {
-                const result = await handleSaveShop(targetId);
+                const cachedLocation = getCachedUserLocation() || undefined;
+                const result = await handleSaveShop(targetId, cachedLocation);
                 if (result.success) {
                     setIsSaved(true);
                 }
