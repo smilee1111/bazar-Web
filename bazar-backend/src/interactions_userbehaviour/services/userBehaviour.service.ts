@@ -1,3 +1,4 @@
+import { UserBehaviourEventType } from "../models/userBehaviour.model";
 import { UserBehaviourRepository } from "../repositories/userBehaviour.repository";
 
 const repo = new UserBehaviourRepository();
@@ -6,7 +7,7 @@ export class UserBehaviourService {
     async logEvent(data: {
         userId: string;
         shopId: string;
-        eventType: string;
+        eventType: UserBehaviourEventType;
         timestamp?: Date;
         userLocation?: { lat: number; lng: number };
     }) {

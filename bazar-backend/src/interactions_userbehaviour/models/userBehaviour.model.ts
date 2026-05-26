@@ -4,7 +4,7 @@ export type UserBehaviourEventType = 'view' | 'save' | 'favorite' | 'search_clic
 
 export interface IUserBehaviour extends Document {
     userId: mongoose.Types.ObjectId;
-    shopId: string;
+    shopId: mongoose.Types.ObjectId;
     eventType: UserBehaviourEventType;
     timestamp: Date;
     userLocation?: {
@@ -24,7 +24,7 @@ const UserLocationSchema = new Schema(
 const UserBehaviourSchema: Schema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-        shopId: { type: String, required: true, trim: true },
+        shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true },
         eventType: {
             type: String,
             enum: ['view', 'save', 'favorite', 'search_click'],
