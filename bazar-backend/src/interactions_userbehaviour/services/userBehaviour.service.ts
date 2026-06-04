@@ -6,8 +6,9 @@ const repo = new UserBehaviourRepository();
 export class UserBehaviourService {
     async logEvent(data: {
         userId: string;
-        shopId: string;
+        shopId?: string;
         eventType: UserBehaviourEventType;
+        searchQuery?: string;
         timestamp?: Date;
         userLocation?: { lat: number; lng: number };
     }) {

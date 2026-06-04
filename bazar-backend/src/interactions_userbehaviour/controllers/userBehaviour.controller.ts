@@ -23,6 +23,7 @@ export class UserBehaviourController {
                 userId: userId.toString(),
                 shopId: parsedData.data.shopId,
                 eventType: parsedData.data.eventType,
+                searchQuery: parsedData.data.searchQuery,
                 timestamp: parsedData.data.timestamp,
                 userLocation: parsedData.data.userLocation,
             });

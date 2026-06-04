@@ -6,11 +6,12 @@ const getAxiosMessage = (err: unknown, fallback: string) => {
     return maybe?.response?.data?.message || maybe?.message || fallback;
 };
 
-export type UserBehaviourEventType = "view" | "save" | "favorite" | "search_click";
+export type UserBehaviourEventType = "view" | "save" | "favorite" | "search_click" | "search";
 
 export type UserBehaviourPayload = {
-    shopId: string;
+    shopId?: string;
     eventType: UserBehaviourEventType;
+    searchQuery?: string;
     timestamp?: string | Date;
     userLocation?: { lat: number; lng: number };
 };
