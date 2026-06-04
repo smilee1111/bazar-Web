@@ -55,6 +55,10 @@ export const API = {
         DELETE: (id: string) => `user/notifications/${id}`,
         DELETE_ALL: 'user/notifications',
     },
+    USER_BEHAVIOUR: {
+        LOG: 'user/behaviour',
+        LIST: 'user/behaviour',
+    },
     SHOPS: {
         CREATE_SHOP: 'seller/shops',
         GET_ALL_SHOPS: 'seller/shops',

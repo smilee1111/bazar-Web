@@ -45,6 +45,15 @@ export default function ShopsPage() {
     const [userReviews, setUserReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [activeFilters, setActiveFilters] = useState<ShopFilters>({
+        search: "",
+        category: "",
+        location: "",
+        minPrice: "",
+        maxPrice: "",
+        minRating: "",
+        nearestOnly: false,
+    });
     const itemsPerPage = 10;
 
     const totalPages = Math.max(1, Math.ceil(filteredShops.length / itemsPerPage));
@@ -101,6 +110,7 @@ export default function ShopsPage() {
     };
 
     const handleFiltersChange = (filters: ShopFilters) => {
+        setActiveFilters(filters);
         if (filters.nearestOnly && filters.category) {
             // Get user location for nearest shops search
             navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -269,6 +279,7 @@ export default function ShopsPage() {
                                     avgRating={shop.avgRating}
                                     reviewCount={shop.reviewCount}
                                     isReviewed={isShopReviewed(shop.shopId || shop._id)}
+                                    searchQuery={activeFilters.search}
                                     
                                 />
                             </div>
