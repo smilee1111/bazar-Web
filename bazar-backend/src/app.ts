@@ -50,10 +50,6 @@ app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, '../u
 app.get('/',(req:Request,res:Response) => {
     res.send("Hello World!");
 });
-// debug route to confirm this app instance is running
-app.get('/__debug/behaviour-route', (req: Request, res: Response) => {
-  res.json({ ok: true, route: '/api/user/behaviour' });
-});
 
 //AUTH
 //importing the routes for auth
@@ -119,11 +115,14 @@ import userFavouriteRoutes from './routes/user/favourite.route';
 import userReviewRoutes from './routes/user/review.route';
 import notificationRoutes from './routes/user/notification.route';
 import userBehaviourRoutes from './interactions_userbehaviour/routes/userBehaviour.route';
+import recommendationRoutes from './routes/recommendation.routes';
+
 app.use('/api/user/saved-shops', userSavedShopRoutes);
 app.use('/api/user/favourites', userFavouriteRoutes);
 app.use('/api/user/reviews', userReviewRoutes);
 app.use('/api/user/notifications', notificationRoutes);
 app.use('/api/user/behaviour', userBehaviourRoutes);
+app.use('/api/recommendations', recommendationRoutes);
 
 //SELLER ROUTES
 import sellerShopRoutes from './routes/seller/shop.route';
