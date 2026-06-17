@@ -116,6 +116,7 @@ import userReviewRoutes from './routes/user/review.route';
 import notificationRoutes from './routes/user/notification.route';
 import userBehaviourRoutes from './interactions_userbehaviour/routes/userBehaviour.route';
 import recommendationRoutes from './routes/recommendation.routes';
+import evaluationRoutes from './routes/evaluation.routes';
 
 app.use('/api/user/saved-shops', userSavedShopRoutes);
 app.use('/api/user/favourites', userFavouriteRoutes);
@@ -123,6 +124,7 @@ app.use('/api/user/reviews', userReviewRoutes);
 app.use('/api/user/notifications', notificationRoutes);
 app.use('/api/user/behaviour', userBehaviourRoutes);
 app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/admin/evaluation', evaluationRoutes);
 
 //SELLER ROUTES
 import sellerShopRoutes from './routes/seller/shop.route';
