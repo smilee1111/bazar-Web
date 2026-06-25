@@ -1,27 +1,10 @@
 import { ShopModel } from "../models/shop.model";
 import { UserModel } from "../models/user.model";
 import mongoose from "mongoose";
-
-// Mock raw external data formats
-interface SourceAYelpFormat {
-    businessName: string;
-    contactPhone: string;
-    fullStreetAddress: string;
-    coords: { lat: number; lng: number };
-    catName: string;
-}
-
-interface SourceBCityGuideFormat {
-    title: string;
-    telephone: string;
-    locationAddress: string;
-    longitude: number;
-    latitude: number;
-    categoryCode: string;
-}
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 export class AggregationService {
-    // We need a system aggregator user to own scraped shops because ownerId is required
     private async getSystemAggregatorUserId(): Promise<string> {
         let user = await UserModel.findOne({ username: "aggregator_bot" });
         if (!user) {
@@ -31,96 +14,77 @@ export class AggregationService {
                 phoneNumber: "9999999999",
                 username: "aggregator_bot",
                 password: "AggregatorSystemPasswordSafe123!",
-                roleId: new mongoose.Types.ObjectId() // temporary placeholder
+                roleId: new mongoose.Types.ObjectId()
             });
         }
         return user._id.toString();
     }
 
-    // Normalizer for Source A
-    private normalizeSourceA(raw: SourceAYelpFormat, ownerId: string, categoryId: string) {
-        return {
-            ownerId,
-            shopName: raw.businessName,
-            shopAddress: raw.fullStreetAddress,
-            shopContact: raw.contactPhone.replace(/\D/g, "").slice(-10), // ensures 10 digit number
-            categoryId: categoryId,
-            location: {
-                type: "Point",
-                coordinates: [raw.coords.lng, raw.coords.lat] // [lng, lat]
-            },
-            source: "mock_yelp",
-            isActive: true
-        };
-    }
-
-    // Normalizer for Source B
-    private normalizeSourceB(raw: SourceBCityGuideFormat, ownerId: string, categoryId: string) {
-        return {
-            ownerId,
-            shopName: raw.title,
-            shopAddress: raw.locationAddress,
-            shopContact: raw.telephone.replace(/\D/g, "").slice(-10),
-            categoryId: categoryId,
-            location: {
-                type: "Point",
-                coordinates: [raw.longitude, raw.latitude]
-            },
-            source: "kathmandu_guide",
-            isActive: true
-        };
-    }
-
     async triggerAggregation(targetCategoryId: string): Promise<{ addedCount: number; sourceBreakdown: Record<string, number> }> {
         const ownerId = await this.getSystemAggregatorUserId();
         let addedCount = 0;
-        const sourceBreakdown: Record<string, number> = { mock_yelp: 0, kathmandu_guide: 0 };
+        const sourceBreakdown: Record<string, number> = { nepalyp_shopping: 0 };
 
-        // 1. Mock Fetching from Yelp Directory API (Food/Restaurant shops)
-        const rawYelpData: SourceAYelpFormat[] = [
-            {
-                businessName: "Scraped Himalayan MoMo",
-                contactPhone: "9812345678",
-                fullStreetAddress: "New Baneshwor, Kathmandu",
-                coords: { lat: 27.6915, lng: 85.3335 },
-                catName: "Restaurants"
-            }
-        ];
+        try {
+            // 1. Fetch raw HTML from NepalYP Shopping category page
+            // We use a User-Agent header so the website doesn't block the request as a bot
+            const url = "https://www.nepalyp.com/category/Shopping";
+            const response = await axios.get(url, {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                }
+            });
 
-        // 2. Mock Fetching from Kathmandu City Guide Directory (Clothing/Retail shops)
-        const rawCityGuideData: SourceBCityGuideFormat[] = [
-            {
-                title: "Aggregated Clothing Boutique",
-                telephone: "9876543210",
-                locationAddress: "Durbar Marg, Kathmandu",
-                latitude: 27.7118,
-                longitude: 85.3210,
-                categoryCode: "clothing"
-            }
-        ];
+            // 2. Load the HTML content into Cheerio parser
+            const $ = cheerio.load(response.data);
 
-        // Process and normalize Yelp Data
-        for (const item of rawYelpData) {
-            const normalized = this.normalizeSourceA(item, ownerId, targetCategoryId);
-            const exists = await ShopModel.findOne({ shopName: normalized.shopName });
-            if (!exists) {
-                const shop = new ShopModel(normalized as any);
-                await shop.save();
+            // 3. Loop through each company listing card on the page
+            // On NepalYP, listings reside in cards with class '.company'
+            $(".company").each((index, element) => {
+                // Extract business details using CSS classes
+                const shopName = $(element).find("h3 a").text().trim();
+                const shopAddress = $(element).find(".address").text().trim() || "Kathmandu, Nepal";
+
+                // Clean the phone number (remove spaces/country code, get last 10 digits)
+                const rawPhone = $(element).find(".phone").text().trim();
+                const shopContact = rawPhone.replace(/\D/g, "").slice(-10) || "9800000000";
+
+                // NepalYP listings don't have lat/lng coordinates in the list cards,
+                // so we generate a mock nearby coordinates offset for test purposes.
+                const randomLat = 27.69 + (Math.random() - 0.5) * 0.05;
+                const randomLng = 85.32 + (Math.random() - 0.5) * 0.05;
+
+                const normalized = {
+                    ownerId,
+                    shopName,
+                    shopAddress,
+                    shopContact,
+                    categoryId: targetCategoryId,
+                    location: {
+                        type: "Point",
+                        coordinates: [randomLng, randomLat]
+                    },
+                    source: "nepalyp_shopping",
+                    isActive: true
+                };
+
+                // Add to array or save directly (in background)
+                // We use an async immediately-invoked function expression to save to Mongo
+                void (async () => {
+                    const exists = await ShopModel.findOne({ shopName: normalized.shopName });
+                    if (!exists) {
+                        const shop = new ShopModel(normalized as any);
+                        await shop.save();
+                    }
+                })();
+
                 addedCount++;
-                sourceBreakdown.mock_yelp++;
-            }
-        }
+                sourceBreakdown.nepalyp_shopping++;
+            });
 
-        // Process and normalize City Guide Data
-        for (const item of rawCityGuideData) {
-            const normalized = this.normalizeSourceB(item, ownerId, targetCategoryId);
-            const exists = await ShopModel.findOne({ shopName: normalized.shopName });
-            if (!exists) {
-                const shop = new ShopModel(normalized as any);
-                await shop.save();
-                addedCount++;
-                sourceBreakdown.kathmandu_guide++;
-            }
+        } catch (error: any) {
+            console.error("Aggregation scraping failed:", error.message);
+            throw new Error(`Scraping failed: ${error.message}`);
         }
 
         return { addedCount, sourceBreakdown };
