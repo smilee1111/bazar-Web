@@ -21,6 +21,14 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.nepalyp.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'nepalyp.com',
       }
     ]
   }
