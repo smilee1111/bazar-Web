@@ -153,9 +153,12 @@ export const handleGetShopById = async (id: string) => {
     }
 }
 
-export const handleGetPublicShopById = async (id: string) => {
+export const handleGetPublicShopById = async (
+    id: string,
+    userLocation?: { lat: number; lng: number }
+) => {
     try {
-        const result = await getPublicShopById(id);
+        const result = await getPublicShopById(id, userLocation);
         if (result.success) {
             return {
                 success: true,

@@ -23,9 +23,12 @@ export const handleGetFavourites = async () => {
     }
 };
 
-export const handleAddFavourite = async (shopId: string) => {
+export const handleAddFavourite = async (
+    shopId: string,
+    userLocation?: { lat: number; lng: number }
+) => {
     try {
-        const result = await createFavourite(shopId);
+        const result = await createFavourite(shopId, userLocation);
         if (result.success) {
             return {
                 success: true,

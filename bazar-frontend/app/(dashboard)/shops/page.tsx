@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,9 @@ import ShopSearch from "./_components/ShopSearch";
 import { handleGetNearestShops, handleGetPublicShops } from "@/lib/actions/shop-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 import { handleGetUserReviews } from "@/lib/actions/review-action";
+import { handleLogUserBehaviour } from "@/lib/actions/userBehaviour-action";
 import { toast } from "react-toastify";
+import { cacheUserLocation, getCachedUserLocation } from "@/lib/services/userLocation.service";
 
 interface Shop {
     _id: string;
@@ -44,6 +46,16 @@ export default function ShopsPage() {
     const [userReviews, setUserReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [activeFilters, setActiveFilters] = useState<ShopFilters>({
+        search: "",
+        category: "",
+        location: "",
+        minPrice: "",
+        maxPrice: "",
+        minRating: "",
+        nearestOnly: false,
+    });
+    const searchLogTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const itemsPerPage = 10;
 
     const totalPages = Math.max(1, Math.ceil(filteredShops.length / itemsPerPage));
@@ -60,6 +72,32 @@ export default function ShopsPage() {
             setCurrentPage(totalPages);
         }
     }, [currentPage, totalPages]);
+
+    useEffect(() => {
+        const query = activeFilters.search.trim();
+        if (searchLogTimer.current) {
+            clearTimeout(searchLogTimer.current);
+            searchLogTimer.current = null;
+        }
+        if (query.length < 2) {
+            return;
+        }
+        searchLogTimer.current = setTimeout(() => {
+            const userLocation = getCachedUserLocation() || undefined;
+            void handleLogUserBehaviour({
+                eventType: "search",
+                searchQuery: query,
+                userLocation,
+            });
+        }, 600);
+
+        return () => {
+            if (searchLogTimer.current) {
+                clearTimeout(searchLogTimer.current);
+                searchLogTimer.current = null;
+            }
+        };
+    }, [activeFilters.search]);
 
     const loadShopsAndCategories = async () => {
         try {
@@ -100,11 +138,13 @@ export default function ShopsPage() {
     };
 
     const handleFiltersChange = (filters: ShopFilters) => {
+        setActiveFilters(filters);
         if (filters.nearestOnly && filters.category) {
             // Get user location for nearest shops search
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const lat = pos.coords.latitude;
                 const lng = pos.coords.longitude;
+                cacheUserLocation({ lat, lng });
                 toast.info("Finding nearest shops...", { autoClose: 2000 });
                 
                 const result = await handleGetNearestShops(filters.category, lat, lng);
@@ -267,6 +307,7 @@ export default function ShopsPage() {
                                     avgRating={shop.avgRating}
                                     reviewCount={shop.reviewCount}
                                     isReviewed={isShopReviewed(shop.shopId || shop._id)}
+                                    searchQuery={activeFilters.search}
                                     
                                 />
                             </div>

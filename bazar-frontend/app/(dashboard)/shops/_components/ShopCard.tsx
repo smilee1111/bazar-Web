@@ -8,6 +8,8 @@ import { Card } from "@/components/ui/card";
 import { API_CONFIG } from "@/lib/api/config";
 import { handleAddFavourite, handleRemoveFavourite } from "@/lib/actions/favourite-action";
 import { handleSaveShop, handleRemoveSavedShop } from "@/lib/actions/savedShop-action";
+import { handleLogUserBehaviour } from "@/lib/actions/userBehaviour-action";
+import { getCachedUserLocation } from "@/lib/services/userLocation.service";
 
 interface ShopCardProps {
     shopId: string;
@@ -26,6 +28,7 @@ interface ShopCardProps {
     isSaved?: boolean;
     isReviewed?: boolean;
     categoryName?: string;
+    searchQuery?: string;
 }
 
 export default function ShopCard({
@@ -43,6 +46,7 @@ export default function ShopCard({
     isSaved = false,
     isReviewed = false,
     categoryName,
+    searchQuery,
 }: ShopCardProps) {
     const [isFav, setIsFav] = useState(isFavourited);
     const [isSavedShop, setIsSavedShop] = useState(isSaved);
@@ -60,7 +64,8 @@ export default function ShopCard({
                     setIsFav(false);
                 }
             } else {
-                const result = await handleAddFavourite(shopId);
+                const userLocation = getCachedUserLocation() || undefined;
+                const result = await handleAddFavourite(shopId, userLocation);
                 if (result.success) {
                     setIsFav(true);
                 }
@@ -81,7 +86,8 @@ export default function ShopCard({
                     setIsSavedShop(false);
                 }
             } else {
-                const result = await handleSaveShop(shopId);
+                const userLocation = getCachedUserLocation() || undefined;
+                const result = await handleSaveShop(shopId, userLocation);
                 if (result.success) {
                     setIsSavedShop(true);
                 }
@@ -89,6 +95,16 @@ export default function ShopCard({
         } finally {
             setIsLoadingSave(false);
         }
+    };
+
+    const handleShopClick = () => {
+        if (!searchQuery || searchQuery.trim().length === 0) return;
+        const userLocation = getCachedUserLocation() || undefined;
+        void handleLogUserBehaviour({
+            shopId,
+            eventType: "search_click",
+            userLocation,
+        });
     };
     const resolvedReviewCount = typeof reviewCount === "number" ? reviewCount : reviews?.length || 0;
     const avgReviewRating = reviews && reviews.length > 0
@@ -110,7 +126,7 @@ export default function ShopCard({
     );
 
     return (
-        <Link href={`/shops/${shopId}`}>
+        <Link href={`/shops/${shopId}`} onClick={handleShopClick}>
             <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer bg-white border-0">
                 <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-0">
                     {/* Photo Collage */}

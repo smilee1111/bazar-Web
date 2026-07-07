@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import z from "zod";
 import { PublicShopService } from "../../services/shop/publicShop.service";
 import { RouteToShopQueryDto } from "../../dtos/map.dto";
+import { UserBehaviourService } from "../../interactions_userbehaviour/services/userBehaviour.service";
 
 const publicShopService = new PublicShopService();
+const behaviourService = new UserBehaviourService();
 
 
 const NearestShopQueryDto = z.object({
@@ -12,6 +14,16 @@ const NearestShopQueryDto = z.object({
     lng: z.coerce.number().min(-180).max(180),
     limit: z.coerce.number().min(1).max(50).optional(),
 });
+
+const parseQueryLocation = (req: Request) => {
+    const latRaw = req.query.lat;
+    const lngRaw = req.query.lng;
+    if (typeof latRaw !== 'string' || typeof lngRaw !== 'string') return undefined;
+    const lat = Number(latRaw);
+    const lng = Number(lngRaw);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return undefined;
+    return { lat, lng };
+};
 
 export class PublicShopController {
     async getPublicFeed(req: Request, res: Response, next: NextFunction) {
@@ -29,6 +41,18 @@ export class PublicShopController {
             const result = await publicShopService.getPublicShopById(shopId);
             if (!result) {
                 return res.status(404).json({ success: false, message: "Shop not found" });
+            }
+            const userId = req.user?._id;
+            if (userId) {
+                const userLocation = parseQueryLocation(req);
+                void behaviourService
+                    .logEvent({
+                        userId: userId.toString(),
+                        shopId,
+                        eventType: 'view',
+                        userLocation,
+                    })
+                    .catch((err) => console.error('Failed to log view event:', err));
             }
             return res.status(200).json({ success: true, data: result });
         } catch (error) {

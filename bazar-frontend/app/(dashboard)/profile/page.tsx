@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { User, Settings, Shield, Mail, Phone, AtSign } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -10,13 +10,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { API_CONFIG } from "@/lib/api/config";
+import { toast } from "react-toastify";
 
 import UpdateForm from "./components/UpdateForm";
 
 export default async function ProfilePage() {
     const result = await handleWhoAmI();
     if (!result.success) {
-        throw new Error(result.message || "some error occurred");
+        redirect('/login');
     }
 
     if (!result.data) {

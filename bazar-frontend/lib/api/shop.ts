@@ -147,10 +147,14 @@ export const getShopById = async (id: string) => {
     }
 }
 
-export const getPublicShopById = async (id: string) => {
+export const getPublicShopById = async (
+    id: string,
+    userLocation?: { lat: number; lng: number }
+) => {
     try {
         const response = await axios.get(
-            API.PUBLIC_SHOPS.GET_BY_ID(id)
+            API.PUBLIC_SHOPS.GET_BY_ID(id),
+            userLocation ? { params: { lat: userLocation.lat, lng: userLocation.lng } } : undefined
         );
         return response.data;
     } catch (err: Error | any) {

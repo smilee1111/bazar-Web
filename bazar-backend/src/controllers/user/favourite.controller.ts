@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { FavouriteService } from '../../services/user/favourite.service';
+import { UserBehaviourService } from '../../interactions_userbehaviour/services/userBehaviour.service';
 
 const service = new FavouriteService();
+const behaviourService = new UserBehaviourService();
 
 export class FavouriteController {
     async add(req: Request, res: Response){
@@ -11,6 +13,19 @@ export class FavouriteController {
             const { shopId } = req.body;
             if(!shopId) return res.status(400).json({ success: false, message: 'shopId is required' });
             const fav = await service.addFavourite(userId, shopId);
+            const rawLocation = req.body?.userLocation;
+            const userLocation =
+                rawLocation && typeof rawLocation.lat === 'number' && typeof rawLocation.lng === 'number'
+                    ? { lat: rawLocation.lat, lng: rawLocation.lng }
+                    : undefined;
+            void behaviourService
+                .logEvent({
+                    userId: userId.toString(),
+                    shopId,
+                    eventType: 'favorite',
+                    userLocation,
+                })
+                .catch((err) => console.error('Failed to log favorite event:', err));
             return res.status(201).json({ success: true, data: fav, message: 'Added to favourites' });
         }catch(err:any){
             return res.status(err?.statusCode || 500).json({ success: false, message: err?.message || 'Internal Server Error' });
