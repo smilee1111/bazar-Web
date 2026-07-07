@@ -5,6 +5,7 @@ export interface IShop extends ShopType, Document {
     _id: mongoose.Types.ObjectId;
     ownerId: mongoose.Types.ObjectId | string;
     isActive?: boolean;
+    source?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -22,6 +23,7 @@ const ShopSchema: Schema = new Schema(
         email: { type: String, required: false },
         categoryId: { type: String, required: false },
         priceRange: { type: String, required: false },
+        source: { type: String, required: false, default: 'internal' },
         location: {
             type: { type: String, enum: ['Point'], default: 'Point' },
             coordinates: { type: [Number], required: false }, // [lng, lat]

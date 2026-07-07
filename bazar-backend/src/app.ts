@@ -1,4 +1,4 @@
-import express, {Application, Request, Response, NextFunction} from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
@@ -18,10 +18,10 @@ console.log(process.env.PORT);
 
 const app: Application = express();
 let corsOptions = {
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",")
-      : ['http://localhost:3000'],
-    //list of domains allowed to access the server
-    //frontend domain/url
+  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",")
+    : ['http://localhost:3000'],
+  //list of domains allowed to access the server
+  //frontend domain/url
 
 }
 
@@ -47,19 +47,15 @@ app.use(writeLimiter);
 // Serve uploaded files with CORS headers
 app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, '../uploads')));
 //test api
-app.get('/',(req:Request,res:Response) => {
-    res.send("Hello World!");
-});
-// debug route to confirm this app instance is running
-app.get('/__debug/behaviour-route', (req: Request, res: Response) => {
-  res.json({ ok: true, route: '/api/user/behaviour' });
+app.get('/', (req: Request, res: Response) => {
+  res.send("Hello World!");
 });
 
 //AUTH
 //importing the routes for auth
 import authRoutes from './routes/auth/auth.route';
 //defining the path for usage of auth routes 
-app.use('/api/auth',authRoutes);
+app.use('/api/auth', authRoutes);
 
 
 //ROLE
@@ -119,11 +115,16 @@ import userFavouriteRoutes from './routes/user/favourite.route';
 import userReviewRoutes from './routes/user/review.route';
 import notificationRoutes from './routes/user/notification.route';
 import userBehaviourRoutes from './interactions_userbehaviour/routes/userBehaviour.route';
+import recommendationRoutes from './routes/recommendation.routes';
+import evaluationRoutes from './routes/evaluation.routes';
+
 app.use('/api/user/saved-shops', userSavedShopRoutes);
 app.use('/api/user/favourites', userFavouriteRoutes);
 app.use('/api/user/reviews', userReviewRoutes);
 app.use('/api/user/notifications', notificationRoutes);
 app.use('/api/user/behaviour', userBehaviourRoutes);
+app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/admin/evaluation', evaluationRoutes);
 
 //SELLER ROUTES
 import sellerShopRoutes from './routes/seller/shop.route';
@@ -142,6 +143,11 @@ app.use('/api/shops', shopDetailRoutes);
 //MAPS ROUTES
 import geocodingRoutes from './routes/maps/geocoding';
 app.use('/api/maps', geocodingRoutes);
+
+//AGGREGATION ROUTES
+import aggregationRoutes from './routes/aggregation.routes';
+app.use('/api/admin/aggregation', aggregationRoutes);
+
 
 // Global error handler - return JSON for known error types (HttpError, MulterError)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
