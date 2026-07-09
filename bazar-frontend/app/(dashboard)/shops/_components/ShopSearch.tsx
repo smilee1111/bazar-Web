@@ -25,20 +25,11 @@ interface ShopFilters {
 
 interface ShopSearchProps {
     categories: any[];
+    filters: ShopFilters;
     onFiltersChange: (filters: ShopFilters) => void;
 }
 
-export default function ShopSearch({ categories = [], onFiltersChange }: ShopSearchProps) {
-    const [filters, setFilters] = useState<ShopFilters>({
-        search: "",
-        category: "",
-        location: "",
-        minPrice: "",
-        maxPrice: "",
-        minRating: "",
-        nearestOnly: false,
-    });
-
+export default function ShopSearch({ categories = [], filters, onFiltersChange }: ShopSearchProps) {
     const [showFilters, setShowFilters] = useState(false);
 
     const handleChange = (field: keyof ShopFilters, value: string | boolean) => {
@@ -46,24 +37,22 @@ export default function ShopSearch({ categories = [], onFiltersChange }: ShopSea
             ...filters,
             [field]: value,
         };
-        setFilters(updatedFilters);
         onFiltersChange(updatedFilters);
     };
 
     const handleReset = () => {
-    const emptyFilters: ShopFilters = {
-        search: "",
-        category: "",
-        location: "",
-        minPrice: "",
-        maxPrice: "",
-        minRating: "",
-        nearestOnly: false,
+        const emptyFilters: ShopFilters = {
+            search: "",
+            category: "",
+            location: "",
+            minPrice: "",
+            maxPrice: "",
+            minRating: "",
+            nearestOnly: false,
+        };
+        onFiltersChange(emptyFilters);
+        setShowFilters(false);
     };
-    setFilters(emptyFilters);
-    onFiltersChange(emptyFilters);
-    setShowFilters(false);
-};
 
    
     const activeFilterCount = Object.entries(filters).filter(([key, value]) => {

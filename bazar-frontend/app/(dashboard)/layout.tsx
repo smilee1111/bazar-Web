@@ -23,7 +23,7 @@ export default function DashboardLayout({
                 <main className="min-w-0 flex-1 overflow-y-auto px-6 py-8 md:px-10">
                     <div className={sidebarCollapsed ? "mx-0 max-w-none" : "mx-auto max-w-7xl"}>
                         <div className="flex justify-end mb-6">
-                            <NotificationBell />
+<NotificationBell />
                         </div>
                         {children}
                     </div>

@@ -28,4 +28,17 @@ export class AggregationController {
             next(error);
         }
     }
+
+    async fetchCategories(req: Request, res: Response, next: NextFunction) {
+        try {
+            const categories = await aggregationService.fetchSourceCategories();
+            return res.status(200).json({
+                success: true,
+                message: "Source categories fetched successfully.",
+                data: categories
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

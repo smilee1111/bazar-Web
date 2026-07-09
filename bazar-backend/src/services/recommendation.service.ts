@@ -1,6 +1,8 @@
 import { IRecommendationRepository, RecommendationRepository } from "../repositories/recommendation.repository";
 import { ShopReviewModel } from "../models/shopReview.model";
 import { ShopModel } from "../models/shop.model";
+import { ShopPhotoModel } from "../models/shopPhoto.model";
+import { ShopDetailModel } from "../models/shopDetail.model";
 
 const EVENT_WEIGHTS: Record<string, number> = {
     favorite: 1.0,
@@ -32,13 +34,20 @@ export class RecommendationService {
 
             // Fetch shops to build a map of shopId -> categoryId
             const shopsForCategories = await ShopModel.find({
-                _id: { $in: shopIds as any[] }
-            }).select("_id categoryId").lean();
+                $or: [
+                    { _id: { $in: shopIds as any[] } },
+                    { shopId: { $in: shopIds as any[] } }
+                ]
+            }).select("_id shopId categoryId").lean();
 
             const shopCategoryMap = new Map<string, string>();
             shopsForCategories.forEach(s => {
                 if ((s as any).categoryId) {
-                    shopCategoryMap.set(s._id.toString(), (s as any).categoryId.toString());
+                    const catStr = (s as any).categoryId.toString();
+                    shopCategoryMap.set(s._id.toString(), catStr);
+                    if ((s as any).shopId) {
+                        shopCategoryMap.set((s as any).shopId.toString(), catStr);
+                    }
                 }
             });
 
@@ -81,14 +90,25 @@ export class RecommendationService {
 
         // Step 3: Popularity score calculations
         // Query reviews for all candidates to compute reviewCount and avgRating
-        const candidateIds = candidates.map(shop => shop._id.toString());
-        const candidateShopIds = candidates.map(shop => shop.shopId).filter(Boolean);
+        const candidateIds = candidates.map(shop => shop._id ? shop._id.toString() : "");
+        const candidateShopIds = candidates.map(shop => shop.shopId ? shop.shopId.toString() : "").filter(Boolean);
         const allQueryIds = Array.from(new Set([...candidateIds, ...candidateShopIds]));
 
-        const reviews = await ShopReviewModel.find({
-            shopId: { $in: allQueryIds },
-            isActive: true
-        }).select("shopId starNum").lean();
+        const [reviews, candidatePhotos] = await Promise.all([
+            ShopReviewModel.find({
+                shopId: { $in: allQueryIds },
+                isActive: true
+            }).select("shopId starNum").lean(),
+            ShopPhotoModel.find({
+                shopId: { $in: allQueryIds },
+                isActive: true
+            }).select("shopId photoName").lean()
+        ]);
+
+        const candidatePhotosByShop = new Set<string>();
+        candidatePhotos.forEach((photo: any) => {
+            if (photo.shopId) candidatePhotosByShop.add(photo.shopId.toString());
+        });
 
         // Calculate raw popularity: count * avgRating
         const rawPopularities = candidates.map(shop => {
@@ -134,8 +154,13 @@ export class RecommendationService {
                 recencyScore = Math.exp(-0.01 * (ageInDays - 30));
             }
 
+            // D. Photo presence score
+            const shopIdStr = shop.shopId;
+            const hasPhoto = candidatePhotosByShop.has(idStr) || (shopIdStr && candidatePhotosByShop.has(shopIdStr));
+            const photoScore = hasPhoto ? 1.0 : 0.0;
+
             // Weighted scoring function
-            const finalScore = (categoryMatchWeight * 0.5) + (popularityScore * 0.3) + (recencyScore * 0.2);
+            const finalScore = (categoryMatchWeight * 0.4) + (popularityScore * 0.3) + (recencyScore * 0.1) + (photoScore * 0.2);
 
             return {
                 shop,
@@ -143,6 +168,7 @@ export class RecommendationService {
                     categoryMatchWeight,
                     popularityScore,
                     recencyScore,
+                    photoScore,
                     finalScore
                 }
             };
@@ -152,6 +178,77 @@ export class RecommendationService {
         scoredCandidates.sort((a, b) => b.scores.finalScore - a.scores.finalScore);
 
         // Limit to top K
-        return scoredCandidates.slice(0, k);
+        const topK = scoredCandidates.slice(0, k);
+
+        // Enrich photos, details, and attach mapped reviews for the top K shops
+        const topKIds = new Set<string>();
+        topK.forEach(item => {
+            if (item.shop._id) topKIds.add(item.shop._id.toString());
+            if (item.shop.shopId) topKIds.add(item.shop.shopId.toString());
+        });
+        const queryIds = Array.from(topKIds);
+
+        const [photos, details] = await Promise.all([
+            ShopPhotoModel.find({ shopId: { $in: queryIds }, isActive: true }).lean(),
+            ShopDetailModel.find({ shopId: { $in: queryIds } }).lean()
+        ]);
+
+        const photosByShop = new Map<string, any[]>();
+        photos.forEach((photo: any) => {
+            const sId = photo.shopId ? photo.shopId.toString() : "";
+            const list = photosByShop.get(sId) || [];
+            list.push(photo);
+            photosByShop.set(sId, list);
+        });
+
+        const detailsByShop = new Map<string, any[]>();
+        details.forEach((detail: any) => {
+            const sId = detail.shopId ? detail.shopId.toString() : "";
+            const list = detailsByShop.get(sId) || [];
+            list.push(detail);
+            detailsByShop.set(sId, list);
+        });
+
+        const enrichedTopK = topK.map(item => {
+            const idStr = item.shop._id ? item.shop._id.toString() : "";
+            const shopIdStr = item.shop.shopId ? item.shop.shopId.toString() : "";
+            const resolvedId = shopIdStr || idStr;
+
+            const shopReviews = reviews.filter(r => {
+                const rsId = r.shopId ? r.shopId.toString() : "";
+                return rsId === idStr || rsId === shopIdStr;
+            });
+            const reviewCount = shopReviews.length;
+            const avgRating = reviewCount > 0 
+                ? shopReviews.reduce((sum, r) => sum + r.starNum, 0) / reviewCount 
+                : 0;
+
+            const shopPhotos = [
+                ...(shopIdStr ? (photosByShop.get(shopIdStr) || []) : []),
+                ...(photosByShop.get(idStr) || [])
+            ];
+
+            const shopDetails = [
+                ...(shopIdStr ? (detailsByShop.get(shopIdStr) || []) : []),
+                ...(detailsByShop.get(idStr) || [])
+            ];
+
+            const enrichedShop = {
+                ...item.shop,
+                shopId: resolvedId,
+                photos: shopPhotos,
+                reviews: shopReviews,
+                details: shopDetails,
+                avgRating,
+                reviewCount
+            };
+
+            return {
+                ...item,
+                shop: enrichedShop
+            };
+        });
+
+        return enrichedTopK;
     }
 }

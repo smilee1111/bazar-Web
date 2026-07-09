@@ -13,7 +13,8 @@ const RecommendationQuerySchema = z.object({
 export class RecommendationController {
     async getRecommendations(req: Request, res: Response, next: NextFunction) {
         try {
-            if (!req.user?._id) {
+            const userId = req.user?._id.toString();
+            if (!userId) {
                 return res.status(401).json({ success: false, message: "Unauthorized" });
             }
 
@@ -26,7 +27,6 @@ export class RecommendationController {
             }
 
             const { lat, lng, k } = parsed.data;
-            const userId = req.user._id.toString();
 
             const recommendations = await recommendationService.getRecommendations(userId, lat, lng, k);
 

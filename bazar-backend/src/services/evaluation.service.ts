@@ -106,16 +106,18 @@ export class EvaluationService {
             const trainLogs = logs.slice(0, splitIndex);
             const testLogs = logs.slice(splitIndex);
 
-            // Test targets (Ground Truth): shops favorited or saved in test logs
+            // Test targets (Ground Truth): shops the user interacted with in test logs.
+            // We include all interaction types (view, favorite, save, search_click) as positive signals
+            // because with sparse data, restricting to only favorite/save leaves the test set empty.
             const testTargetShopIds = Array.from(
                 new Set(
                     testLogs
-                        .filter(log => (log.eventType === "favorite" || log.eventType === "save") && log.shopId)
+                        .filter(log => log.shopId)
                         .map(log => log.shopId!.toString())
                 )
             );
 
-            // Skip users without any positive targets in test split
+            // Skip users without any interactions in test split
             if (testTargetShopIds.length === 0) {
                 continue;
             }
@@ -126,23 +128,37 @@ export class EvaluationService {
             const evalRepo = new EvaluationRecommendationRepository(trainLogs, this.realRecommendationRepository);
             const personalizedService = new RecommendationService(evalRepo);
             const recs = await personalizedService.getRecommendations(userId, lat, lng, 10);
-            const recShopIds = recs.map(r => r.shop._id.toString());
-            const recsAt5 = recShopIds.slice(0, 5);
-            const recsAt10 = recShopIds.slice(0, 10);
+            // Build ID sets per recommendation so we can match behaviour logs that use either _id or shopId
+            const recIdSets = recs.map(r => {
+                const ids = [r.shop._id.toString()];
+                if ((r.shop as any).shopId) ids.push((r.shop as any).shopId.toString());
+                return ids;
+            });
 
             // Run Baseline recommendations
             const baselineRepo = new BaselineRecommendationRepository(trainLogs, this.realRecommendationRepository);
             const baselineService = new RecommendationService(baselineRepo);
             const baseRecs = await baselineService.getRecommendations(userId, lat, lng, 10);
-            const baseShopIds = baseRecs.map(r => r.shop._id.toString());
-            const baseRecsAt5 = baseShopIds.slice(0, 5);
-            const baseRecsAt10 = baseShopIds.slice(0, 10);
+            const baseIdSets = baseRecs.map(r => {
+                const ids = [r.shop._id.toString()];
+                if ((r.shop as any).shopId) ids.push((r.shop as any).shopId.toString());
+                return ids;
+            });
+
+            // Helper: count how many recommendation slots have at least one ID matching a target
+            const countHits = (idSets: string[][], targets: string[]) =>
+                idSets.filter(ids => ids.some(id => targets.includes(id))).length;
 
             // Compute metrics
-            const persAt5 = this.calculateMetrics(recsAt5, testTargetShopIds);
-            const persAt10 = this.calculateMetrics(recsAt10, testTargetShopIds);
-            const baseAt5 = this.calculateMetrics(baseRecsAt5, testTargetShopIds);
-            const baseAt10 = this.calculateMetrics(baseRecsAt10, testTargetShopIds);
+            const persHitsAt5 = countHits(recIdSets.slice(0, 5), testTargetShopIds);
+            const persHitsAt10 = countHits(recIdSets.slice(0, 10), testTargetShopIds);
+            const baseHitsAt5 = countHits(baseIdSets.slice(0, 5), testTargetShopIds);
+            const baseHitsAt10 = countHits(baseIdSets.slice(0, 10), testTargetShopIds);
+
+            const persAt5 = { precision: recIdSets.length >= 5 ? persHitsAt5 / 5 : (recIdSets.length > 0 ? persHitsAt5 / recIdSets.length : 0), recall: testTargetShopIds.length > 0 ? persHitsAt5 / testTargetShopIds.length : 0 };
+            const persAt10 = { precision: recIdSets.length >= 10 ? persHitsAt10 / 10 : (recIdSets.length > 0 ? persHitsAt10 / recIdSets.length : 0), recall: testTargetShopIds.length > 0 ? persHitsAt10 / testTargetShopIds.length : 0 };
+            const baseAt5 = { precision: baseIdSets.length >= 5 ? baseHitsAt5 / 5 : (baseIdSets.length > 0 ? baseHitsAt5 / baseIdSets.length : 0), recall: testTargetShopIds.length > 0 ? baseHitsAt5 / testTargetShopIds.length : 0 };
+            const baseAt10 = { precision: baseIdSets.length >= 10 ? baseHitsAt10 / 10 : (baseIdSets.length > 0 ? baseHitsAt10 / baseIdSets.length : 0), recall: testTargetShopIds.length > 0 ? baseHitsAt10 / testTargetShopIds.length : 0 };
 
             // Aggregate
             sumPersPrecisionAt5 += persAt5.precision;

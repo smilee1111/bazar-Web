@@ -1,4 +1,0 @@
-node seed-data.js -i — Import/seed all data
-node seed-data.js -d — Delete all data
-npm run seed:import— Import/seed all data
-npm run seed:delete— Delete all data

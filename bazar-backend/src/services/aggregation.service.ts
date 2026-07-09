@@ -26,6 +26,16 @@ export class AggregationService {
         return user._id.toString();
     }
 
+    async fetchSourceCategories(): Promise<Record<string, string[]>> {
+        const categoriesBySource: Record<string, string[]> = {};
+        for (const crawler of this.crawlers) {
+            if (crawler.fetchCategories) {
+                categoriesBySource[crawler.sourceName] = await crawler.fetchCategories();
+            }
+        }
+        return categoriesBySource;
+    }
+
     async triggerAggregation(targetCategoryId: string): Promise<{ addedCount: number; sourceBreakdown: Record<string, number> }> {
         const ownerId = await this.getSystemAggregatorUserId();
         let totalAddedCount = 0;

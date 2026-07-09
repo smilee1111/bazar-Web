@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileQuestion, Home, ArrowLeft } from "lucide-react"
@@ -20,7 +21,7 @@ export default function notFound() {
                         </div>
                     </div>
                     <CardTitle className="text-[#2D2318] text-2xl">Oops! Page not found</CardTitle>
-                </CardContent>
+                </CardHeader>
                 <CardContent className="space-y-6">
                     <p className="text-center text-[#5B3E2E]">
                         The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.

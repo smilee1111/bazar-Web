@@ -126,6 +126,7 @@ app.use('/api/user/behaviour', userBehaviourRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/admin/evaluation', evaluationRoutes);
 
+
 //SELLER ROUTES
 import sellerShopRoutes from './routes/seller/shop.route';
 app.use('/api/seller/shops', sellerShopRoutes);

@@ -26,6 +26,7 @@ export const API = {
     USERS_SELF: {
         UPDATE_PROFILE: 'user/update-profile',
         GET_USER_PROFILE: 'user/whoami',
+        ONBOARDING: 'user/onboarding',
     },
     USER_SELLER_APPLICATIONS: {
         CREATE_APPLICATION: 'user/seller-applications',
@@ -122,5 +123,18 @@ export const API = {
         GET_ALL: 'admin/shop-details',
         GET_BY_ID: (detailId: string) => `admin/shop-details/${detailId}`,
         DELETE: (detailId: string) => `admin/shop-details/${detailId}`,
+    },
+    ADMIN_CATEGORIES: {
+        CREATE: 'categories',
+        GET_ALL: 'categories',
+        GET_BY_ID: (id: string) => `categories/${id}`,
+        UPDATE: (id: string) => `categories/${id}`,
+        DELETE: (id: string) => `categories/${id}`,
+    },
+    RECOMMENDATIONS: 'recommendations',
+    ADMIN_EVALUATION: 'admin/evaluation',
+    ADMIN_AGGREGATION: {
+        TRIGGER: 'admin/aggregation/trigger',
+        SOURCE_CATEGORIES: 'admin/aggregation/categories',
     },
 }

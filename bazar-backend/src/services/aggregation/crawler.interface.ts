@@ -6,4 +6,5 @@ export interface CrawlerResult {
 export interface ICrawler {
     sourceName: string;
     crawl(targetCategoryId: string, ownerId: string): Promise<CrawlerResult>;
+    fetchCategories?(): Promise<string[]>;
 }

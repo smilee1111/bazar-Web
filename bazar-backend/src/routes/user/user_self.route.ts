@@ -8,5 +8,6 @@ const userSelfController = new UserSelfController();
 
 router.put('/update-profile', authorizedMiddleware, uploads.single('image'), userSelfController.updateUser);
 router.get('/whoami', authorizedMiddleware, userSelfController.getUserProfile);
+router.post('/onboarding', authorizedMiddleware, userSelfController.completeOnboarding.bind(userSelfController));
 
 export default router;
