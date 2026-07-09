@@ -18,6 +18,7 @@ import { handleLikeShopReview, handleUnlikeShopReview, handleIsReviewLiked, hand
 import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { handleAddFavourite, handleRemoveFavourite, handleGetFavourites } from "@/lib/actions/favourite-action";
 import { handleSaveShop, handleRemoveSavedShop, handleGetSavedShops } from "@/lib/actions/savedShop-action";
+import { handleLogUserBehaviour } from "@/lib/actions/userBehaviour-action";
 import { toast } from "react-toastify";
 import { useAuth } from "@/app/providers/AuthContext";
 import { cacheUserLocation, getCachedUserLocation } from "@/lib/services/userLocation.service";
@@ -157,6 +158,17 @@ export default function ShopDetailsPage() {
             loadShopDetails();
         }
     }, [shopId]);
+
+    // Log user behaviour (viewing a shop)
+    useEffect(() => {
+        if (shop && user) {
+            const canonicalShopId = shop.shopId || shop._id || shopId;
+            handleLogUserBehaviour({
+                shopId: canonicalShopId,
+                eventType: 'view'
+            }).catch(console.error);
+        }
+    }, [shop?.shopId, shop?._id, shopId, user]);
 
     useEffect(() => {
         // Fetch categories on mount

@@ -28,7 +28,7 @@ export default function AdminLayout({
                 <main className="min-w-0 flex-1 overflow-y-auto px-4 py-6 md:px-6">
                     <div className={sidebarCollapsed ? "mx-0 max-w-none" : "mx-auto max-w-7xl"}>
                         <div className="flex justify-end mb-4">
-                            <NotificationBell />
+<NotificationBell />
                         </div>
                         {children}
                     </div>

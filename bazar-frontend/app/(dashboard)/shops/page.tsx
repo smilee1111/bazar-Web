@@ -55,6 +55,32 @@ export default function ShopsPage() {
         minRating: "",
         nearestOnly: false,
     });
+    const [isInitialized, setIsInitialized] = useState(false);
+
+    useEffect(() => {
+        const savedPage = sessionStorage.getItem("bazar_shops_page");
+        if (savedPage) {
+            const parsed = parseInt(savedPage, 10);
+            if (!isNaN(parsed)) setCurrentPage(parsed);
+        }
+        
+        const savedFilters = sessionStorage.getItem("bazar_shops_filters");
+        if (savedFilters) {
+            try {
+                setActiveFilters(JSON.parse(savedFilters));
+            } catch (e) {}
+        }
+        
+        setIsInitialized(true);
+    }, []);
+
+    useEffect(() => {
+        if (isInitialized) {
+            sessionStorage.setItem("bazar_shops_filters", JSON.stringify(activeFilters));
+            sessionStorage.setItem("bazar_shops_page", currentPage.toString());
+        }
+    }, [activeFilters, currentPage, isInitialized]);
+
     const searchLogTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const itemsPerPage = 10;
 
@@ -111,8 +137,6 @@ export default function ShopsPage() {
             if (shopsResult.success) {
                 const shopsData = Array.isArray(shopsResult.data) ? shopsResult.data : shopsResult.data?.data || [];
                 setShops(shopsData);
-                setFilteredShops(shopsData);
-
             }
 
             if (categoriesResult.success) {
@@ -137,10 +161,8 @@ export default function ShopsPage() {
         return userReviews.some((review: any) => review.shopId === shopId);
     };
 
-    const handleFiltersChange = (filters: ShopFilters) => {
-        setActiveFilters(filters);
+    const applyFilters = async (filters: ShopFilters, currentShops: Shop[]) => {
         if (filters.nearestOnly && filters.category) {
-            // Get user location for nearest shops search
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const lat = pos.coords.latitude;
                 const lng = pos.coords.longitude;
@@ -151,7 +173,6 @@ export default function ShopsPage() {
                 if (result.success) {
                     const nearestShops = result.data || [];
                     setFilteredShops(nearestShops);
-                    setCurrentPage(1);
                     if (nearestShops.length === 0) {
                         toast.warn("No shops found in this category within 10km. Try expanding your search.");
                     } else {
@@ -162,27 +183,16 @@ export default function ShopsPage() {
                 }
             }, (err) => {
                  toast.error("Location access denied. Please enable location access in your browser.");
-                 // Fall back to category filtering only
-                 let filtered = [...shops];
-                 if (filters.category) {
-                     filtered = filtered.filter((shop) => {
-                         const catId = typeof shop.categoryId === "string" ? shop.categoryId : shop.categoryId?._id;
-                         const catAltId = shop.categoryId?.categoryId;
-                         return (
-                             String(catId) === String(filters.category) ||
-                             String(catAltId) === String(filters.category) ||
-                             String(shop.categoryId) === String(filters.category)
-                         );
-                     });
-                 }
-                 setFilteredShops(filtered);
-                 setCurrentPage(1);
+                 applyClientSideFilters(filters, currentShops);
             });
         } else {
-            // Client-side filtering for search, category, location, price, rating
-            let filtered = [...shops];
+            applyClientSideFilters(filters, currentShops);
+        }
+    };
 
-        // Search filter
+    const applyClientSideFilters = (filters: ShopFilters, currentShops: Shop[]) => {
+        let filtered = [...currentShops];
+        
         if (filters.search) {
             const searchLower = filters.search.toLowerCase();
             filtered = filtered.filter((shop) =>
@@ -192,22 +202,18 @@ export default function ShopsPage() {
             );
         }
 
-        // Category filter
         if (filters.category) {
             filtered = filtered.filter((shop) => {
-                // Shop may have categoryId as string or as object with _id/categoryId
                 const catId = typeof shop.categoryId === "string" ? shop.categoryId : shop.categoryId?._id;
                 const catAltId = shop.categoryId?.categoryId;
-                // Also check if shop.categoryId matches the selected category's _id
                 return (
-        String(catId) === String(filters.category) ||
-        String(catAltId) === String(filters.category) ||
-        String(shop.categoryId) === String(filters.category)
-    );
+                    String(catId) === String(filters.category) ||
+                    String(catAltId) === String(filters.category) ||
+                    String(shop.categoryId) === String(filters.category)
+                );
             });
         }
 
-        // Location filter
         if (filters.location) {
             const locationLower = filters.location.toLowerCase();
             filtered = filtered.filter((shop) =>
@@ -215,7 +221,6 @@ export default function ShopsPage() {
             );
         }
 
-        // Rating filter (would require data from reviews - for now, kept as placeholder)
         if (filters.minRating) {
             const minRating = Number(filters.minRating);
             filtered = filtered.filter((shop) => {
@@ -237,17 +242,43 @@ export default function ShopsPage() {
                 const numeric = Number(String(raw).replace(/[^0-9.]/g, ""));
                 const dollarCount = String(raw).split("").filter((c) => c === "$").length;
                 const score = Number.isNaN(numeric) ? dollarCount : numeric;
-                if (!score) {
-                    return false;
-                }
+                if (!score) return false;
                 return score >= minPrice && score <= maxPrice;
             });
         }
 
         setFilteredShops(filtered);
-        setCurrentPage(1);
-    }      
     };
+
+    useEffect(() => {
+        if (!shops.length) return;
+        applyFilters(activeFilters, shops);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [shops, activeFilters]);
+
+    const handleFiltersChange = (filters: ShopFilters) => {
+        setActiveFilters(filters);
+        setCurrentPage(1);
+    };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            sessionStorage.setItem("bazar_shops_scroll", window.scrollY.toString());
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    useEffect(() => {
+        if (!loading && isInitialized) {
+            const savedScroll = sessionStorage.getItem("bazar_shops_scroll");
+            if (savedScroll) {
+                setTimeout(() => {
+                    window.scrollTo(0, parseInt(savedScroll, 10));
+                }, 100);
+            }
+        }
+    }, [loading, isInitialized]);
 
     return (
         <div className="space-y-6">
@@ -259,7 +290,7 @@ export default function ShopsPage() {
             </div>
 
             {/* Search and Filters */}
-            <ShopSearch categories={categories} onFiltersChange={handleFiltersChange} />
+            <ShopSearch categories={categories} filters={activeFilters} onFiltersChange={handleFiltersChange} />
 
             {/* Shops Grid */}
             <div className="space-y-6">

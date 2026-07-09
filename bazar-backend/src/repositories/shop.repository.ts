@@ -218,13 +218,17 @@ export class ShopRepository implements IShopRepository {
         limit = 10
     ): Promise<IShop[]> {
         try {
-            // First, resolve the category ID - the input could be either _id or categoryId
+            let categoryQuery: any[] = [
+                { categoryId: categoryId }
+            ];
+            
+            if (isObjectIdString(categoryId)) {
+                categoryQuery.push({ _id: categoryId });
+                categoryQuery.push({ _id: new mongoose.Types.ObjectId(categoryId) });
+            }
+
             let category = await CategoryModel.findOne({
-                $or: [
-                    { _id: categoryId },
-                    { categoryId: categoryId },
-                    { _id: new mongoose.Types.ObjectId(categoryId) }
-                ]
+                $or: categoryQuery
             }).lean();
 
             if (!category) {
@@ -233,11 +237,14 @@ export class ShopRepository implements IShopRepository {
             }
 
             // Use the category's categoryId field for shop lookup
-            const actualCategoryId = category.categoryId || String(category._id);
+            const categoryIdsToMatch = [String(category._id)];
+            if (category.categoryId) {
+                categoryIdsToMatch.push(category.categoryId);
+            }
             
             // Get shops within the distance limit, ordered by distance
             const shops = await ShopModel.find({
-                categoryId: actualCategoryId,
+                categoryId: { $in: categoryIdsToMatch },
                 isActive: true,
                 location: {
                     $near: {
@@ -245,7 +252,7 @@ export class ShopRepository implements IShopRepository {
                             type: "Point",
                             coordinates: [userLocation.lng, userLocation.lat],
                         },
-                        $maxDistance: 7000 // 7km straight-line (roughly 10km road distance)
+                        $maxDistance: 10000 // 10km radius
                     }
                 }
             })

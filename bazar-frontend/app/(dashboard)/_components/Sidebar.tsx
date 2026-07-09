@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store, Settings, ChevronUp, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { Bookmark, Heart, Home, LogOut, Shield, UserRound, Users, Store, Settings, ChevronUp, MapPin, ChevronLeft, ChevronRight, Database, BarChart, Tags } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -55,7 +55,10 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
         ? [
             ...baseNavItems,
             { label: "Users", href: "/admin/users", icon: Users },
-            { label: "Shops", href: "/admin/shops", icon: Store }
+            { label: "Categories", href: "/admin/categories", icon: Tags },
+            { label: "Shops", href: "/admin/shops", icon: Store },
+            { label: "Data Import", href: "/admin/aggregation", icon: Database },
+            { label: "Model Evaluation", href: "/admin/evaluation", icon: BarChart }
         ]
         : isSeller
             ? [

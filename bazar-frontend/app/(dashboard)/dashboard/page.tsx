@@ -12,6 +12,8 @@ import { handleGetUserReviews } from "@/lib/actions/review-action";
 import { handleGetSavedShops } from "@/lib/actions/savedShop-action";
 import { handleGetFavourites } from "@/lib/actions/favourite-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
+import { handleGetRecommendations } from "@/lib/actions/recommendation-action";
+import { getCachedUserLocation } from "@/lib/services/userLocation.service";
 import { API_CONFIG } from "@/lib/api/config";
 import { useAuth } from "../../providers/AuthContext";
 import ShopCard from "../shops/_components/ShopCard";
@@ -48,6 +50,7 @@ export default function DashboardPage() {
     const [savedShopsCount, setSavedShopsCount] = useState(0);
     const [favouritesCount, setFavouritesCount] = useState(0);
     const [categories, setCategories] = useState<any[]>([]);
+    const [recommendations, setRecommendations] = useState<Shop[]>([]);
     const [loading, setLoading] = useState(true);
     const roleRaw = typeof user?.role === "string"
         ? user.role
@@ -62,16 +65,32 @@ export default function DashboardPage() {
 
     const loadDashboardData = async () => {
         try {
-            const [shopsResult, reviewsResult, savedResult, favouritesResult] = await Promise.all([
+            const userLocation = getCachedUserLocation();
+            const lat = userLocation?.lat || 27.7172;
+            const lng = userLocation?.lng || 85.3240;
+
+            const [shopsResult, reviewsResult, savedResult, favouritesResult, categoriesResult, recommendationsResult] = await Promise.all([
                 handleGetPublicShops(),
                 handleGetUserReviews(),
                 handleGetSavedShops(),
                 handleGetFavourites(),
+                handleGetAllCategories(),
+                handleGetRecommendations(lat, lng),
             ]);
 
             if (shopsResult.success) {
                 const data = Array.isArray(shopsResult.data) ? shopsResult.data : shopsResult.data?.data || [];
                 setAllShops(data);
+            }
+
+            if (categoriesResult?.success) {
+                const data = Array.isArray(categoriesResult.data) ? categoriesResult.data : categoriesResult.data?.data || [];
+                setCategories(data);
+            }
+
+            if (recommendationsResult?.success) {
+                const data = Array.isArray(recommendationsResult.data) ? recommendationsResult.data : recommendationsResult.data?.data || [];
+                setRecommendations(data);
             }
 
             if (reviewsResult.success) {
@@ -107,7 +126,7 @@ export default function DashboardPage() {
                 if (bRating !== aRating) return bRating - aRating;
                 return (b.reviewCount || 0) - (a.reviewCount || 0);
             })
-            .slice(0, 4);
+            .slice(0, 10);
     }, [allShops]);
     const totalPlatformReviews = useMemo(
         () => allShops.reduce((sum, shop) => sum + (shop.reviewCount || 0), 0),
@@ -121,8 +140,9 @@ export default function DashboardPage() {
         return total / rated.length;
     }, [allShops]);
 
-    const spotlightShop = topRatedShops[0];
-    const topPicks = topRatedShops.slice(0, 3);
+    const displayRecommendations = user && !isAdmin && !isSeller && recommendations.length > 0;
+    const spotlightShop = displayRecommendations ? recommendations[0] : topRatedShops[0];
+    const topPicks = displayRecommendations ? recommendations.slice(1, 4) : topRatedShops.slice(0, 3);
 
     const recentActivity = useMemo(() => {
         return [...userReviews]
@@ -408,11 +428,11 @@ export default function DashboardPage() {
                     </Card>
                 ) : (
                     <div className="space-y-0">
-                        {topRatedShops.map((shop) => {
+                        {(displayRecommendations ? recommendations : topRatedShops).slice(0, 10).map((shop) => {
                             const categoryName =
-                           typeof shop.categoryId === "object"
-                            ? shop.categoryId.name
-                            : categories.find(cat => cat._id === shop.categoryId)?.name || ""; 
+                                typeof shop.categoryId === "object"
+                                    ? (shop.categoryId as any).name || (shop.categoryId as any).categoryName
+                                    : categories.find(cat => cat._id === shop.categoryId)?.categoryName || categories.find(cat => cat._id === shop.categoryId)?.name || ""; 
                             return(
                                 <div key={shop._id} className="pb-5 last:pb-0">
                                 <ShopCard
@@ -436,6 +456,14 @@ export default function DashboardPage() {
                        })}
                     </div>
                 )}
+                <div className="pt-6 flex justify-center">
+                    <Link href="/shops">
+                        <Button className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                            <Compass className="mr-2 h-5 w-5" />
+                            Explore More Shops
+                        </Button>
+                    </Link>
+                </div>
             </div>
         </div>
     );
