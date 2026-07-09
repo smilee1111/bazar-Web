@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { authorizedMiddleware } from "../middlewares/authorized.middleware";
 import { RecommendationController } from "../controllers/recommendation.controller";
+
+import { authorizedMiddleware } from "../middlewares/authorized.middleware";
 
 const router = Router();
 const controller = new RecommendationController();

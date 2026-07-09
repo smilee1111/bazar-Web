@@ -11,7 +11,8 @@ const UserSchema: Schema = new Schema(
         password : { type: String, required: true},
         profilePic: { type: String, required: false },
         roleId: { type: Schema.Types.ObjectId, ref: 'Role', required: false },
-        sellerStatus: { type: String, enum: ['none','pending','approved','rejected'], default: 'none' }
+        sellerStatus: { type: String, enum: ['none','pending','approved','rejected'], default: 'none' },
+        hasCompletedOnboarding: { type: Boolean, default: false }
     },
     {
         timestamps: true, //auto createdAt and updatedAt

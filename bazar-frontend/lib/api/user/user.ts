@@ -33,3 +33,17 @@ export const getUserProfile = async () => {
         );
     }
 }
+
+export const completeOnboarding = async (onboardingData: { categoryIds: string[]; location?: { lat: number; lng: number } }) => {
+    try {
+        const response = await axios.post(
+            API.USERS_SELF.ONBOARDING,
+            onboardingData
+        );
+        return response.data;
+    } catch (err: Error | any) {
+        throw new Error(
+            err.response?.data?.message || err.message || "Failed to complete onboarding"
+        );
+    }
+}
