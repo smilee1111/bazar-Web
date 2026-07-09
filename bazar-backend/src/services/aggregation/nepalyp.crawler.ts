@@ -4,6 +4,7 @@ import { ShopPhotoModel } from "../../models/shopPhoto.model";
 import { ShopReviewModel } from "../../models/shopReview.model";
 import { ShopDetailModel } from "../../models/shopDetail.model";
 import { UserModel } from "../../models/user.model";
+import { CategoryModel } from "../../models/category.model";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import mongoose from "mongoose";
@@ -31,12 +32,45 @@ export class NepalYPCrawler implements ICrawler {
         return user._id.toString();
     }
 
+    async fetchCategories(): Promise<string[]> {
+        try {
+            const response = await axios.get('https://www.nepalyp.com/browse-business-directory', {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                }
+            });
+            const $ = cheerio.load(response.data);
+            const categories = new Set<string>();
+            $('a[href^="/category/"]').each((i, el) => {
+                const href = $(el).attr('href');
+                if (href) {
+                    const slug = href.replace('/category/', '');
+                    categories.add(slug);
+                }
+            });
+            return Array.from(categories);
+        } catch(err: any) {
+            console.error("[NepalYPCrawler] Failed to fetch categories:", err.message);
+            throw err;
+        }
+    }
+
     async crawl(targetCategoryId: string, ownerId: string): Promise<CrawlerResult> {
         let addedCount = 0;
 
         try {
+            // Fetch category name to build dynamic URL
+            const category = await CategoryModel.findOne({ categoryId: targetCategoryId }) 
+                           || await CategoryModel.findById(targetCategoryId).catch(() => null);
+            
+            const categoryName = category?.categoryName || "Boutique";
+            
+            // The categoryName is already exactly matching the NepalYP slug because it was fetched directly from there
+            const ypCategorySlug = categoryName;
+            
             // 1. Fetch category listing page
-            const categoryUrl = "https://www.nepalyp.com/category/Boutique";
+            const categoryUrl = `https://www.nepalyp.com/category/${ypCategorySlug}`;
+            console.log(`[NepalYPCrawler] Crawling category: ${categoryName} -> ${categoryUrl}`);
             const response = await axios.get(categoryUrl, {
                 headers: {
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
