@@ -89,8 +89,9 @@ export default function DashboardPage() {
             }
 
             if (recommendationsResult?.success) {
-                const data = Array.isArray(recommendationsResult.data) ? recommendationsResult.data : recommendationsResult.data?.data || [];
-                setRecommendations(data);
+                const rawData = Array.isArray(recommendationsResult.data) ? recommendationsResult.data : recommendationsResult.data?.data || [];
+                const mappedData = rawData.map((item: any) => item.shop || item);
+                setRecommendations(mappedData);
             }
 
             if (reviewsResult.success) {
@@ -432,28 +433,28 @@ export default function DashboardPage() {
                             const categoryName =
                                 typeof shop.categoryId === "object"
                                     ? (shop.categoryId as any).name || (shop.categoryId as any).categoryName
-                                    : categories.find(cat => cat._id === shop.categoryId)?.categoryName || categories.find(cat => cat._id === shop.categoryId)?.name || ""; 
-                            return(
+                                    : categories.find(cat => cat._id === shop.categoryId)?.categoryName || categories.find(cat => cat._id === shop.categoryId)?.name || "";
+                            return (
                                 <div key={shop._id} className="pb-5 last:pb-0">
-                                <ShopCard
-                                    shopId={shop.shopId || shop._id}
-                                    shopName={shop.shopName}
-                                    shopAddress={shop.shopAddress}
-                                    description={shop.description}
-                                    contactNumber={shop.contactNumber}
-                                    categoryId={shop.categoryId}
-                                    categoryName={categoryName}
-                                    priceRange={shop.priceRange}
-                                    photos={shop.photos || []}
-                                    reviews={shop.reviews || []}
-                                    details={shop.details || []}
-                                    avgRating={shop.avgRating}
-                                    reviewCount={shop.reviewCount}
-                                    isReviewed={isShopReviewed(shop.shopId || shop._id)}
-                                />
-                            </div>
-                            );              
-                       })}
+                                    <ShopCard
+                                        shopId={shop.shopId || shop._id}
+                                        shopName={shop.shopName}
+                                        shopAddress={shop.shopAddress}
+                                        description={shop.description}
+                                        contactNumber={shop.contactNumber}
+                                        categoryId={shop.categoryId}
+                                        categoryName={categoryName}
+                                        priceRange={shop.priceRange}
+                                        photos={shop.photos || []}
+                                        reviews={shop.reviews || []}
+                                        details={shop.details || []}
+                                        avgRating={shop.avgRating}
+                                        reviewCount={shop.reviewCount}
+                                        isReviewed={isShopReviewed(shop.shopId || shop._id)}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
                 <div className="pt-6 flex justify-center">
