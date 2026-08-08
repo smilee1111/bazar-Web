@@ -3,40 +3,26 @@ import { ShopModel } from "../../models/shop.model";
 import { ShopPhotoModel } from "../../models/shopPhoto.model";
 import { ShopReviewModel } from "../../models/shopReview.model";
 import { ShopDetailModel } from "../../models/shopDetail.model";
-import { UserModel } from "../../models/user.model";
 import { CategoryModel } from "../../models/category.model";
+import { HONEST_USER_AGENT, isCrawlAllowed, politeDelay, getOrCreateExternalReviewerUser } from "./crawlerUtils";
 import axios from "axios";
 import * as cheerio from "cheerio";
-import mongoose from "mongoose";
 
 export class NepalYPCrawler implements ICrawler {
     readonly sourceName = "nepalyp_shopping";
 
-    /**
-     * Dynamically provisions a user account for each real reviewer so that reviews satisfy
-     * foreign-key validations and are properly linkable in the frontend.
-     */
-    private async getOrCreateReviewerUser(fullName: string): Promise<string> {
-        const username = fullName.toLowerCase().replace(/[^a-z0-9]/g, "_");
-        let user = await UserModel.findOne({ username });
-        if (!user) {
-            user = await UserModel.create({
-                fullName,
-                email: `${username}@bazar-reviewer.com`,
-                phoneNumber: `98${Math.floor(10000000 + Math.random() * 90000000)}`,
-                username,
-                password: "ReviewerPassword123!",
-                roleId: new mongoose.Types.ObjectId()
-            });
-        }
-        return user._id.toString();
-    }
-
     async fetchCategories(): Promise<string[]> {
         try {
-            const response = await axios.get('https://www.nepalyp.com/browse-business-directory', {
+            const listingUrl = 'https://www.nepalyp.com/browse-business-directory';
+            const { allowed } = await isCrawlAllowed(listingUrl);
+            if (!allowed) {
+                console.warn(`[NepalYPCrawler] robots.txt disallows ${listingUrl}, skipping category fetch.`);
+                return [];
+            }
+
+            const response = await axios.get(listingUrl, {
                 headers: {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    "User-Agent": HONEST_USER_AGENT
                 }
             });
             const $ = cheerio.load(response.data);
@@ -70,10 +56,16 @@ export class NepalYPCrawler implements ICrawler {
             
             // 1. Fetch category listing page
             const categoryUrl = `https://www.nepalyp.com/category/${ypCategorySlug}`;
+            const { allowed: categoryAllowed } = await isCrawlAllowed(categoryUrl);
+            if (!categoryAllowed) {
+                console.warn(`[NepalYPCrawler] robots.txt disallows ${categoryUrl}, aborting crawl for this category.`);
+                return { addedCount: 0, sourceName: this.sourceName };
+            }
+
             console.log(`[NepalYPCrawler] Crawling category: ${categoryName} -> ${categoryUrl}`);
             const response = await axios.get(categoryUrl, {
                 headers: {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    "User-Agent": HONEST_USER_AGENT
                 }
             });
 
@@ -118,13 +110,21 @@ export class NepalYPCrawler implements ICrawler {
                 let description = "";
                 let website = "";
                 const photoUrls: string[] = [];
-                const reviews: { authorName: string; starNum: number; reviewBody: string }[] = [];
+                const reviews: { starNum: number; reviewBody: string }[] = [];
 
                 if (item.profileUrl) {
                     try {
+                        // Politely space out requests to the source site, honoring its robots.txt crawl-delay if set.
+                        const { allowed: detailAllowed, crawlDelayMs } = await isCrawlAllowed(item.profileUrl);
+                        if (!detailAllowed) {
+                            console.warn(`[NepalYPCrawler] robots.txt disallows ${item.profileUrl}, skipping.`);
+                            continue;
+                        }
+                        await politeDelay(crawlDelayMs);
+
                         const detailResponse = await axios.get(item.profileUrl, {
                             headers: {
-                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                                "User-Agent": HONEST_USER_AGENT
                             }
                         });
                         const detail$ = cheerio.load(detailResponse.data);
@@ -161,15 +161,16 @@ export class NepalYPCrawler implements ICrawler {
                             }
                         });
 
-                        // Extract customer reviews
+                        // Extract customer reviews. We intentionally do not capture the reviewer's name --
+                        // scraped reviews are attributed to a shared, clearly-labeled source account
+                        // (see getOrCreateExternalReviewerUser) rather than a real third party's identity.
                         detail$(".review").each((i, el) => {
-                            const authorName = detail$(el).find('[itemprop="author"] [itemprop="name"]').text().trim() || "Anonymous Reviewer";
                             const ratingText = detail$(el).find('[itemprop="ratingValue"]').text().trim();
                             const starNum = Math.round(parseFloat(ratingText)) || 5;
                             const reviewBody = detail$(el).find('[itemprop="reviewBody"]').text().trim();
-                            
+
                             if (reviewBody) {
-                                reviews.push({ authorName, starNum, reviewBody });
+                                reviews.push({ starNum, reviewBody });
                             }
                         });
 
@@ -214,19 +215,21 @@ export class NepalYPCrawler implements ICrawler {
                     });
                 }
 
-                // Save Reviews
-                for (const rev of reviews) {
-                    try {
-                        const reviewerId = await this.getOrCreateReviewerUser(rev.authorName);
-                        await ShopReviewModel.create({
-                            shopId,
-                            reviewName: rev.reviewBody,
-                            reviewedBy: reviewerId,
-                            starNum: rev.starNum,
-                            isActive: true
-                        });
-                    } catch (revErr: any) {
-                        console.error(`[NepalYPCrawler] Failed to save review for ${item.shopName}: ${revErr.message}`);
+                // Save Reviews, all attributed to the one shared external-reviewer account for this source
+                if (reviews.length > 0) {
+                    const reviewerId = await getOrCreateExternalReviewerUser(this.sourceName);
+                    for (const rev of reviews) {
+                        try {
+                            await ShopReviewModel.create({
+                                shopId,
+                                reviewName: rev.reviewBody,
+                                reviewedBy: reviewerId,
+                                starNum: rev.starNum,
+                                isActive: true
+                            });
+                        } catch (revErr: any) {
+                            console.error(`[NepalYPCrawler] Failed to save review for ${item.shopName}: ${revErr.message}`);
+                        }
                     }
                 }
 
