@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Database, RefreshCcw, Activity } from "lucide-react";
+import { Database, RefreshCcw, Activity, Globe } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { handleTriggerAggregation } from "@/lib/actions/aggregation-action";
+import { Badge } from "@/components/ui/badge";
+import { handleTriggerAggregation, handleFetchSourceCategories } from "@/lib/actions/aggregation-action";
 import { handleGetAllCategories } from "@/lib/actions/category-action";
 
 export default function AggregationPage() {
@@ -12,7 +13,8 @@ export default function AggregationPage() {
     const [statusLogs, setStatusLogs] = useState<string[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("");
-    
+    const [sourceCategories, setSourceCategories] = useState<Record<string, string[]>>({});
+
     useEffect(() => {
         const fetchCategories = async () => {
             const res = await handleGetAllCategories();
@@ -23,7 +25,14 @@ export default function AggregationPage() {
                 }
             }
         };
+        const fetchSources = async () => {
+            const res = await handleFetchSourceCategories();
+            if (res.success && res.data) {
+                setSourceCategories(res.data);
+            }
+        };
         fetchCategories();
+        fetchSources();
     }, []);
 
     const onTrigger = async () => {
@@ -33,12 +42,17 @@ export default function AggregationPage() {
         }
 
         setLoading(true);
-        setStatusLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] Triggering NepalYP Crawler for category...`]);
+        setStatusLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] Triggering aggregation crawlers for category...`]);
         const res = await handleTriggerAggregation(selectedCategory);
-        
+
         if (res.success) {
             setStatusLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] Success: ${res.message}`]);
-            if (res.data) {
+            const sourceBreakdown = res.data?.sourceBreakdown;
+            if (sourceBreakdown && typeof sourceBreakdown === "object") {
+                Object.entries(sourceBreakdown).forEach(([source, count]) => {
+                    setStatusLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}]   - ${source}: ${count} shop(s) added`]);
+                });
+            } else if (res.data) {
                 setStatusLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] Data: ${JSON.stringify(res.data)}`]);
             }
         } else {
@@ -58,8 +72,20 @@ export default function AggregationPage() {
                         Aggregation Control
                     </CardTitle>
                     <CardDescription>
-                        Manually trigger the crawler to fetch new shops and details from external directories (e.g. NepalYP). This process runs asynchronously.
+                        Manually trigger aggregation for the selected category. Every registered source crawler runs for that category and reports its own results below; this process runs asynchronously.
                     </CardDescription>
+                    <div className="flex flex-wrap items-center gap-2 pt-2">
+                        <span className="flex items-center gap-1 text-xs font-medium text-gray-500">
+                            <Globe className="w-3.5 h-3.5" /> Registered sources:
+                        </span>
+                        {Object.keys(sourceCategories).length === 0 ? (
+                            <span className="text-xs text-gray-400">Loading...</span>
+                        ) : (
+                            Object.keys(sourceCategories).map((source) => (
+                                <Badge key={source} variant="secondary">{source}</Badge>
+                            ))
+                        )}
+                    </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div>
