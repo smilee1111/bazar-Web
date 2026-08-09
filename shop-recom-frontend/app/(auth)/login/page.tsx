@@ -22,9 +22,9 @@ export default function Page() {
     return (
         <div className="relative w-full min-h-screen bg-neutral-50 flex">
             {/* Left Panel */}
-            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#8B6F47] via-[#7D5A3F] to-[#5B3E2E] overflow-hidden">
+            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#142A1C] via-[#1A3625] to-[#1B4A31] overflow-hidden">
                 <div
-                    className="absolute inset-0 w-full h-full bg-cover bg-center"
+                    className="absolute inset-0 w-full h-full bg-cover bg-center opacity-5"
                     style={{ backgroundImage: "url('/images/auth-background.svg')" }}
                 />
 
@@ -33,12 +33,12 @@ export default function Page() {
                         <div className="flex w-12 h-12 items-center justify-center bg-white/20 rounded-2xl border-[1.2px] border-white/30">
                             <img
                                 className="w-8 h-8 object-contain"
-                                alt="Bazar logo"
-                                src="/images/logo.svg"
+                                alt="HaatKhoj logo"
+                                src="/images/HaatKhoj.svg"
                             />
                         </div>
                         <h1 className="font-normal text-white text-[32px] tracking-[-0.32px] leading-[41.6px]">
-                            Bazar
+                            HaatKhoj
                         </h1>
                     </header>
 
@@ -46,7 +46,7 @@ export default function Page() {
                         <div className="flex flex-col gap-4">
                             <p className="text-sm uppercase tracking-[0.4em] text-white/70">Sign in</p>
                             <h2 className="font-semibold text-white text-3xl lg:text-[40px] tracking-[-0.6px] leading-snug">
-                                Welcome Back to Bazar
+                                Welcome Back to HaatKhoj
                             </h2>
 
                             <p className="font-normal text-white text-base lg:text-lg leading-relaxed text-white/90">
@@ -83,8 +83,8 @@ export default function Page() {
                             variant="ghost"
                             className="flex items-center gap-2 mb-12 h-auto p-0 hover:bg-transparent"
                         >
-                            <ChevronLeft className="w-5 h-5 text-[#5B3E2E]" />
-                            <span className="font-normal text-[#5B3E2E] text-base">
+                            <ChevronLeft className="w-5 h-5 text-[#1B4A31]" />
+                            <span className="font-normal text-[#1B4A31] text-base">
                                 Back to Home
                             </span>
                         </Button>
