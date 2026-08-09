@@ -1,0 +1,168 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginData, loginSchema } from "../schema";
+import { handleLogin } from "@/lib/actions/auth-action";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Lock, Mail } from "lucide-react";
+import { useAuth } from "../../providers/AuthContext";
+import { getRoleHomePath } from "@/lib/utils";
+
+export default function LoginForm() {
+    const router = useRouter();
+    const { checkAuth } = useAuth();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<LoginData>({
+        resolver: zodResolver(loginSchema),
+        mode: "onSubmit",
+    });
+
+    const [pending, startTransition] = useTransition();
+    const [error, setError] = useState("");
+
+    const submit = async (values: LoginData) => {
+        setError("");
+        try {
+            const result = await handleLogin(values);
+            if (!result.success) {
+                throw new Error(result.message);
+            }
+            const destination = getRoleHomePath(result.data?.role ?? result.data?.roleId);
+            await checkAuth();   
+            startTransition(async () => {
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                router.push(destination);
+            });
+        } catch (err: Error | any) {
+            setError(err.message || "Login failed");
+        }
+    };
+
+    return (
+        <Card className="w-full bg-white rounded-3xl border-[1.2px] border-[#efefef] shadow-[0px_4px_6px_-4px_#0000001a,0px_10px_15px_-3px_#0000001a] hover:shadow-[0px_8px_25px_-5px_#0000001a] transition-shadow duration-300">
+            <CardContent className="p-8 lg:p-[49.2px]">
+                <div className="flex flex-col gap-8">
+                    <div className="flex flex-col gap-3 animate-fade-up">
+                        <h2 className="font-light text-[#142A1C] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
+                            Welcome Back
+                        </h2>
+                        <p className="font-normal text-[#1B4A31] text-sm md:text-base leading-relaxed">
+                            Sign in to your HaatKhoj account
+                        </p>
+                    </div>
+
+                    {error && (
+                        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="email" className="font-normal text-[#1C5C39] text-sm md:text-base">
+                                Email<span className="text-[#267A4C]">*</span>
+                            </Label>
+                            <div className="relative group">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#267A4C] transition-colors" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="your.email@example.com"
+                                    {...register("email")}
+                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
+                                />
+                            </div>
+                            {errors.email?.message && (
+                                <p className="text-xs text-red-600">{errors.email.message}</p>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="password" className="font-normal text-[#1C5C39] text-sm md:text-base">
+                                Password<span className="text-[#267A4C]">*</span>
+                            </Label>
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#267A4C] transition-colors" />
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    placeholder="Enter your password"
+                                    {...register("password")}
+                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
+                                />
+                            </div>
+                            {errors.password?.message && (
+                                <p className="text-xs text-red-600">{errors.password.message}</p>
+                            )}
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <Link href="/forget-password" className="text-[#267A4C] text-sm hover:underline hover:text-[#1C5C39] transition-colors">
+                                Forgot password?
+                            </Link>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting || pending}
+                            className="w-full h-12 md:h-14 bg-[#267A4C] hover:bg-[#1C5C39] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                        >
+                            {isSubmitting || pending ? "Logging in..." : "Log in"}
+                        </Button>
+                    </form>
+
+                    <div className="relative">
+                        <Separator className="bg-[#efefef]" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4">
+                            <span className="font-normal text-[#1B4A31] text-sm md:text-base">Or continue with</span>
+                        </div>
+                    </div>
+
+                    <Button
+                        variant="outline"
+                        type="button"
+                        className="w-full h-12 md:h-[52px] bg-white rounded-full border-[1.2px] border-[#efefef] shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-[#1a1a1a] text-sm md:text-base hover:bg-neutral-50 hover:shadow-md hover:scale-[1.01] transition-all duration-200"
+                    >
+                        <svg className="w-5 h-5 mr-2" viewBox="0 0 20 20" fill="none">
+                            <path
+                                d="M18.1713 8.36788H17.5001V8.33329H10.0001V11.6666H14.7096C14.0225 13.6069 12.1763 15 10.0001 15C7.23882 15 5.00007 12.7612 5.00007 9.99996C5.00007 7.23871 7.23882 4.99996 10.0001 4.99996C11.2746 4.99996 12.4342 5.48079 13.3171 6.26621L15.6742 3.90913C14.1859 2.52204 12.1951 1.66663 10.0001 1.66663C5.39799 1.66663 1.66675 5.39788 1.66675 9.99996C1.66675 14.602 5.39799 18.3333 10.0001 18.3333C14.6022 18.3333 18.3334 14.602 18.3334 9.99996C18.3334 9.44121 18.2759 8.89579 18.1713 8.36788Z"
+                                fill="#FFC107"
+                            />
+                            <path
+                                d="M2.62756 6.12121L5.36548 8.12913C6.10631 6.29496 7.90048 5 10.0001 5C11.2746 5 12.4342 5.48083 13.3171 6.26625L15.6742 3.90917C14.1859 2.52208 12.1951 1.66667 10.0001 1.66667C6.79923 1.66667 4.02339 3.47371 2.62756 6.12121Z"
+                                fill="#FF3D00"
+                            />
+                            <path
+                                d="M10.0001 18.3333C12.1526 18.3333 14.1092 17.5095 15.5876 16.17L13.0084 13.9875C12.1434 14.6452 11.0801 15.0008 10.0001 15C7.83259 15 5.99176 13.6179 5.29843 11.6891L2.58093 13.7829C3.96009 16.4816 6.76176 18.3333 10.0001 18.3333Z"
+                                fill="#4CAF50"
+                            />
+                            <path
+                                d="M18.1713 8.36796H17.5V8.33337H10V11.6667H14.7096C14.3809 12.5902 13.7889 13.3972 13.0067 13.9879L13.0079 13.9871L15.5871 16.1696C15.4046 16.3355 18.3333 14.1667 18.3333 10C18.3333 9.44129 18.2758 8.89587 18.1713 8.36796Z"
+                                fill="#1976D2"
+                            />
+                        </svg>
+                        Sign in with Google
+                    </Button>
+
+                    <p className="text-center font-normal text-[#1B4A31] text-sm md:text-base">
+                        Don't have an account?{" "}
+                        <Link href="/register" className="text-[#267A4C] hover:underline hover:text-[#1C5C39] transition-colors">
+                            Sign up
+                        </Link>
+                    </p>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
