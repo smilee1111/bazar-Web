@@ -2,6 +2,7 @@ import { UserModel } from "../models/user.model";
 import mongoose from "mongoose";
 import { ICrawler } from "./aggregation/crawler.interface";
 import { NepalYPCrawler } from "./aggregation/nepalyp.crawler";
+import { InquiryNepalCrawler } from "./aggregation/inquirynepal.crawler";
 
 export class AggregationService {
     private crawlers: ICrawler[] = [];
@@ -9,6 +10,7 @@ export class AggregationService {
     constructor() {
         // Register available crawlers
         this.crawlers.push(new NepalYPCrawler());
+        this.crawlers.push(new InquiryNepalCrawler());
     }
 
     private async getSystemAggregatorUserId(): Promise<string> {

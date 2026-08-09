@@ -137,4 +137,8 @@ export const API = {
         TRIGGER: 'admin/aggregation/trigger',
         SOURCE_CATEGORIES: 'admin/aggregation/categories',
     },
+    ADMIN_EDA: {
+        DATASET: 'admin/eda/dataset',
+        INTERACTIONS: 'admin/eda/interactions',
+    },
 }

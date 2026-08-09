@@ -38,9 +38,9 @@ export default function Page() {
     return (
         <div className="relative w-full min-h-screen bg-neutral-50 flex">
             {/* Left Panel */}
-            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#8B6F47] via-[#7D5A3F] to-[#5B3E2E] overflow-hidden">
+            <section className="relative w-full lg:w-[57%] min-h-screen bg-gradient-to-br from-[#142A1C] via-[#1A3625] to-[#1B4A31] overflow-hidden">
                 <div
-                    className="absolute inset-0 w-full h-full bg-cover bg-center"
+                    className="absolute inset-0 w-full h-full bg-cover bg-center opacity-5"
                     style={{ backgroundImage: "url('/images/auth-background.svg')" }}
                 />
 
@@ -49,12 +49,12 @@ export default function Page() {
                         <div className="flex w-12 h-12 items-center justify-center bg-white/20 rounded-2xl border-[1.2px] border-white/30">
                             <img
                                 className="w-8 h-8 object-contain"
-                                alt="Bazar logo"
-                                src="/images/logo.svg"
+                                alt="HaatKhoj logo"
+                                src="/images/HaatKhoj.svg"
                             />
                         </div>
                         <h1 className="font-normal text-white text-[32px] tracking-[-0.32px] leading-[41.6px]">
-                            Bazar
+                            HaatKhoj
                         </h1>
                     </header>
 
@@ -79,7 +79,7 @@ export default function Page() {
                     <Link href="/login">
                         <Button
                             variant="ghost"
-                            className="flex items-center gap-2 mb-12 h-auto p-0 hover:bg-transparent text-[#5B3E2E] hover:text-[#8B6F47] transition-colors"
+                            className="flex items-center gap-2 mb-12 h-auto p-0 hover:bg-transparent text-[#1B4A31] hover:text-[#267A4C] transition-colors"
                         >
                             <ArrowLeft className="w-5 h-5" />
                             <span className="font-normal text-base">
@@ -92,27 +92,27 @@ export default function Page() {
                         <CardContent className="p-8 lg:p-[49.2px]">
                             <div className="flex flex-col gap-8">
                                 <div className="flex flex-col gap-3 animate-fade-up">
-                                    <h2 className="font-light text-[#2D2318] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
+                                    <h2 className="font-light text-[#142A1C] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
                                         Reset Password
                                     </h2>
-                                    <p className="font-normal text-[#5B3E2E] text-sm md:text-base leading-relaxed">
+                                    <p className="font-normal text-[#1B4A31] text-sm md:text-base leading-relaxed">
                                         Enter your email to receive a reset link
                                     </p>
                                 </div>
 
                                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
                                     <div className="flex flex-col gap-2">
-                                        <Label htmlFor="email" className="font-normal text-[#524632] text-sm md:text-base">
-                                            Email<span className="text-[#8B6F47]">*</span>
+                                        <Label htmlFor="email" className="font-normal text-[#1C5C39] text-sm md:text-base">
+                                            Email<span className="text-[#267A4C]">*</span>
                                         </Label>
                                         <div className="relative group">
-                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8B6F47] transition-colors" />
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#267A4C] transition-colors" />
                                             <Input
                                                 id="email"
                                                 type="email"
                                                 placeholder="your.email@example.com"
                                                 {...register("email")}
-                                                className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
+                                                className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
                                             />
                                         </div>
                                         {errors.email && (
@@ -123,15 +123,15 @@ export default function Page() {
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full h-12 md:h-14 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                                        className="w-full h-12 md:h-14 bg-[#267A4C] hover:bg-[#1C5C39] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
                                     >
                                         {isSubmitting ? "Sending..." : "Send Reset Link"}
                                     </Button>
                                 </form>
 
-                                <p className="text-center font-normal text-[#5B3E2E] text-sm md:text-base">
+                                <p className="text-center font-normal text-[#1B4A31] text-sm md:text-base">
                                     Remember your password? {" "}
-                                    <Link href="/login" className="text-[#8B6F47] hover:underline hover:text-[#7D5A3F] transition-colors">
+                                    <Link href="/login" className="text-[#267A4C] hover:underline hover:text-[#1C5C39] transition-colors">
                                         Sign in
                                     </Link>
                                 </p>

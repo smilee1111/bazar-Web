@@ -185,15 +185,38 @@ describe("Recommendation Evaluation Integration Tests", () => {
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty("success", true);
             expect(response.body.data).toHaveProperty("totalUsersEvaluated");
-            expect(response.body.data).toHaveProperty("personalized");
-            expect(response.body.data).toHaveProperty("baseline");
-            
+            expect(response.body.data).toHaveProperty("kValues");
+            expect(response.body.data).toHaveProperty("variants");
+            expect(response.body.data).toHaveProperty("significance");
+
             const data = response.body.data;
             expect(data.totalUsersEvaluated).toBeGreaterThanOrEqual(1);
-            expect(data.personalized).toHaveProperty("precisionAt5");
-            expect(data.personalized).toHaveProperty("recallAt5");
-            expect(data.baseline).toHaveProperty("precisionAt5");
-            expect(data.baseline).toHaveProperty("recallAt5");
+            expect(data.kValues).toEqual([1, 3, 5, 10]);
+
+            // Every registered variant reports precision/recall/ndcg at every K
+            ["personalized", "baseline", "random"].forEach((variant) => {
+                expect(data.variants).toHaveProperty(variant);
+                ["precision", "recall", "ndcg"].forEach((metric) => {
+                    expect(data.variants[variant]).toHaveProperty(metric);
+                    [1, 3, 5, 10].forEach((k) => {
+                        expect(typeof data.variants[variant][metric][k]).toBe("number");
+                    });
+                });
+            });
+
+            // Significance is only computed at K=5/10 for precision/recall, vs both baselines
+            expect(data.significance.testedAtK).toEqual([5, 10]);
+            ["precision", "recall"].forEach((metric) => {
+                [5, 10].forEach((k) => {
+                    const vsBaseline = data.significance.vsBaseline[metric][k];
+                    expect(vsBaseline).toHaveProperty("pValue");
+                    expect(vsBaseline).toHaveProperty("significant");
+                    expect(vsBaseline).toHaveProperty("n");
+
+                    const vsRandom = data.significance.vsRandom[metric][k];
+                    expect(vsRandom).toHaveProperty("pValue");
+                });
+            });
         });
     });
 });

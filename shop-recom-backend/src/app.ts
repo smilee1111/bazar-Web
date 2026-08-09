@@ -149,6 +149,10 @@ app.use('/api/maps', geocodingRoutes);
 import aggregationRoutes from './routes/aggregation.routes';
 app.use('/api/admin/aggregation', aggregationRoutes);
 
+//EDA ROUTES (dataset + interaction descriptive statistics)
+import edaRoutes from './routes/eda.routes';
+app.use('/api/admin/eda', edaRoutes);
+
 
 // Global error handler - return JSON for known error types (HttpError, MulterError)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
