@@ -5,7 +5,7 @@
 
 // User-Agent is REQUIRED by Nominatim API to prevent rate limiting
 const NOMINATIM_HEADERS = {
-    'User-Agent': 'BazarApp/1.0',
+    'User-Agent': 'HaatKhojApp/1.0',
 };
 
 export interface GeocodingResult {

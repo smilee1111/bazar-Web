@@ -5,7 +5,7 @@ import { UserModel } from "../../models/user.model";
 
 // Identifies this crawler honestly to source sites instead of spoofing a browser,
 // and gives site operators a way to reach out (block/rate-limit requests, ask questions).
-export const HONEST_USER_AGENT = "BazarResearchBot/1.0 (+academic research project; contact: muskankc2005@gmail.com)";
+export const HONEST_USER_AGENT = "HaatKhojResearchBot/1.0 (+academic research project; contact: muskankc2005@gmail.com)";
 
 const DEFAULT_MIN_DELAY_MS = 2000;
 
@@ -73,7 +73,7 @@ export async function getOrCreateExternalReviewerUser(sourceName: string): Promi
     if (!user) {
         user = await UserModel.create({
             fullName: `Verified visitor (via ${sourceName})`,
-            email: `${username}@bazar-system.local`,
+            email: `${username}@haatkhoj-system.local`,
             phoneNumber: `98${stableDigitsFromString(sourceName)}`,
             username,
             password: "ExternalReviewerSystemPasswordSafe123!",

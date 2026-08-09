@@ -18,7 +18,7 @@ export const searchLocation = async (req: Request, res: Response) => {
             }),
             {
                 headers: {
-                    'User-Agent': 'BazarApp/1.0',
+                    'User-Agent': 'HaatKhojApp/1.0',
                 },
             }
         );
@@ -53,7 +53,7 @@ export const reverseGeocode = async (req: Request, res: Response) => {
             }),
             {
                 headers: {
-                    'User-Agent': 'BazarApp/1.0',
+                    'User-Agent': 'HaatKhojApp/1.0',
                 },
             }
         );

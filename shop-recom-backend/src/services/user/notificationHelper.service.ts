@@ -117,7 +117,7 @@ export class NotificationHelperService {
                     userId: user._id.toString(),
                     type: 'new_shop' as const,
                     title: 'New Shop Added',
-                    message: `${shopName} is now available on Bazar!`,
+                    message: `${shopName} is now available on HaatKhoj!`,
                     relatedEntityId: shopId,
                     relatedEntityType: 'shop' as const,
                     metadata: {

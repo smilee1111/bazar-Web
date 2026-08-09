@@ -122,7 +122,7 @@ export default function SavedShopsPage() {
         <div className="space-y-6">
             <div className="space-y-2 animate-fade-up">
                 <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Saved</p>
-                <h2 className="text-4xl font-bold text-[#2D2318]">Your Saved Shops</h2>
+                <h2 className="text-4xl font-bold text-[#142A1C]">Your Saved Shops</h2>
                 <p className="text-gray-500">Keep track of shops you want to revisit.</p>
             </div>
 
@@ -130,8 +130,8 @@ export default function SavedShopsPage() {
                 <Card className="bg-white border-[1.2px] border-gray-100 shadow-sm">
                     <CardContent className="p-8">
                         <div className="text-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B6F47] mx-auto"></div>
-                            <p className="mt-4 text-[#7D5A3F]">Loading saved shops...</p>
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#267A4C] mx-auto"></div>
+                            <p className="mt-4 text-[#1C5C39]">Loading saved shops...</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -139,9 +139,9 @@ export default function SavedShopsPage() {
                 <Card className="bg-white border-[1.2px] border-gray-100 shadow-sm">
                     <CardContent className="p-8">
                         <div className="text-center">
-                            <Bookmark className="h-12 w-12 text-[#C99A6E] mx-auto mb-3" />
-                            <p className="text-[#7D5A3F] text-lg">No saved shops yet</p>
-                            <p className="text-[#a8986f] text-sm mt-2">Browse the shop feed and save your favorites.</p>
+                            <Bookmark className="h-12 w-12 text-[#93E48B] mx-auto mb-3" />
+                            <p className="text-[#1C5C39] text-lg">No saved shops yet</p>
+                            <p className="text-[#4FAF6D] text-sm mt-2">Browse the shop feed and save your favorites.</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -150,8 +150,8 @@ export default function SavedShopsPage() {
                     {shops.map((shop) => (
                         <div key={shop._id} className="space-y-3">
                             <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-                                <div className="flex items-center gap-3 text-[#2D2318]">
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8B6F47] text-white">
+                                <div className="flex items-center gap-3 text-[#142A1C]">
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#267A4C] text-white">
                                         <Store className="h-4 w-4" />
                                     </div>
                                     <div>
@@ -161,7 +161,7 @@ export default function SavedShopsPage() {
                                 </div>
                                 <Button
                                     variant="outline"
-                                    className="border-gray-300 text-[#2D2318] hover:bg-gray-50"
+                                    className="border-gray-300 text-[#142A1C] hover:bg-gray-50"
                                     onClick={() => handleRemove(shop.shopId || shop._id)}
                                     disabled={removing === (shop.shopId || shop._id)}
                                 >

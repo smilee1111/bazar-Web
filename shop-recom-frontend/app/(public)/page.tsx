@@ -45,20 +45,20 @@ export default function Home() {
 
             {/* Hero Section */}
             <section className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#2D2318] via-[#3D2F22] to-[#5B3E2E]" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#142A1C] via-[#1A3625] to-[#1B4A31]" />
                 <div
                     className="absolute inset-0 w-full h-full bg-cover bg-center opacity-5"
                     style={{ backgroundImage: "url('/images/auth-background.svg')" }}
                 />
                 <div className="relative w-full max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
                     <div className="max-w-3xl animate-fade-up">
-                        <span className="inline-flex items-center gap-2 rounded-full bg-[#8B6F47]/20 px-4 py-1.5 text-sm font-medium text-[#D4A574] mb-6">
-                            <Sparkle /> Welcome to Bazar
+                        <span className="inline-flex items-center gap-2 rounded-full bg-[#267A4C]/20 px-4 py-1.5 text-sm font-medium text-[#8FD1A3] mb-6">
+                            <Sparkle /> Welcome to HaatKhoj
                         </span>
                         <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 tracking-tight leading-[1.1]">
                             Discover Your
                             <br />
-                            <span className="text-[#D4A574]">Local Favorites</span>
+                            <span className="text-[#8FD1A3]">Local Favorites</span>
                         </h1>
                         <p className="text-lg text-white/70 mb-10 leading-relaxed max-w-xl">
                             Connect with the best local shops, share experiences, and build your
@@ -66,13 +66,13 @@ export default function Home() {
                         </p>
                         <div className="flex flex-col sm:flex-row items-start gap-4">
                             <Link href="/shops">
-                                <Button className="bg-[#8B6F47] text-white hover:bg-[#7D5A3F] rounded-full px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group">
+                                <Button className="bg-[#267A4C] text-white hover:bg-[#1C5C39] rounded-full px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group">
                                     Browse Shops
                                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </Link>
                             <Link href="/register">
-                                <Button className="bg-white text-[#2D2318] hover:bg-white/90 rounded-full px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                                <Button className="bg-white text-[#142A1C] hover:bg-white/90 rounded-full px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                                     Get Started Free
                                 </Button>
                             </Link>
@@ -87,7 +87,7 @@ export default function Home() {
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
                         {stats.map((stat, index) => (
                             <div key={index} className="text-center">
-                                <div className="text-4xl font-bold text-[#2D2318] mb-1">{stat.value}</div>
+                                <div className="text-4xl font-bold text-[#142A1C] mb-1">{stat.value}</div>
                                 <div className="text-sm text-gray-500 font-medium">{stat.label}</div>
                             </div>
                         ))}
@@ -96,12 +96,12 @@ export default function Home() {
             </section>
 
             {/* Features Section */}
-            <section id="features" className="w-full bg-[#FAF8F5]">
+            <section id="features" className="w-full bg-[#F1FAF5]">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 py-24">
                     <div className="text-center mb-16">
-                        <span className="inline-block text-sm font-semibold text-[#8B6F47] uppercase tracking-[0.2em] mb-3">Features</span>
-                        <h2 className="text-3xl lg:text-5xl font-bold text-[#2D2318] mb-4">
-                            Why Choose Bazar?
+                        <span className="inline-block text-sm font-semibold text-[#267A4C] uppercase tracking-[0.2em] mb-3">Features</span>
+                        <h2 className="text-3xl lg:text-5xl font-bold text-[#142A1C] mb-4">
+                            Why Choose HaatKhoj?
                         </h2>
                         <p className="text-lg text-gray-500 max-w-2xl mx-auto">
                             Experience the best way to discover and connect with local businesses
@@ -116,10 +116,10 @@ export default function Home() {
                                     className="bg-white border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
                                 >
                                     <CardContent className="p-8">
-                                        <div className="inline-flex p-3.5 bg-[#FAF4EC] rounded-2xl mb-5 group-hover:bg-[#8B6F47]/15 transition-colors duration-300">
-                                            <Icon className="w-7 h-7 text-[#8B6F47]" />
+                                        <div className="inline-flex p-3.5 bg-[#E3F5E9] rounded-2xl mb-5 group-hover:bg-[#267A4C]/15 transition-colors duration-300">
+                                            <Icon className="w-7 h-7 text-[#267A4C]" />
                                         </div>
-                                        <h3 className="text-lg font-semibold text-[#2D2318] mb-2">
+                                        <h3 className="text-lg font-semibold text-[#142A1C] mb-2">
                                             {feature.title}
                                         </h3>
                                         <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
@@ -134,9 +134,9 @@ export default function Home() {
             {/* CTA Section */}
             <section className="w-full bg-white">
                 <div className="max-w-4xl mx-auto px-6 lg:px-8 py-24">
-                    <div className="relative rounded-3xl bg-gradient-to-br from-[#2D2318] to-[#5B3E2E] p-12 lg:p-16 text-center overflow-hidden">
-                        <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-[#8B6F47]/20 blur-3xl" />
-                        <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#D4A574]/10 blur-3xl" />
+                    <div className="relative rounded-3xl bg-gradient-to-br from-[#142A1C] to-[#1B4A31] p-12 lg:p-16 text-center overflow-hidden">
+                        <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-[#267A4C]/20 blur-3xl" />
+                        <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[#8FD1A3]/10 blur-3xl" />
                         <div className="relative z-10">
                             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
                                 Ready to Get Started?
@@ -146,13 +146,13 @@ export default function Home() {
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                                 <Link href="/shops">
-                                    <Button className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white rounded-full px-10 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group">
+                                    <Button className="bg-[#267A4C] hover:bg-[#1C5C39] text-white rounded-full px-10 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group">
                                         Browse Shops
                                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
                                 <Link href="/register">
-                                    <Button className="bg-white text-[#2D2318] hover:bg-white/90 rounded-full px-10 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <Button className="bg-white text-[#142A1C] hover:bg-white/90 rounded-full px-10 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                                         Create Your Account
                                     </Button>
                                 </Link>
@@ -163,32 +163,32 @@ export default function Home() {
             </section>
 
             {/* Footer */}
-            <footer className="w-full bg-[#1A1410] text-white">
+            <footer className="w-full bg-[#0B1F14] text-white">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                         <div className="col-span-1 md:col-span-2">
                             <div className="flex items-center gap-3 mb-5">
-                                <div className="flex w-10 h-10 items-center justify-center bg-[#8B6F47] rounded-xl">
+                                <div className="flex w-10 h-10 items-center justify-center bg-[#267A4C] rounded-xl">
                                     <img
                                         className="w-6 h-6 object-contain"
-                                        alt="Bazar logo"
-                                        src="/images/logo.svg"
+                                        alt="HaatKhoj logo"
+                                        src="/images/HaatKhoj.svg"
                                     />
                                 </div>
-                                <h3 className="font-semibold text-xl">Bazar</h3>
+                                <h3 className="font-semibold text-xl">HaatKhoj</h3>
                             </div>
                             <p className="text-gray-400 mb-6 max-w-md leading-relaxed">
                                 Discover and connect with amazing local businesses in your community.
                                 Share experiences and build your favorite places collection.
                             </p>
                             <div className="flex gap-3">
-                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#8B6F47] transition-colors cursor-pointer">
+                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#267A4C] transition-colors cursor-pointer">
                                     <Globe className="w-4 h-4" />
                                 </div>
-                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#8B6F47] transition-colors cursor-pointer">
+                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#267A4C] transition-colors cursor-pointer">
                                     <Heart className="w-4 h-4" />
                                 </div>
-                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#8B6F47] transition-colors cursor-pointer">
+                                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#267A4C] transition-colors cursor-pointer">
                                     <Star className="w-4 h-4" />
                                 </div>
                             </div>
@@ -214,7 +214,7 @@ export default function Home() {
                     </div>
                     <Separator className="my-10 bg-white/10" />
                     <div className="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
-                        <p>&copy; 2024 Bazar. All rights reserved.</p>
+                        <p>&copy; 2024 HaatKhoj. All rights reserved.</p>
                         <p>Made with ❤️ for local communities</p>
                     </div>
                 </div>

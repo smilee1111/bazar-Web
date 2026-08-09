@@ -122,11 +122,11 @@ export default function RegisterForm() {
         <Card className="w-full bg-white rounded-3xl border-[1.2px] border-[#efefef] shadow-[0px_4px_6px_-4px_#0000001a,0px_10px_15px_-3px_#0000001a] hover:shadow-[0px_8px_25px_-5px_#0000001a] transition-shadow duration-300">
             <CardContent className="p-8 md:p-[42px]">
                 <div className="flex flex-col gap-3 animate-fade-up">
-                    <h2 className="font-light text-[#2D2318] text-3xl md:text-4xl tracking-[-0.72px] leading-tight md:leading-[48px]">
+                    <h2 className="font-light text-[#142A1C] text-3xl md:text-4xl tracking-[-0.72px] leading-tight md:leading-[48px]">
                         Create Account
                     </h2>
-                    <p className="font-normal text-[#5B3E2E] text-sm md:text-base leading-relaxed">
-                        Join Bazar to discover local shops
+                    <p className="font-normal text-[#1B4A31] text-sm md:text-base leading-relaxed">
+                        Join HaatKhoj to discover local shops
                     </p>
                 </div>
 
@@ -142,19 +142,19 @@ export default function RegisterForm() {
                             const fieldError = errors[field.id as keyof RegisterData];
                             return (
                                 <div key={field.id} className="flex flex-col gap-1.5">
-                                    <Label htmlFor={field.id} className="font-normal text-[#524632] text-sm md:text-base">
+                                    <Label htmlFor={field.id} className="font-normal text-[#1C5C39] text-sm md:text-base">
                                         {field.label}
-                                        <span className="text-[#8B6F47] ml-1">*</span>
+                                        <span className="text-[#267A4C] ml-1">*</span>
                                     </Label>
                                     <div className="relative group">
-                                        <IconComponent className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8B6F47] transition-colors" />
+                                        <IconComponent className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#267A4C] transition-colors" />
                                         <Input
                                             id={field.id}
                                             type={field.type}
                                             placeholder={field.placeholder}
                                             autoComplete={field.autoComplete}
                                             {...register(field.id as keyof RegisterData)}
-                                            className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
+                                            className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
                                         />
                                     </div>
                                     {fieldError?.message && (
@@ -165,20 +165,20 @@ export default function RegisterForm() {
                         })}
                     </div>
 
-                    <div className="flex items-start gap-3 rounded-2xl border border-[#f0e8d0] bg-[#fdfbf6] px-4 py-3 hover:bg-[#fefcf7] transition-colors">
+                    <div className="flex items-start gap-3 rounded-2xl border border-[#E9F6EE] bg-[#F7FCF9] px-4 py-3 hover:bg-[#F7FCF9] transition-colors">
                         <Checkbox
                             id="terms"
                             checked={acceptTerms}
                             onCheckedChange={(checked) => setAcceptTerms(checked === true)}
-                            className="mt-1 w-[17px] h-[17px] border-[#8B6F47] data-[state=checked]:bg-[#8B6F47] data-[state=checked]:border-[#8B6F47] hover:border-[#7D5A3F] transition-colors"
+                            className="mt-1 w-[17px] h-[17px] border-[#267A4C] data-[state=checked]:bg-[#267A4C] data-[state=checked]:border-[#267A4C] hover:border-[#1C5C39] transition-colors"
                         />
                         <Label htmlFor="terms" className="font-normal text-black text-sm md:text-base leading-relaxed">
                             I agree to the {" "}
-                            <a href="#" className="text-[#8B6F47] underline hover:text-[#7D5A3F] transition-colors">
+                            <a href="#" className="text-[#267A4C] underline hover:text-[#1C5C39] transition-colors">
                                 Terms of Service
                             </a>{" "}
                             and {" "}
-                            <a href="#" className="text-[#8B6F47] underline hover:text-[#7D5A3F] transition-colors">
+                            <a href="#" className="text-[#267A4C] underline hover:text-[#1C5C39] transition-colors">
                                 Privacy Policy
                             </a>
                         </Label>
@@ -187,7 +187,7 @@ export default function RegisterForm() {
                     <Button
                         type="submit"
                         disabled={isBusy || !acceptTerms}
-                        className="w-full h-12 md:h-14 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                        className="w-full h-12 md:h-14 bg-[#267A4C] hover:bg-[#1C5C39] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
                     >
                         {isBusy ? "Creating account..." : "Create Account"}
                     </Button>
@@ -196,7 +196,7 @@ export default function RegisterForm() {
                 <div className="relative mt-8">
                     <Separator className="bg-[#efefef]" />
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4">
-                        <span className="font-normal text-[#5B3E2E] text-sm md:text-base">Or continue with</span>
+                        <span className="font-normal text-[#1B4A31] text-sm md:text-base">Or continue with</span>
                     </div>
                 </div>
 
@@ -226,9 +226,9 @@ export default function RegisterForm() {
                     Sign up with Google
                 </Button>
 
-                <p className="text-center font-normal text-[#5B3E2E] text-sm md:text-base mt-8">
+                <p className="text-center font-normal text-[#1B4A31] text-sm md:text-base mt-8">
                     Already have an account? {" "}
-                    <Link href="/login" className="text-[#8B6F47] hover:underline hover:text-[#7D5A3F] transition-colors">
+                    <Link href="/login" className="text-[#267A4C] hover:underline hover:text-[#1C5C39] transition-colors">
                         Sign in
                     </Link>
                 </p>

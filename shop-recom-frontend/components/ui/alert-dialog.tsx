@@ -35,7 +35,7 @@ const AlertDialogContent = React.forwardRef<
 		<AlertDialogPrimitive.Content
 			ref={ref}
 			className={cn(
-				"fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border border-[#F5EFE7] bg-white p-6 shadow-2xl",
+				"fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border border-[#DCF0E2] bg-white p-6 shadow-2xl",
 				"focus:outline-none",
 				className,
 			)}
@@ -59,7 +59,7 @@ const AlertDialogTitle = React.forwardRef<
 	React.ElementRef<typeof AlertDialogPrimitive.Title>,
 	React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-	<AlertDialogPrimitive.Title ref={ref} className={cn("text-lg font-semibold text-[#2D2318]", className)} {...props} />
+	<AlertDialogPrimitive.Title ref={ref} className={cn("text-lg font-semibold text-[#142A1C]", className)} {...props} />
 ));
 AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName;
 
@@ -69,7 +69,7 @@ const AlertDialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
 	<AlertDialogPrimitive.Description
 		ref={ref}
-		className={cn("text-sm text-[#5B3E2E]", className)}
+		className={cn("text-sm text-[#1B4A31]", className)}
 		{...props}
 	/>
 ));
@@ -82,7 +82,7 @@ const AlertDialogAction = React.forwardRef<
 	<AlertDialogPrimitive.Action
 		ref={ref}
 		className={cn(
-			"inline-flex h-10 items-center justify-center rounded-md bg-[#7D5A3F] px-4 text-sm font-medium text-white transition-colors hover:bg-[#5B3E2E] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7D5A3F]/40",
+			"inline-flex h-10 items-center justify-center rounded-md bg-[#1C5C39] px-4 text-sm font-medium text-white transition-colors hover:bg-[#1B4A31] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C5C39]/40",
 			className,
 		)}
 		{...props}
@@ -97,7 +97,7 @@ const AlertDialogCancel = React.forwardRef<
 	<AlertDialogPrimitive.Cancel
 		ref={ref}
 		className={cn(
-			"inline-flex h-10 items-center justify-center rounded-md border border-[#D4A574] bg-white px-4 text-sm font-medium text-[#2D2318] transition-colors hover:bg-[#FAF4EC] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7D5A3F]/40",
+			"inline-flex h-10 items-center justify-center rounded-md border border-[#8FD1A3] bg-white px-4 text-sm font-medium text-[#142A1C] transition-colors hover:bg-[#E3F5E9] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C5C39]/40",
 			className,
 		)}
 		{...props}

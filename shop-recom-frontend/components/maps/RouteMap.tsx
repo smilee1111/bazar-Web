@@ -87,7 +87,7 @@ export default function RouteMap({ from, to, geometry, height = 320 }: RouteMapP
                 {greenIcon && <Marker position={[from.lat, from.lng]} icon={greenIcon} />}
                 {redIcon && <Marker position={[to.lat, to.lng]} icon={redIcon} />}
                 {polyline.length > 0 && (
-                    <Polyline positions={polyline} pathOptions={{ color: "#D4A574", weight: 4 }} />
+                    <Polyline positions={polyline} pathOptions={{ color: "#8FD1A3", weight: 4 }} />
                 )}
             </MapContainer>
         </div>

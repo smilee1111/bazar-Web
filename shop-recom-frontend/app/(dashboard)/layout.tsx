@@ -13,7 +13,7 @@ export default function DashboardLayout({
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     return (
-        <div className="relative min-h-screen bg-[#F7F5F2]">
+        <div className="relative min-h-screen bg-[#F1FAF5]">
             <div className="relative z-10 flex min-h-screen">
                 <Sidebar
                     isCollapsed={sidebarCollapsed}

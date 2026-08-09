@@ -41,10 +41,10 @@ export default function MetricLineChart({ title, series, kValues, valueFormat = 
     return (
         <div>
             <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-semibold text-[#2D2318]">{title}</h4>
+                <h4 className="text-sm font-semibold text-[#142A1C]">{title}</h4>
                 <button
                     onClick={() => setShowTable((s) => !s)}
-                    className="text-xs font-medium text-[#8B6F47] hover:text-[#6B4F33] underline underline-offset-2"
+                    className="text-xs font-medium text-[#267A4C] hover:text-[#6B4F33] underline underline-offset-2"
                 >
                     {showTable ? "View chart" : "View table"}
                 </button>

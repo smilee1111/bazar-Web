@@ -1,4 +1,4 @@
-// Rate Limiting Configuration Guide for Bazar Backend
+// Rate Limiting Configuration Guide for HaatKhoj Backend
 
 /**
  * RATE LIMITING STRATEGY

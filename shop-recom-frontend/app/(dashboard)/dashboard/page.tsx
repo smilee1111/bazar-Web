@@ -162,13 +162,13 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-6">
-            <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-[#2D2318] via-[#3D2F22] to-[#5B3E2E] text-white shadow-xl">
+            <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-[#142A1C] via-[#1A3625] to-[#1B4A31] text-white shadow-xl">
                 <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-                <div className="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-[#C99A6E]/20 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-[#93E48B]/20 blur-3xl" />
                 <CardContent className="relative p-6 md:p-8">
                     <div className="grid gap-6 lg:grid-cols-2 lg:items-center">
                         <div className="space-y-4">
-                            <p className="text-sm uppercase tracking-[0.2em] text-white/80">Welcome to Bazar</p>
+                            <p className="text-sm uppercase tracking-[0.2em] text-white/80">Welcome to HaatKhoj</p>
                             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
                                 {isAdmin
                                     ? "Admin Control Center"
@@ -185,7 +185,7 @@ export default function DashboardPage() {
                             </p>
                             <div className="flex flex-wrap gap-3 pt-1">
                                 <Link href={isAdmin ? "/admin/shops" : isSeller ? "/my-shop" : "/shops"}>
-                                    <Button className="bg-white text-[#7D5A3F] hover:bg-white/90">
+                                    <Button className="bg-white text-[#1C5C39] hover:bg-white/90">
                                         <Compass className="mr-2 h-4 w-4" />
                                         {isAdmin ? "Manage Shops" : isSeller ? "My Shop" : "Browse Shops"}
                                     </Button>
@@ -221,7 +221,7 @@ export default function DashboardPage() {
                                             <span className="text-white/70">({spotlightShop.reviewCount || 0} reviews)</span>
                                         </div>
                                         <Link href={`/shops/${spotlightShop.shopId || spotlightShop._id}`}>
-                                            <Button size="sm" className="bg-[#C99A6E] text-[#5B3E2E] hover:bg-[#C99A6E]">
+                                            <Button size="sm" className="bg-[#93E48B] text-[#1B4A31] hover:bg-[#93E48B]">
                                                 Open Shop
                                             </Button>
                                         </Link>
@@ -242,27 +242,27 @@ export default function DashboardPage() {
                     <CardContent className="p-5">
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-500 font-medium">{isAdmin ? "Managed Shops" : "Saved Shops"}</p>
-                            <div className="p-2 bg-[#FAF4EC] rounded-xl"><Bookmark className="h-4 w-4 text-[#8B6F47]" /></div>
+                            <div className="p-2 bg-[#E3F5E9] rounded-xl"><Bookmark className="h-4 w-4 text-[#267A4C]" /></div>
                         </div>
-                        <p className="mt-1 text-2xl font-bold text-[#2D2318]">{isAdmin ? allShops.length : savedShopsCount}</p>
+                        <p className="mt-1 text-2xl font-bold text-[#142A1C]">{isAdmin ? allShops.length : savedShopsCount}</p>
                     </CardContent>
                 </Card>
                 <Card className="border-gray-100 bg-white shadow-sm">
                     <CardContent className="p-5">
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-500 font-medium">{isAdmin ? "Platform Reviews" : "Favourites"}</p>
-                            <div className="p-2 bg-[#FAF4EC] rounded-xl"><Heart className="h-4 w-4 text-[#8B6F47]" /></div>
+                            <div className="p-2 bg-[#E3F5E9] rounded-xl"><Heart className="h-4 w-4 text-[#267A4C]" /></div>
                         </div>
-                        <p className="mt-1 text-2xl font-bold text-[#2D2318]">{isAdmin ? totalPlatformReviews : favouritesCount}</p>
+                        <p className="mt-1 text-2xl font-bold text-[#142A1C]">{isAdmin ? totalPlatformReviews : favouritesCount}</p>
                     </CardContent>
                 </Card>
                 <Card className="border-gray-100 bg-white shadow-sm">
                     <CardContent className="p-5">
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-500 font-medium">{isAdmin ? "Top Rated Shops" : "My Reviews"}</p>
-                            <div className="p-2 bg-[#FAF4EC] rounded-xl"><MessageCircle className="h-4 w-4 text-[#8B6F47]" /></div>
+                            <div className="p-2 bg-[#E3F5E9] rounded-xl"><MessageCircle className="h-4 w-4 text-[#267A4C]" /></div>
                         </div>
-                        <p className="mt-1 text-2xl font-bold text-[#2D2318]">
+                        <p className="mt-1 text-2xl font-bold text-[#142A1C]">
                             {isAdmin ? allShops.filter((shop) => (shop.avgRating || 0) >= 4.5).length : userReviews.length}
                         </p>
                     </CardContent>
@@ -271,9 +271,9 @@ export default function DashboardPage() {
                     <CardContent className="p-5">
                         <div className="flex items-center justify-between">
                             <p className="text-sm text-gray-500 font-medium">{isAdmin ? "Avg Platform Rating" : "Available Shops"}</p>
-                            <div className="p-2 bg-[#FAF4EC] rounded-xl"><Store className="h-4 w-4 text-[#8B6F47]" /></div>
+                            <div className="p-2 bg-[#E3F5E9] rounded-xl"><Store className="h-4 w-4 text-[#267A4C]" /></div>
                         </div>
-                        <p className="mt-1 text-2xl font-bold text-[#2D2318]">
+                        <p className="mt-1 text-2xl font-bold text-[#142A1C]">
                             {isAdmin ? avgPlatformRating.toFixed(1) : allShops.length}
                         </p>
                     </CardContent>
@@ -301,14 +301,14 @@ export default function DashboardPage() {
                                 </div>
                             </div>
                             <CardContent className="p-3">
-                                <p className="line-clamp-1 text-xs text-[#7D5A3F]">{shop.shopAddress}</p>
+                                <p className="line-clamp-1 text-xs text-[#1C5C39]">{shop.shopAddress}</p>
                             </CardContent>
                         </Card>
                     </Link>
                 ))}
                 {!loading && topPicks.length === 0 && (
                     <Card className="border-gray-100 bg-white shadow-sm md:col-span-3">
-                        <CardContent className="p-5 text-center text-sm text-[#7D5A3F]">
+                        <CardContent className="p-5 text-center text-sm text-[#1C5C39]">
                             No top picks yet.
                         </CardContent>
                     </Card>
@@ -318,32 +318,32 @@ export default function DashboardPage() {
             <div className="grid gap-6 lg:grid-cols-3">
                 <Card className="border-gray-100 bg-white shadow-sm lg:col-span-1">
                     <CardHeader>
-                        <CardTitle className="text-[#2D2318]">{isAdmin ? "Admin Actions" : isSeller ? "Seller Actions" : "Quick Actions"}</CardTitle>
+                        <CardTitle className="text-[#142A1C]">{isAdmin ? "Admin Actions" : isSeller ? "Seller Actions" : "Quick Actions"}</CardTitle>
                         <CardDescription>
                             {isAdmin ? "Jump into core admin workflows." : isSeller ? "Manage your shop and engagement." : "Jump into your most used pages."}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         <Link href={isAdmin ? "/admin/shops" : isSeller ? "/my-shop" : "/shops"} className="block">
-                            <Button className="w-full justify-start bg-[#8B6F47] text-white hover:bg-[#7D5A3F]">
+                            <Button className="w-full justify-start bg-[#267A4C] text-white hover:bg-[#1C5C39]">
                                 <Compass className="mr-2 h-4 w-4" />
                                 {isAdmin ? "Manage Shops" : isSeller ? "My Shop" : "Browse Shops"}
                             </Button>
                         </Link>
                         <Link href={isAdmin ? "/admin/users" : "/dashboard/saved-shops"} className="block">
-                            <Button variant="outline" className="w-full justify-start border-[#D4A574] text-[#7D5A3F] hover:bg-[#FAF4EC]">
+                            <Button variant="outline" className="w-full justify-start border-[#8FD1A3] text-[#1C5C39] hover:bg-[#E3F5E9]">
                                 <Bookmark className="mr-2 h-4 w-4" />
                                 {isAdmin ? "Manage Users" : "My Saved Shops"}
                             </Button>
                         </Link>
                         <Link href={isAdmin ? "/shops" : "/dashboard/favourites"} className="block">
-                            <Button variant="outline" className="w-full justify-start border-[#D4A574] text-[#7D5A3F] hover:bg-[#FAF4EC]">
+                            <Button variant="outline" className="w-full justify-start border-[#8FD1A3] text-[#1C5C39] hover:bg-[#E3F5E9]">
                                 <Heart className="mr-2 h-4 w-4" />
                                 {isAdmin ? "View Public Feed" : "My Favourites"}
                             </Button>
                         </Link>
                         <Link href={isAdmin ? "/profile" : "/profile"} className="block">
-                            <Button variant="outline" className="w-full justify-start border-[#D4A574] text-[#7D5A3F] hover:bg-[#FAF4EC]">
+                            <Button variant="outline" className="w-full justify-start border-[#8FD1A3] text-[#1C5C39] hover:bg-[#E3F5E9]">
                                 Profile Settings
                             </Button>
                         </Link>
@@ -353,11 +353,11 @@ export default function DashboardPage() {
                 <Card className="border-gray-100 bg-white shadow-sm lg:col-span-2">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle className="text-[#2D2318]">{isAdmin ? "Platform Activity" : "Recent Activity"}</CardTitle>
+                            <CardTitle className="text-[#142A1C]">{isAdmin ? "Platform Activity" : "Recent Activity"}</CardTitle>
                             <CardDescription>{isAdmin ? "Latest review activity across shops." : "Your latest review activity."}</CardDescription>
                         </div>
                         <Link href="/shops">
-                            <Button variant="outline" className="border-[#D4A574] text-[#7D5A3F] hover:bg-[#FAF4EC]">
+                            <Button variant="outline" className="border-[#8FD1A3] text-[#1C5C39] hover:bg-[#E3F5E9]">
                                 <Sparkles className="mr-2 h-4 w-4" />
                                 Explore More
                             </Button>
@@ -365,27 +365,27 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         {recentActivity.length === 0 ? (
-                            <p className="text-sm text-[#7D5A3F]">No recent activity yet. Start by reviewing a shop.</p>
+                            <p className="text-sm text-[#1C5C39]">No recent activity yet. Start by reviewing a shop.</p>
                         ) : (
                             <div className="space-y-3">
                                 {recentActivity.map((review, index) => {
                                     const reviewShopId = review.shopId || "";
                                     const reviewShopName = shopNameById.get(reviewShopId) || "Shop";
                                     return (
-                                        <div key={review._id || `${reviewShopId}-${index}`} className="rounded-xl border border-[#F5EFE7] bg-[#FAF4EC] p-3">
+                                        <div key={review._id || `${reviewShopId}-${index}`} className="rounded-xl border border-[#DCF0E2] bg-[#E3F5E9] p-3">
                                             <div className="flex items-center justify-between gap-3">
-                                                <Link href={reviewShopId ? `/shops/${reviewShopId}` : "/shops"} className="font-medium text-[#2D2318] hover:text-[#8B6F47]">
+                                                <Link href={reviewShopId ? `/shops/${reviewShopId}` : "/shops"} className="font-medium text-[#142A1C] hover:text-[#267A4C]">
                                                     {reviewShopName}
                                                 </Link>
-                                                <span className="text-xs text-[#7D5A3F]">
+                                                <span className="text-xs text-[#1C5C39]">
                                                     {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : "Recently"}
                                                 </span>
                                             </div>
-                                            <div className="mt-1 flex items-center gap-2 text-sm text-[#7D5A3F]">
+                                            <div className="mt-1 flex items-center gap-2 text-sm text-[#1C5C39]">
                                                 <Star className="h-4 w-4 text-[#d1a547]" />
                                                 <span>{review.starNum || 0}/5</span>
                                             </div>
-                                            <p className="mt-2 text-sm text-[#5B3E2E] line-clamp-2">
+                                            <p className="mt-2 text-sm text-[#1B4A31] line-clamp-2">
                                                 {review.reviewText || review.reviewName || "You left feedback for this shop."}
                                             </p>
                                         </div>
@@ -399,11 +399,11 @@ export default function DashboardPage() {
 
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-2xl font-bold text-[#2D2318]">
+                    <h3 className="text-2xl font-bold text-[#142A1C]">
                         {isAdmin ? "Top Performing Shops" : isSeller ? "Market Highlights" : "Recommended For You"}
                     </h3>
                     <Link href={isAdmin ? "/admin/shops" : "/shops"}>
-                        <Button className="bg-[#8B6F47] text-white hover:bg-[#7D5A3F] rounded-full px-6">
+                        <Button className="bg-[#267A4C] text-white hover:bg-[#1C5C39] rounded-full px-6">
                             {isAdmin ? "Open Admin Shops" : "Browse All Shops"}
                         </Button>
                     </Link>
@@ -413,7 +413,7 @@ export default function DashboardPage() {
                     <Card className="bg-white border-gray-100 shadow-sm">
                         <CardContent className="p-10">
                             <div className="text-center">
-                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#8B6F47] mx-auto"></div>
+                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#267A4C] mx-auto"></div>
                                 <p className="mt-3 text-gray-500">Loading your dashboard...</p>
                             </div>
                         </CardContent>
@@ -422,7 +422,7 @@ export default function DashboardPage() {
                     <Card className="bg-white border-gray-100 shadow-sm">
                         <CardContent className="p-10">
                             <div className="text-center">
-                                <Store className="h-12 w-12 text-[#C99A6E] mx-auto mb-3" />
+                                <Store className="h-12 w-12 text-[#93E48B] mx-auto mb-3" />
                                 <p className="text-gray-500 text-lg">No recommendations yet</p>
                             </div>
                         </CardContent>
@@ -459,7 +459,7 @@ export default function DashboardPage() {
                 )}
                 <div className="pt-6 flex justify-center">
                     <Link href="/shops">
-                        <Button className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                        <Button className="bg-[#267A4C] hover:bg-[#1C5C39] text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
                             <Compass className="mr-2 h-5 w-5" />
                             Explore More Shops
                         </Button>

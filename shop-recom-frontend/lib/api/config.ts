@@ -8,7 +8,7 @@ export const API_CONFIG = {
     BASE_URL: NORMALIZED_BASE,
     // Always return a string for Next/Image `src`. Use a local fallback image when missing.
     getImageUrl: (imagePath: string | undefined | null): string => {
-        if (!imagePath) return '/images/logo.svg';
+        if (!imagePath) return '/images/HaatKhoj.svg';
         if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
             return imagePath;
         }

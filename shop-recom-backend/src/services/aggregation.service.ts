@@ -18,7 +18,7 @@ export class AggregationService {
         if (!user) {
             user = await UserModel.create({
                 fullName: "System Aggregator Bot",
-                email: "aggregator.bot@bazar.com",
+                email: "aggregator.bot@haatkhoj.com",
                 phoneNumber: "9999999999",
                 username: "aggregator_bot",
                 password: "AggregatorSystemPasswordSafe123!",

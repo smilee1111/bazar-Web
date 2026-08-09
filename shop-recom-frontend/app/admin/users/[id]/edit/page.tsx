@@ -88,11 +88,11 @@ export default function EditUserPage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Admin Panel</p>
-            <h1 className="text-4xl font-bold text-[#2D2318]">Edit User</h1>
+            <h1 className="text-4xl font-bold text-[#142A1C]">Edit User</h1>
             <p className="text-gray-500 text-lg">Update user information and profile settings.</p>
           </div>
           <Link href={`/admin/users/${userId}`}>
-            <Button variant="outline" className="gap-2 border-gray-300 text-[#2D2318] hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
+            <Button variant="outline" className="gap-2 border-gray-300 text-[#142A1C] hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
               <ArrowLeft className="h-4 w-4" />
               Back to Profile
             </Button>

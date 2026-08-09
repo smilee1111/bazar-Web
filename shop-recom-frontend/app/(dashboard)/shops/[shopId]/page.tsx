@@ -645,7 +645,7 @@ export default function ShopDetailsPage() {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="inline-block">
-                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#8B6F47]/30 border-t-[#8B6F47]"></div>
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#267A4C]/30 border-t-[#267A4C]"></div>
                     </div>
                     <p className="mt-6 text-gray-500 text-lg">Loading shop details...</p>
                 </div>
@@ -662,7 +662,7 @@ export default function ShopDetailsPage() {
                         <p className="text-gray-500 text-sm mt-2">The shop you're looking for doesn't exist or is no longer available.</p>
                     </div>
                     <Link href="/shops">
-                        <Button className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white px-8">
+                        <Button className="bg-[#267A4C] hover:bg-[#1C5C39] text-white px-8">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Shops
                         </Button>
@@ -677,7 +677,7 @@ export default function ShopDetailsPage() {
             {/* Back Button */}
             <div className="sticky top-4 z-40 flex justify-start px-4 md:px-8">
                 <Link href="/shops">
-                    <Button variant="outline" className="border-gray-200 bg-white text-[#2D2318] hover:bg-gray-50 shadow-sm">
+                    <Button variant="outline" className="border-gray-200 bg-white text-[#142A1C] hover:bg-gray-50 shadow-sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back to Shops
                     </Button>
@@ -688,7 +688,7 @@ export default function ShopDetailsPage() {
                 {/* Photo Gallery Section */}
                 {photos.length > 0 && (
                     <div className="rounded-2xl overflow-hidden shadow-2xl">
-                        <div className="relative w-full h-96 md:h-[500px] bg-gradient-to-br from-[#F5EFE7] to-[#C99A6E]">
+                        <div className="relative w-full h-96 md:h-[500px] bg-gradient-to-br from-[#DCF0E2] to-[#93E48B]">
                             <Image
                                 src={API_CONFIG.getImageUrl(photos[currentPhotoIndex].photoName)}
                                 alt={shop.shopName}
@@ -738,8 +738,8 @@ export default function ShopDetailsPage() {
                                         onClick={() => setCurrentPhotoIndex(idx)}
                                         className={`relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition ${
                                             idx === currentPhotoIndex
-                                                ? "border-[#8B6F47] shadow-lg"
-                                                : "border-gray-200 hover:border-[#8B6F47]"
+                                                ? "border-[#267A4C] shadow-lg"
+                                                : "border-gray-200 hover:border-[#267A4C]"
                                         }`}
                                     >
                                         <Image
@@ -765,10 +765,10 @@ export default function ShopDetailsPage() {
                                 {/* Title and Badge */}
                                 <div>
                                     <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
-                                        <h1 className="text-5xl font-bold text-[#2D2318]">{shop.shopName}</h1>
+                                        <h1 className="text-5xl font-bold text-[#142A1C]">{shop.shopName}</h1>
                                         <div className="flex flex-wrap items-center gap-3 justify-end">
                                             {shop.priceRange && (
-                                                <span className="rounded-full bg-[#8B6F47]/10 px-4 py-2 text-sm font-semibold text-[#8B6F47] border border-[#8B6F47]/20">
+                                                <span className="rounded-full bg-[#267A4C]/10 px-4 py-2 text-sm font-semibold text-[#267A4C] border border-[#267A4C]/20">
                                                     Price Range: {shop.priceRange}
                                                 </span>
                                             )}
@@ -833,7 +833,7 @@ export default function ShopDetailsPage() {
                                             ))}
                                         </div>
                                         <div>
-                                            <span className="text-3xl font-bold text-[#8B6F47]">{avgRating}</span>
+                                            <span className="text-3xl font-bold text-[#267A4C]">{avgRating}</span>
                                             <span className="text-gray-500 ml-2">({reviews.length} reviews)</span>
                                         </div>
                                     </div>
@@ -855,26 +855,26 @@ export default function ShopDetailsPage() {
 
                                 {/* Contact Info */}
                                 <div className="space-y-4 border-t border-gray-100 pt-6">
-                                    <h3 className="text-[#2D2318] font-semibold text-lg">Contact Information</h3>
+                                    <h3 className="text-[#142A1C] font-semibold text-lg">Contact Information</h3>
                                     <div className="space-y-3">
                                         {shop.shopAddress && (
                                             <div className="flex items-start gap-4 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                                                <MapPin className="h-5 w-5 text-[#8B6F47] mt-0.5 flex-shrink-0" />
+                                                <MapPin className="h-5 w-5 text-[#267A4C] mt-0.5 flex-shrink-0" />
                                                 <span className="text-gray-700">{shop.shopAddress}</span>
                                             </div>
                                         )}
                                         {shop.contactNumber && (
                                             <div className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                                                <Phone className="h-5 w-5 text-[#8B6F47] flex-shrink-0" />
-                                                <a href={`tel:${shop.contactNumber}`} className="text-gray-700 hover:text-[#8B6F47] transition">
+                                                <Phone className="h-5 w-5 text-[#267A4C] flex-shrink-0" />
+                                                <a href={`tel:${shop.contactNumber}`} className="text-gray-700 hover:text-[#267A4C] transition">
                                                     {shop.contactNumber}
                                                 </a>
                                             </div>
                                         )}
                                         {shop.email && (
                                             <div className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                                                <Mail className="h-5 w-5 text-[#8B6F47] flex-shrink-0" />
-                                                <a href={`mailto:${shop.email}`} className="text-gray-700 hover:text-[#8B6F47] transition">
+                                                <Mail className="h-5 w-5 text-[#267A4C] flex-shrink-0" />
+                                                <a href={`mailto:${shop.email}`} className="text-gray-700 hover:text-[#267A4C] transition">
                                                     {shop.email}
                                                 </a>
                                             </div>
@@ -885,11 +885,11 @@ export default function ShopDetailsPage() {
                                 {shop.location?.coordinates && (
                                     <div className="border-t border-gray-100 pt-6">
                                         <div className="flex items-center justify-between gap-4 mb-4">
-                                            <h3 className="text-[#2D2318] font-semibold text-lg">Map & Route</h3>
+                                            <h3 className="text-[#142A1C] font-semibold text-lg">Map & Route</h3>
                                             <Button
                                                 type="button"
                                                 onClick={handleOpenDirections}
-                                                className="bg-[#8B6F47] text-white hover:bg-[#7D5A3F]"
+                                                className="bg-[#267A4C] text-white hover:bg-[#1C5C39]"
                                             >
                                                 <Navigation className="mr-2 h-4 w-4" />
                                                 Navigate
@@ -924,10 +924,10 @@ export default function ShopDetailsPage() {
 
                                         <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">
                                             <span>
-                                                Distance: <span className="text-[#8B6F47]">{formatDistance(routeData?.distance)}</span>
+                                                Distance: <span className="text-[#267A4C]">{formatDistance(routeData?.distance)}</span>
                                             </span>
                                             <span>
-                                                ETA: <span className="text-[#8B6F47]">{formatDuration(routeData?.duration)}</span>
+                                                ETA: <span className="text-[#267A4C]">{formatDuration(routeData?.duration)}</span>
                                             </span>
                                             {!userLocation && (
                                                 <span className="text-gray-400">Enable location to see route.</span>
@@ -939,7 +939,7 @@ export default function ShopDetailsPage() {
                                 {/* Shop Links */}
                                 {shop.details && shop.details.length > 0 && (
                                     <div className="border-t border-gray-100 pt-6">
-                                        <h3 className="text-[#2D2318] font-semibold text-lg mb-4">Quick Links</h3>
+                                        <h3 className="text-[#142A1C] font-semibold text-lg mb-4">Quick Links</h3>
                                         <div className="flex flex-wrap gap-3">
                                             {shop.details.flatMap((detail: any) => [
                                                 detail.link1,
@@ -952,7 +952,7 @@ export default function ShopDetailsPage() {
                                                     href={link}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="px-4 py-2 rounded-lg bg-[#8B6F47]/10 text-[#8B6F47] hover:bg-[#8B6F47]/20 transition border border-[#8B6F47]/20 text-sm"
+                                                    className="px-4 py-2 rounded-lg bg-[#267A4C]/10 text-[#267A4C] hover:bg-[#267A4C]/20 transition border border-[#267A4C]/20 text-sm"
                                                 >
                                                     Link {idx + 1}
                                                 </a>
@@ -966,7 +966,7 @@ export default function ShopDetailsPage() {
                         {/* Reviews Section */}
                         <Card className="p-8 bg-white border border-gray-100 shadow-sm rounded-2xl">
                             <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-3xl font-bold text-[#2D2318]">Customer Reviews</h2>
+                                <h2 className="text-3xl font-bold text-[#142A1C]">Customer Reviews</h2>
                                 {reviews.length > 0 && (
                                     <span className="text-gray-500 text-sm">{reviews.length} reviews</span>
                                 )}
@@ -977,7 +977,7 @@ export default function ShopDetailsPage() {
                                     {reviews.map((review) => (
                                         <div
                                             key={review._id}
-                                            className="border-l-2 border-[#8B6F47] pl-4 py-4 bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition"
+                                            className="border-l-2 border-[#267A4C] pl-4 py-4 bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition"
                                         >
                                             <div className="mb-2 flex items-center justify-between gap-3">
                                                 <div className="flex items-center gap-3">
@@ -990,13 +990,13 @@ export default function ShopDetailsPage() {
                                                                 className="object-cover"
                                                             />
                                                         ) : (
-                                                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-[#2D2318]">
+                                                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-[#142A1C]">
                                                                 {getReviewerName(review.reviewedBy, review.userId).slice(0, 2).toUpperCase()}
                                                             </div>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <p className="font-semibold text-[#2D2318]">
+                                                        <p className="font-semibold text-[#142A1C]">
                                                             {getReviewerName(review.reviewedBy, review.userId)}
                                                         </p>
                                                         <p className="text-xs text-gray-500">

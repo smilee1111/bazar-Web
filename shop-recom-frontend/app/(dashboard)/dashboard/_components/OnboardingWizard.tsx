@@ -72,11 +72,11 @@ export default function OnboardingWizard({ onComplete }: { onComplete: () => voi
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
             <div className="w-full max-w-2xl rounded-3xl bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-                <div className="bg-[#2D2318] p-8 text-white relative">
+                <div className="bg-[#142A1C] p-8 text-white relative">
                     <div className="absolute top-0 right-0 p-8 opacity-10">
                         <Sparkles className="w-32 h-32" />
                     </div>
-                    <h2 className="text-3xl font-bold mb-2">Welcome to Bazar!</h2>
+                    <h2 className="text-3xl font-bold mb-2">Welcome to HaatKhoj!</h2>
                     <p className="text-white/80 text-lg">Let's personalize your experience.</p>
                 </div>
                 
@@ -92,11 +92,11 @@ export default function OnboardingWizard({ onComplete }: { onComplete: () => voi
                                         <button
                                             key={cat._id}
                                             onClick={() => toggleCategory(cat._id)}
-                                            className={`p-4 rounded-xl border-2 text-left transition-all ${selectedCategories.includes(cat._id) ? 'border-[#8B6F47] bg-[#FAF4EC]' : 'border-gray-100 hover:border-gray-200'}`}
+                                            className={`p-4 rounded-xl border-2 text-left transition-all ${selectedCategories.includes(cat._id) ? 'border-[#267A4C] bg-[#E3F5E9]' : 'border-gray-100 hover:border-gray-200'}`}
                                         >
                                             <div className="flex items-center justify-between">
-                                                <span className={`font-medium ${selectedCategories.includes(cat._id) ? 'text-[#8B6F47]' : 'text-gray-700'}`}>{cat.categoryName || cat.name}</span>
-                                                {selectedCategories.includes(cat._id) && <Check className="w-4 h-4 text-[#8B6F47]" />}
+                                                <span className={`font-medium ${selectedCategories.includes(cat._id) ? 'text-[#267A4C]' : 'text-gray-700'}`}>{cat.categoryName || cat.name}</span>
+                                                {selectedCategories.includes(cat._id) && <Check className="w-4 h-4 text-[#267A4C]" />}
                                             </div>
                                         </button>
                                     ))}
@@ -106,7 +106,7 @@ export default function OnboardingWizard({ onComplete }: { onComplete: () => voi
                                 <Button 
                                     onClick={() => setStep(2)} 
                                     disabled={selectedCategories.length === 0}
-                                    className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white px-8 rounded-full"
+                                    className="bg-[#267A4C] hover:bg-[#1C5C39] text-white px-8 rounded-full"
                                 >
                                     Continue
                                 </Button>
@@ -116,8 +116,8 @@ export default function OnboardingWizard({ onComplete }: { onComplete: () => voi
 
                     {step === 2 && (
                         <div className="space-y-6 animate-in slide-in-from-right-4 text-center py-8">
-                            <div className="mx-auto w-20 h-20 bg-[#FAF4EC] rounded-full flex items-center justify-center mb-6">
-                                <MapPin className="w-10 h-10 text-[#8B6F47]" />
+                            <div className="mx-auto w-20 h-20 bg-[#E3F5E9] rounded-full flex items-center justify-center mb-6">
+                                <MapPin className="w-10 h-10 text-[#267A4C]" />
                             </div>
                             <h3 className="text-2xl font-semibold text-gray-900">Find shops near you</h3>
                             <p className="text-gray-500 max-w-md mx-auto">
@@ -128,7 +128,7 @@ export default function OnboardingWizard({ onComplete }: { onComplete: () => voi
                                 <Button 
                                     onClick={handleRequestLocation} 
                                     disabled={loading}
-                                    className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white px-8 rounded-full h-12 text-lg"
+                                    className="bg-[#267A4C] hover:bg-[#1C5C39] text-white px-8 rounded-full h-12 text-lg"
                                 >
                                     {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Allow Location Access"}
                                 </Button>
@@ -141,7 +141,7 @@ export default function OnboardingWizard({ onComplete }: { onComplete: () => voi
 
                     {step === 3 && (
                         <div className="space-y-6 animate-in slide-in-from-right-4 text-center py-12">
-                            <Sparkles className="w-16 h-16 text-[#8B6F47] mx-auto mb-6 animate-pulse" />
+                            <Sparkles className="w-16 h-16 text-[#267A4C] mx-auto mb-6 animate-pulse" />
                             <h3 className="text-2xl font-semibold text-gray-900">Curating your feed...</h3>
                             <p className="text-gray-500">We are gathering the best recommendations for you.</p>
                             
@@ -149,9 +149,9 @@ export default function OnboardingWizard({ onComplete }: { onComplete: () => voi
                                 <Button 
                                     onClick={handleSubmit} 
                                     disabled={loading}
-                                    className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white px-10 rounded-full h-12 text-lg"
+                                    className="bg-[#267A4C] hover:bg-[#1C5C39] text-white px-10 rounded-full h-12 text-lg"
                                 >
-                                    {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Explore Bazar"}
+                                    {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Explore HaatKhoj"}
                                 </Button>
                             </div>
                         </div>

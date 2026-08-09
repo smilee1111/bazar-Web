@@ -15,15 +15,15 @@ export default function Header() {
             <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <div className="flex w-10 h-10 items-center justify-center bg-[#2D2318] rounded-xl">
+                        <div className="flex w-10 h-10 items-center justify-center bg-[#142A1C] rounded-xl">
                             <img
                                 className="w-6 h-6 object-contain"
-                                alt="Bazar logo"
-                                src="/images/logo.svg"
+                                alt="HaatKhoj logo"
+                                src="/images/HaatKhoj.svg"
                             />
                         </div>
-                        <h1 className="font-semibold text-[#2D2318] text-xl tracking-tight">
-                            Bazar
+                        <h1 className="font-semibold text-[#142A1C] text-xl tracking-tight">
+                            HaatKhoj
                         </h1>
                     </Link>
                 </div>
@@ -34,7 +34,7 @@ export default function Header() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className="text-gray-500 hover:text-[#2D2318] transition-colors font-medium text-sm"
+                            className="text-gray-500 hover:text-[#142A1C] transition-colors font-medium text-sm"
                         >
                             {item.label}
                         </Link>
@@ -45,13 +45,13 @@ export default function Header() {
                     <Link href="/login">
                         <Button
                             variant="ghost"
-                            className="text-[#2D2318] hover:bg-gray-100 transition-all duration-200 font-medium"
+                            className="text-[#142A1C] hover:bg-gray-100 transition-all duration-200 font-medium"
                         >
                             Login
                         </Button>
                     </Link>
                     <Link href="/register">
-                        <Button className="bg-[#2D2318] text-white hover:bg-[#3D2F22] rounded-full shadow-sm hover:shadow-md transition-all duration-300 font-medium px-6">
+                        <Button className="bg-[#142A1C] text-white hover:bg-[#1A3625] rounded-full shadow-sm hover:shadow-md transition-all duration-300 font-medium px-6">
                             Sign Up
                         </Button>
                     </Link>
@@ -66,7 +66,7 @@ export default function Header() {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className="text-gray-500 hover:text-[#2D2318] transition-colors text-sm font-medium"
+                            className="text-gray-500 hover:text-[#142A1C] transition-colors text-sm font-medium"
                         >
                             {item.label}
                         </Link>

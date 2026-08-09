@@ -112,12 +112,12 @@ export default function UpdateForm({ user }: { user: any }) {
         <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm hover:shadow-md transition-all duration-300">
             <CardHeader className="space-y-4">
                 <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#8B6F47] to-[#7D5A3F] shadow-lg">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#267A4C] to-[#1C5C39] shadow-lg">
                         <User className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <CardTitle className="text-xl text-[#2D2318]">Update Profile</CardTitle>
-                        <CardDescription className="text-[#5B3E2E]">
+                        <CardTitle className="text-xl text-[#142A1C]">Update Profile</CardTitle>
+                        <CardDescription className="text-[#1B4A31]">
                             Keep your profile information up to date
                         </CardDescription>
                     </div>
@@ -139,12 +139,12 @@ export default function UpdateForm({ user }: { user: any }) {
                         <Label className="text-base font-semibold text-[#1a1a1a]">Profile Picture</Label>
                         <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
                             <div className="relative">
-                                <Avatar className="h-32 w-32 ring-4 ring-[#8B6F47]/20 shadow-lg">
+                                <Avatar className="h-32 w-32 ring-4 ring-[#267A4C]/20 shadow-lg">
                                     <AvatarImage
                                         src={previewImage || API_CONFIG.getImageUrl(user?.profilePic) || undefined}
                                         alt={user.fullName || "Profile"}
                                     />
-                                    <AvatarFallback className="bg-gradient-to-br from-[#8B6F47] to-[#7D5A3F] text-white text-2xl font-semibold">
+                                    <AvatarFallback className="bg-gradient-to-br from-[#267A4C] to-[#1C5C39] text-white text-2xl font-semibold">
                                         {(user.fullName || "U").charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
@@ -171,7 +171,7 @@ export default function UpdateForm({ user }: { user: any }) {
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                className="border-[#8B6F47]/40 text-[#8B6F47] hover:bg-[#8B6F47]/10 hover:border-[#7D5A3F] transition-all duration-300"
+                                                className="border-[#267A4C]/40 text-[#267A4C] hover:bg-[#267A4C]/10 hover:border-[#1C5C39] transition-all duration-300"
                                                 onClick={() => fileInputRef.current?.click()}
                                             >
                                                 <Upload className="mr-2 h-4 w-4" />
@@ -184,7 +184,7 @@ export default function UpdateForm({ user }: { user: any }) {
                                                 accept=".jpg,.jpeg,.png,.webp"
                                                 className="hidden"
                                             />
-                                            <p className="text-xs text-[#6a5c38]">
+                                            <p className="text-xs text-[#1C5C39]">
                                                 JPG, PNG or WebP. Max size 5MB.
                                             </p>
                                         </div>
@@ -209,7 +209,7 @@ export default function UpdateForm({ user }: { user: any }) {
                                 id="fullName"
                                 type="text"
                                 {...register("fullName")}
-                                className="border-[#8B6F47]/30 focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
+                                className="border-[#267A4C]/30 focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
                                 placeholder="Enter your full name"
                             />
                             {errors.fullName && (
@@ -225,7 +225,7 @@ export default function UpdateForm({ user }: { user: any }) {
                                 id="username"
                                 type="text"
                                 {...register("username")}
-                                className="border-[#8B6F47]/30 focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
+                                className="border-[#267A4C]/30 focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
                                 placeholder="Enter your username"
                             />
                             {errors.username && (
@@ -241,7 +241,7 @@ export default function UpdateForm({ user }: { user: any }) {
                                 id="email"
                                 type="email"
                                 {...register("email")}
-                                className="border-[#8B6F47]/30 focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
+                                className="border-[#267A4C]/30 focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
                                 placeholder="Enter your email"
                             />
                             {errors.email && (
@@ -257,7 +257,7 @@ export default function UpdateForm({ user }: { user: any }) {
                                 id="phoneNumber"
                                 type="text"
                                 {...register("phoneNumber")}
-                                className="border-[#8B6F47]/30 focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
+                                className="border-[#267A4C]/30 focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
                                 placeholder="Enter 10-digit phone number"
                             />
                             {errors.phoneNumber && (
@@ -273,7 +273,7 @@ export default function UpdateForm({ user }: { user: any }) {
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="bg-gradient-to-r from-[#8B6F47] to-[#7D5A3F] text-white hover:from-[#7D5A3F] hover:to-[#5B3E2E] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] px-8"
+                            className="bg-gradient-to-r from-[#267A4C] to-[#1C5C39] text-white hover:from-[#1C5C39] hover:to-[#1B4A31] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] px-8"
                         >
                             {isSubmitting ? (
                                 <>

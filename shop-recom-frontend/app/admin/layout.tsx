@@ -13,7 +13,7 @@ export default function AdminLayout({
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     return (
-        <div className="relative min-h-screen bg-[#F7F5F2]">
+        <div className="relative min-h-screen bg-[#F1FAF5]">
             <div
                 className="absolute inset-0 -z-10 h-full w-full bg-cover bg-center opacity-5"
                 style={{ backgroundImage: "url('/images/auth-background.svg')" }}

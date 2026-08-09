@@ -71,7 +71,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
     return (
         <aside
             className={cn(
-                "sticky top-0 flex h-screen flex-none flex-col overflow-hidden bg-[#2D2318] text-white shadow-xl transition-[width] duration-300 ease-in-out will-change-[width]",
+                "sticky top-0 flex h-screen flex-none flex-col overflow-hidden bg-[#142A1C] text-white shadow-xl transition-[width] duration-300 ease-in-out will-change-[width]",
                 isCollapsed ? "w-20" : "w-72"
             )}
         >
@@ -86,12 +86,12 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                         <button
                             type="button"
                             onClick={onToggleCollapse}
-                            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-[#8B6F47] shadow-md transition hover:bg-[#7D5A3F]"
+                            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-[#267A4C] shadow-md transition hover:bg-[#1C5C39]"
                             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                         >
                             <Image
-                                src="/images/logo.svg"
-                                alt="Bazar logo"
+                                src="/images/HaatKhoj.svg"
+                                alt="HaatKhoj logo"
                                 width={26}
                                 height={26}
                                 className="h-6 w-6"
@@ -100,10 +100,10 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                         </button>
                         {!isCollapsed && (
                             <div className="leading-tight">
-                                <p className="text-[11px] uppercase tracking-[0.2em] text-white/50">Bazar</p>
+                                <p className="text-[11px] uppercase tracking-[0.2em] text-white/50">HaatKhoj</p>
                                 <div className="flex items-center gap-2">
                                     <p className="text-xl font-semibold">Dashboard</p>
-                                    <span className="inline-flex items-center gap-1 rounded-full bg-[#8B6F47] px-2 py-[3px] text-[11px] font-medium text-white/90">
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-[#267A4C] px-2 py-[3px] text-[11px] font-medium text-white/90">
                                         <Shield className="h-3 w-3" />
                                         {roleBadgeLabel}
                                     </span>
@@ -142,9 +142,9 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                                 <Button
                                     variant="ghost"
                                     className={cn(
-                                        "group relative flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/70 transition-all duration-200 hover:bg-[#8B6F47]/30 hover:text-white",
+                                        "group relative flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/70 transition-all duration-200 hover:bg-[#267A4C]/30 hover:text-white",
                                         isCollapsed && "justify-center px-2",
-                                        isActive && "bg-[#8B6F47] text-white shadow-md"
+                                        isActive && "bg-[#267A4C] text-white shadow-md"
                                     )}
                                 >
                                     <span
@@ -169,7 +169,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                         onClick={() => setSettingsOpen((prev) => !prev)}
                         variant="ghost"
                         className={cn(
-                            "flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/70 transition-all duration-200 hover:bg-[#8B6F47]/30 hover:text-white",
+                            "flex w-full items-center justify-start gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-white/70 transition-all duration-200 hover:bg-[#267A4C]/30 hover:text-white",
                             isCollapsed && "justify-center px-2"
                         )}
                     >
@@ -197,7 +197,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                                 <Link href="/settings/account">
                                     <Button
                                         variant="ghost"
-                                        className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/60 hover:bg-[#8B6F47]/20 hover:text-white"
+                                        className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/60 hover:bg-[#267A4C]/20 hover:text-white"
                                     >
                                         Account
                                     </Button>
@@ -205,7 +205,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps)
                                 <Link href="/settings/security">
                                     <Button
                                         variant="ghost"
-                                        className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/60 hover:bg-[#8B6F47]/20 hover:text-white"
+                                        className="w-full justify-start gap-3 rounded-xl px-4 py-2 text-[14px] font-medium text-white/60 hover:bg-[#267A4C]/20 hover:text-white"
                                     >
                                         Security
                                     </Button>

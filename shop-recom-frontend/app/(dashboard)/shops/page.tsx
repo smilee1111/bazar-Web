@@ -58,13 +58,13 @@ export default function ShopsPage() {
     const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
-        const savedPage = sessionStorage.getItem("bazar_shops_page");
+        const savedPage = sessionStorage.getItem("haatkhoj_shops_page");
         if (savedPage) {
             const parsed = parseInt(savedPage, 10);
             if (!isNaN(parsed)) setCurrentPage(parsed);
         }
         
-        const savedFilters = sessionStorage.getItem("bazar_shops_filters");
+        const savedFilters = sessionStorage.getItem("haatkhoj_shops_filters");
         if (savedFilters) {
             try {
                 setActiveFilters(JSON.parse(savedFilters));
@@ -76,8 +76,8 @@ export default function ShopsPage() {
 
     useEffect(() => {
         if (isInitialized) {
-            sessionStorage.setItem("bazar_shops_filters", JSON.stringify(activeFilters));
-            sessionStorage.setItem("bazar_shops_page", currentPage.toString());
+            sessionStorage.setItem("haatkhoj_shops_filters", JSON.stringify(activeFilters));
+            sessionStorage.setItem("haatkhoj_shops_page", currentPage.toString());
         }
     }, [activeFilters, currentPage, isInitialized]);
 
@@ -263,7 +263,7 @@ export default function ShopsPage() {
 
     useEffect(() => {
         const handleScroll = () => {
-            sessionStorage.setItem("bazar_shops_scroll", window.scrollY.toString());
+            sessionStorage.setItem("haatkhoj_shops_scroll", window.scrollY.toString());
         };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
@@ -271,7 +271,7 @@ export default function ShopsPage() {
 
     useEffect(() => {
         if (!loading && isInitialized) {
-            const savedScroll = sessionStorage.getItem("bazar_shops_scroll");
+            const savedScroll = sessionStorage.getItem("haatkhoj_shops_scroll");
             if (savedScroll) {
                 setTimeout(() => {
                     window.scrollTo(0, parseInt(savedScroll, 10));
@@ -284,8 +284,8 @@ export default function ShopsPage() {
         <div className="space-y-6">
             {/* Header */}
             <div className="space-y-2 animate-fade-up">
-                <p className="text-sm uppercase tracking-[0.2em] text-[#8B6F47]">Discover</p>
-                <h2 className="text-4xl font-bold text-[#2D2318]">Shop Feed</h2>
+                <p className="text-sm uppercase tracking-[0.2em] text-[#267A4C]">Discover</p>
+                <h2 className="text-4xl font-bold text-[#142A1C]">Shop Feed</h2>
                 <p className="text-gray-500">Explore and discover amazing local shops</p>
             </div>
 
@@ -298,7 +298,7 @@ export default function ShopsPage() {
                     <Card className="bg-white border-gray-100 shadow-sm">
                         <CardContent className="p-8">
                             <div className="text-center">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B6F47] mx-auto"></div>
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#267A4C] mx-auto"></div>
                                 <p className="mt-4 text-gray-500">Loading shops...</p>
                             </div>
                         </CardContent>
@@ -307,7 +307,7 @@ export default function ShopsPage() {
                     <Card className="bg-white border-gray-100 shadow-sm">
                         <CardContent className="p-8">
                             <div className="text-center">
-                                <Store className="h-12 w-12 text-[#C99A6E] mx-auto mb-3" />
+                                <Store className="h-12 w-12 text-[#93E48B] mx-auto mb-3" />
                                 <p className="text-gray-500 text-lg">No shops found matching your criteria</p>
                                 <p className="text-gray-400 text-sm mt-2">Try adjusting your search filters</p>
                             </div>
@@ -359,18 +359,18 @@ export default function ShopsPage() {
                                     variant="outline"
                                     onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                                     disabled={currentPage === 1}
-                                    className="border-gray-200 bg-white text-[#2D2318] hover:bg-gray-50 disabled:opacity-50"
+                                    className="border-gray-200 bg-white text-[#142A1C] hover:bg-gray-50 disabled:opacity-50"
                                 >
                                     Previous
                                 </Button>
-                                <span className="text-sm text-[#2D2318]">
+                                <span className="text-sm text-[#142A1C]">
                                     Page {currentPage} of {totalPages}
                                 </span>
                                 <Button
                                     variant="outline"
                                     onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                                     disabled={currentPage === totalPages}
-                                    className="border-gray-200 bg-white text-[#2D2318] hover:bg-gray-50 disabled:opacity-50"
+                                    className="border-gray-200 bg-white text-[#142A1C] hover:bg-gray-50 disabled:opacity-50"
                                 >
                                     Next
                                 </Button>

@@ -76,25 +76,25 @@ export default function CategoriesPage() {
 
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
-            <h1 className="text-3xl font-bold text-[#2D2318]">Category Management</h1>
+            <h1 className="text-3xl font-bold text-[#142A1C]">Category Management</h1>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Source Import Card */}
                 <Card className="border-gray-100 shadow-md">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <CloudDownload className="w-5 h-5 text-[#8B6F47]" />
+                            <CloudDownload className="w-5 h-5 text-[#267A4C]" />
                             Import from Sources
                         </CardTitle>
                         <CardDescription>
-                            Fetch official category lists from scraper sources (e.g., NepalYP) and import them directly into Bazar.
+                            Fetch official category lists from scraper sources (e.g., NepalYP) and import them directly into HaatKhoj.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <Button 
                             onClick={onFetchSource} 
                             disabled={fetchingSource}
-                            className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white w-full"
+                            className="bg-[#267A4C] hover:bg-[#1C5C39] text-white w-full"
                         >
                             <CloudDownload className={`w-4 h-4 mr-2 ${fetchingSource ? 'animate-bounce' : ''}`} />
                             {fetchingSource ? "Fetching..." : "Fetch Categories from Sources"}
@@ -110,7 +110,7 @@ export default function CategoriesPage() {
                                                 type="checkbox" 
                                                 checked={selectedSources.has(cat)}
                                                 onChange={() => toggleSourceSelection(cat)}
-                                                className="rounded border-gray-300 text-[#8B6F47] focus:ring-[#8B6F47]"
+                                                className="rounded border-gray-300 text-[#267A4C] focus:ring-[#267A4C]"
                                             />
                                             {cat}
                                         </label>
@@ -135,11 +135,11 @@ export default function CategoriesPage() {
                 <Card className="border-gray-100 shadow-md">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Tags className="w-5 h-5 text-[#8B6F47]" />
+                            <Tags className="w-5 h-5 text-[#267A4C]" />
                             Database Categories
                         </CardTitle>
                         <CardDescription>
-                            Categories currently available in Bazar for shops and users.
+                            Categories currently available in HaatKhoj for shops and users.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -149,9 +149,9 @@ export default function CategoriesPage() {
                                 placeholder="Add custom category..."
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
-                                className="flex-1 rounded-lg border-gray-300 border p-2 text-sm focus:border-[#8B6F47] focus:outline-none"
+                                className="flex-1 rounded-lg border-gray-300 border p-2 text-sm focus:border-[#267A4C] focus:outline-none"
                             />
-                            <Button onClick={onCreateManual} disabled={loading || !newCategoryName.trim()} className="bg-[#8B6F47] hover:bg-[#7D5A3F]">
+                            <Button onClick={onCreateManual} disabled={loading || !newCategoryName.trim()} className="bg-[#267A4C] hover:bg-[#1C5C39]">
                                 <Plus className="w-4 h-4" />
                             </Button>
                         </div>

@@ -1,6 +1,6 @@
 export type UserLocation = { lat: number; lng: number };
 
-const STORAGE_KEY = "bazar_user_location";
+const STORAGE_KEY = "haatkhoj_user_location";
 
 const isValidLocation = (value: any): value is UserLocation => {
     return (

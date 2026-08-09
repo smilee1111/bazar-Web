@@ -555,11 +555,11 @@ export default function MyShopPage() {
             <div className="space-y-6">
                 <div className="flex flex-col gap-3">
                     <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Seller</p>
-                    <h1 className="text-4xl font-bold text-[#2D2318]">My Shop</h1>
+                    <h1 className="text-4xl font-bold text-[#142A1C]">My Shop</h1>
                     <p className="text-gray-500 text-lg">We could not find a shop for your account yet.</p>
                 </div>
                 <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
-                    <CardContent className="py-10 text-center text-sm text-[#5B3E2E]">
+                    <CardContent className="py-10 text-center text-sm text-[#1B4A31]">
                         Your shop will appear here once it is created from an approved seller application.
                     </CardContent>
                 </Card>
@@ -571,41 +571,41 @@ export default function MyShopPage() {
         <div className="space-y-8">
             <div className="flex flex-col gap-3">
                 <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Seller</p>
-                <h1 className="text-4xl font-bold text-[#2D2318]">My Shop</h1>
+                <h1 className="text-4xl font-bold text-[#142A1C]">My Shop</h1>
                 <p className="text-gray-500 text-lg">Manage your shop details and keep them up to date.</p>
             </div>
 
             <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
                 <CardHeader className="space-y-4">
                     <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B6F47]/15">
-                            <Store className="h-5 w-5 text-[#8B6F47]" />
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#267A4C]/15">
+                            <Store className="h-5 w-5 text-[#267A4C]" />
                         </span>
                         <div>
-                            <CardTitle className="text-xl text-[#2D2318]">Shop Overview</CardTitle>
+                            <CardTitle className="text-xl text-[#142A1C]">Shop Overview</CardTitle>
                             <CardDescription>Review and update your shop information.</CardDescription>
                         </div>
                     </div>
 
-                    <div className="grid gap-3 text-sm text-[#5B3E2E] md:grid-cols-2">
+                    <div className="grid gap-3 text-sm text-[#1B4A31] md:grid-cols-2">
                         <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-[#8B6F47]" />
-                            <span className="font-medium text-[#2D2318]">Owner:</span>
+                            <User className="h-4 w-4 text-[#267A4C]" />
+                            <span className="font-medium text-[#142A1C]">Owner:</span>
                             <span>{shop.ownerId.fullName}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-[#8B6F47]" />
-                            <span className="font-medium text-[#2D2318]">Email:</span>
+                            <Mail className="h-4 w-4 text-[#267A4C]" />
+                            <span className="font-medium text-[#142A1C]">Email:</span>
                             <span>{shop.ownerId.email}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-[#8B6F47]" />
-                            <span className="font-medium text-[#2D2318]">Phone:</span>
+                            <Phone className="h-4 w-4 text-[#267A4C]" />
+                            <span className="font-medium text-[#142A1C]">Phone:</span>
                             <span>{shop.ownerId.phoneNumber}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-[#8B6F47]" />
-                            <span className="font-medium text-[#2D2318]">Address:</span>
+                            <MapPin className="h-4 w-4 text-[#267A4C]" />
+                            <span className="font-medium text-[#142A1C]">Address:</span>
                             <span>{shop.shopAddress}</span>
                         </div>
                     </div>
@@ -615,8 +615,8 @@ export default function MyShopPage() {
 
                 <CardContent className="space-y-6 pt-6">
                     <div className="flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-[#8B6F47]" />
-                        <h2 className="text-lg font-semibold text-[#2D2318]">Shop Details</h2>
+                        <Building2 className="h-5 w-5 text-[#267A4C]" />
+                        <h2 className="text-lg font-semibold text-[#142A1C]">Shop Details</h2>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -734,7 +734,7 @@ export default function MyShopPage() {
                                         setFormData((prev) => ({ ...prev, isActive: checked === true }))
                                     }
                                 />
-                                <span className="text-sm text-[#5B3E2E]">Shop is active</span>
+                                <span className="text-sm text-[#1B4A31]">Shop is active</span>
                             </div>
                         </div>
                     </div>
@@ -743,7 +743,7 @@ export default function MyShopPage() {
                         <Button
                             onClick={handleSave}
                             disabled={saving}
-                            className="bg-[#8B6F47] text-white hover:bg-[#7D5A3F]"
+                            className="bg-[#267A4C] text-white hover:bg-[#1C5C39]"
                         >
                             {saving ? "Saving..." : "Save Changes"}
                         </Button>
@@ -755,21 +755,21 @@ export default function MyShopPage() {
                 <CardHeader className="space-y-4">
                     <div className="flex items-center justify-between gap-4 flex-wrap">
                         <div className="flex items-center gap-3">
-                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B6F47]/15">
-                                <MessageCircle className="h-5 w-5 text-[#8B6F47]" />
+                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#267A4C]/15">
+                                <MessageCircle className="h-5 w-5 text-[#267A4C]" />
                             </span>
                             <div>
-                                <CardTitle className="text-xl text-[#2D2318]">Reviews & Photos</CardTitle>
+                                <CardTitle className="text-xl text-[#142A1C]">Reviews & Photos</CardTitle>
                                 <CardDescription>
                                     Highlight what customers love and curate shop moments.
                                 </CardDescription>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Badge className="bg-[#f0e7d6] text-[#6f5f3a] border border-[#F5EFE7]">
+                            <Badge className="bg-[#E9F6EE] text-[#1C5C39] border border-[#DCF0E2]">
                                 {shop.categoryId?.name || "Shop"}
                             </Badge>
-                            <Badge variant="outline" className="border-[#F5EFE7] text-[#7D5A3F]">
+                            <Badge variant="outline" className="border-[#DCF0E2] text-[#1C5C39]">
                                 {shop.shopAddress}
                             </Badge>
                         </div>
@@ -780,16 +780,16 @@ export default function MyShopPage() {
 
                 <CardContent className="space-y-6 pt-6">
                     <div className="grid gap-4 md:grid-cols-3">
-                        <div className="rounded-2xl border border-[#efe7d6] bg-[#FAF4EC] p-5">
-                            <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
+                        <div className="rounded-2xl border border-[#DCF0E2] bg-[#E3F5E9] p-5">
+                            <div className="flex items-center gap-2 text-sm text-[#1C5C39]">
                                 <Star className="h-4 w-4" />
                                 <span>Average rating</span>
                             </div>
                             <div className="mt-3 flex items-end gap-2">
-                                <span className="text-3xl font-semibold text-[#1f1a14]">
+                                <span className="text-3xl font-semibold text-[#0F2116]">
                                     {reviewStats.average.toFixed(1)}
                                 </span>
-                                <span className="text-sm text-[#7D5A3F]">out of 5</span>
+                                <span className="text-sm text-[#1C5C39]">out of 5</span>
                             </div>
                             <div className="mt-3 flex items-center gap-1">
                                 {Array.from({ length: 5 }).map((_, index) => (
@@ -798,24 +798,24 @@ export default function MyShopPage() {
                                         className={`h-4 w-4 ${
                                             index < Math.round(reviewStats.average)
                                                 ? "text-[#d1a547]"
-                                                : "text-[#F5EFE7]"
+                                                : "text-[#DCF0E2]"
                                         }`}
                                         fill="currentColor"
                                     />
                                 ))}
-                                <span className="ml-2 text-xs text-[#7D5A3F]">
+                                <span className="ml-2 text-xs text-[#1C5C39]">
                                     {reviewStats.total} reviews
                                 </span>
                             </div>
                         </div>
-                        <div className="rounded-2xl border border-[#efe7d6] bg-white p-5">
-                            <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
+                        <div className="rounded-2xl border border-[#DCF0E2] bg-white p-5">
+                            <div className="flex items-center gap-2 text-sm text-[#1C5C39]">
                                 <Camera className="h-4 w-4" />
                                 <span>Photo highlights</span>
                             </div>
                             <div className="mt-3 grid grid-cols-3 gap-2">
                                 {photos.length === 0 && (
-                                    <div className="col-span-3 rounded-xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-3 py-4 text-center text-xs text-[#7D5A3F]">
+                                    <div className="col-span-3 rounded-xl border border-dashed border-[#DCF0E2] bg-[#E3F5E9] px-3 py-4 text-center text-xs text-[#1C5C39]">
                                         No photos yet. Upload moments to showcase your shop.
                                     </div>
                                 )}
@@ -824,7 +824,7 @@ export default function MyShopPage() {
                                     return (
                                         <div
                                             key={photo.photoId || photo._id}
-                                            className="group relative h-16 overflow-hidden rounded-xl border border-[#efe7d6] bg-[#f4ede0] cursor-pointer transition-transform hover:scale-105"
+                                            className="group relative h-16 overflow-hidden rounded-xl border border-[#DCF0E2] bg-[#E3F5E9] cursor-pointer transition-transform hover:scale-105"
                                             onClick={() => imageUrl && setSelectedImage(imageUrl)}
                                         >
                                             {imageUrl ? (
@@ -834,13 +834,13 @@ export default function MyShopPage() {
                                                     className="h-full w-full object-cover"
                                                 />
                                             ) : (
-                                                <div className="h-full w-full bg-gradient-to-br from-[#f4ede0] via-[#efe6d2] to-[#e7dbc2]" />
+                                                <div className="h-full w-full bg-gradient-to-br from-[#E3F5E9] via-[#DCF0E2] to-[#DCF0E2]" />
                                             )}
-                                            <div className="absolute inset-0 rounded-xl bg-[#1f1a14]/0 transition group-hover:bg-[#1f1a14]/10" />
+                                            <div className="absolute inset-0 rounded-xl bg-[#0F2116]/0 transition group-hover:bg-[#0F2116]/10" />
                                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <ZoomIn className="h-5 w-5 text-white drop-shadow-lg" />
                                             </div>
-                                            <div className="absolute bottom-1 left-1 right-1 rounded-md bg-white/80 px-1 py-0.5 text-[10px] text-[#7D5A3F]">
+                                            <div className="absolute bottom-1 left-1 right-1 rounded-md bg-white/80 px-1 py-0.5 text-[10px] text-[#1C5C39]">
                                                 {formatDate(photo.createdAt)}
                                             </div>
                                         </div>
@@ -848,22 +848,22 @@ export default function MyShopPage() {
                                 })}
                             </div>
                         </div>
-                        <div className="rounded-2xl border border-[#efe7d6] bg-white p-5">
-                            <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
+                        <div className="rounded-2xl border border-[#DCF0E2] bg-white p-5">
+                            <div className="flex items-center gap-2 text-sm text-[#1C5C39]">
                                 <Heart className="h-4 w-4" />
                                 <span>Customer sentiment</span>
                             </div>
                             <div className="mt-4 space-y-2">
                                 {reviewStats.breakdown.map((item) => (
                                     <div key={`rating-${item.label}`} className="flex items-center gap-2 text-xs">
-                                        <span className="w-5 text-[#6f5f3a]">{item.label}</span>
-                                        <div className="h-2 flex-1 rounded-full bg-[#efe7d6]">
+                                        <span className="w-5 text-[#1C5C39]">{item.label}</span>
+                                        <div className="h-2 flex-1 rounded-full bg-[#DCF0E2]">
                                             <div
-                                                className="h-2 rounded-full bg-[#c9a86a]"
+                                                className="h-2 rounded-full bg-[#4FAF6D]"
                                                 style={{ width: `${item.percent}%` }}
                                             />
                                         </div>
-                                        <span className="w-10 text-right text-[#7D5A3F]">{item.percent}%</span>
+                                        <span className="w-10 text-right text-[#1C5C39]">{item.percent}%</span>
                                     </div>
                                 ))}
                             </div>
@@ -871,7 +871,7 @@ export default function MyShopPage() {
                     </div>
 
                     <Tabs defaultValue="reviews" className="w-full">
-                        <TabsList className="w-full justify-start bg-[#f5efe3]">
+                        <TabsList className="w-full justify-start bg-[#E3F5E9]">
                             <TabsTrigger value="reviews" className="data-[state=active]:bg-white">
                                 Reviews
                             </TabsTrigger>
@@ -886,12 +886,12 @@ export default function MyShopPage() {
                         <TabsContent value="reviews" className="mt-6">
                             <div className="space-y-4">
                                 {reviewsLoading && (
-                                    <div className="rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
+                                    <div className="rounded-2xl border border-dashed border-[#DCF0E2] bg-[#E3F5E9] px-4 py-6 text-center text-sm text-[#1C5C39]">
                                         Loading reviews...
                                     </div>
                                 )}
                                 {!reviewsLoading && sortedReviews.length === 0 && (
-                                    <div className="rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
+                                    <div className="rounded-2xl border border-dashed border-[#DCF0E2] bg-[#E3F5E9] px-4 py-6 text-center text-sm text-[#1C5C39]">
                                         No reviews yet. Encourage customers to leave feedback.
                                     </div>
                                 )}
@@ -904,7 +904,7 @@ export default function MyShopPage() {
                                     return (
                                         <div
                                             key={review.reviewId || review._id}
-                                            className="rounded-2xl border border-[#efe7d6] bg-white p-5"
+                                            className="rounded-2xl border border-[#DCF0E2] bg-white p-5"
                                         >
                                             <div className="flex flex-wrap items-center justify-between gap-4">
                                                 <div className="flex items-center gap-3">
@@ -916,15 +916,15 @@ export default function MyShopPage() {
                                                         <AvatarFallback>{initials || "CU"}</AvatarFallback>
                                                     </Avatar>
                                                     <div>
-                                                        <div className="font-semibold text-[#1f1a14]">
+                                                        <div className="font-semibold text-[#0F2116]">
                                                             {reviewer.name}
                                                         </div>
-                                                        <div className="text-xs text-[#7D5A3F]">
+                                                        <div className="text-xs text-[#1C5C39]">
                                                             {reviewer.detail || "User"}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-xs text-[#7D5A3F]">
+                                                <div className="text-xs text-[#1C5C39]">
                                                     {formatDate(review.createdAt)}
                                                 </div>
                                             </div>
@@ -936,12 +936,12 @@ export default function MyShopPage() {
                                                         className={`h-4 w-4 ${
                                                             index < (review.starNum || 0)
                                                                 ? "text-[#d1a547]"
-                                                                : "text-[#F5EFE7]"
+                                                                : "text-[#DCF0E2]"
                                                         }`}
                                                         fill="currentColor"
                                                     />
                                                 ))}
-                                                <span className="ml-2 text-xs text-[#7D5A3F]">
+                                                <span className="ml-2 text-xs text-[#1C5C39]">
                                                     {(review.starNum || 0).toFixed(1)}
                                                 </span>
                                             </div>
@@ -951,13 +951,13 @@ export default function MyShopPage() {
                                             <div className="mt-4 flex flex-wrap items-center gap-2">
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-[#F5EFE7] text-[#7D5A3F]"
+                                                    className="border-[#DCF0E2] text-[#1C5C39]"
                                                 >
                                                     {review.likesCount || 0} likes
                                                 </Badge>
                                                 <Badge
                                                     variant="outline"
-                                                    className="border-[#F5EFE7] text-[#7D5A3F]"
+                                                    className="border-[#DCF0E2] text-[#1C5C39]"
                                                 >
                                                     {review.dislikeCount || 0} dislikes
                                                 </Badge>
@@ -980,7 +980,7 @@ export default function MyShopPage() {
                                 <Button
                                     onClick={() => document.getElementById("photo-upload")?.click()}
                                     disabled={uploading}
-                                    className="gap-2 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white"
+                                    className="gap-2 bg-[#267A4C] hover:bg-[#1C5C39] text-white"
                                 >
                                     <Upload className="h-4 w-4" />
                                     {uploading ? "Uploading..." : "Upload Photo"}
@@ -989,12 +989,12 @@ export default function MyShopPage() {
 
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {photosLoading && (
-                                    <div className="col-span-full rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
+                                    <div className="col-span-full rounded-2xl border border-dashed border-[#DCF0E2] bg-[#E3F5E9] px-4 py-6 text-center text-sm text-[#1C5C39]">
                                         Loading photos...
                                     </div>
                                 )}
                                 {!photosLoading && photos.length === 0 && (
-                                    <div className="col-span-full rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
+                                    <div className="col-span-full rounded-2xl border border-dashed border-[#DCF0E2] bg-[#E3F5E9] px-4 py-6 text-center text-sm text-[#1C5C39]">
                                         No photos uploaded yet. Add photos to bring your shop to life.
                                     </div>
                                 )}
@@ -1006,7 +1006,7 @@ export default function MyShopPage() {
                                     return (
                                         <div
                                             key={photoIdentifier}
-                                            className="group relative overflow-hidden rounded-2xl border border-[#efe7d6] bg-white"
+                                            className="group relative overflow-hidden rounded-2xl border border-[#DCF0E2] bg-white"
                                         >
                                             <div 
                                                 className="cursor-pointer"
@@ -1019,10 +1019,10 @@ export default function MyShopPage() {
                                                         className="h-40 w-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="h-40 bg-gradient-to-br from-[#f4ede0] via-[#efe6d2] to-[#e7dbc2]" />
+                                                    <div className="h-40 bg-gradient-to-br from-[#E3F5E9] via-[#DCF0E2] to-[#DCF0E2]" />
                                                 )}
-                                                <div className="absolute inset-0 bg-gradient-to-t from-[#1f1a14]/30 via-transparent to-transparent" />
-                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-[#1f1a14]/20">
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#0F2116]/30 via-transparent to-transparent" />
+                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-[#0F2116]/20">
                                                     <ZoomIn className="h-8 w-8 text-white drop-shadow-lg" />
                                                 </div>
                                                 <div className="absolute inset-4 flex flex-col justify-end gap-1 text-white">
@@ -1057,13 +1057,13 @@ export default function MyShopPage() {
 
                         <TabsContent value="links" className="mt-6">
                             {detailsLoading ? (
-                                <div className="rounded-2xl border border-dashed border-[#F5EFE7] bg-[#FAF4EC] px-4 py-6 text-center text-sm text-[#7D5A3F]">
+                                <div className="rounded-2xl border border-dashed border-[#DCF0E2] bg-[#E3F5E9] px-4 py-6 text-center text-sm text-[#1C5C39]">
                                     Loading links...
                                 </div>
                             ) : (
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-sm text-[#7D5A3F]">
+                                        <div className="flex items-center gap-2 text-sm text-[#1C5C39]">
                                             <LinkIcon className="h-4 w-4" />
                                             <span>Social Media & Website Links</span>
                                         </div>
@@ -1085,7 +1085,7 @@ export default function MyShopPage() {
                                                             }
                                                         }}
                                                         disabled={detailsSaving}
-                                                        className="border-[#8B6F47] text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                                                        className="border-[#267A4C] text-[#267A4C] hover:bg-[#267A4C]/10"
                                                     >
                                                         Cancel
                                                     </Button>
@@ -1093,7 +1093,7 @@ export default function MyShopPage() {
                                                         size="sm"
                                                         onClick={handleDetailsSave}
                                                         disabled={detailsSaving}
-                                                        className="gap-2 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white"
+                                                        className="gap-2 bg-[#267A4C] hover:bg-[#1C5C39] text-white"
                                                     >
                                                         <Save className="h-4 w-4" />
                                                         {detailsSaving ? "Saving..." : "Save"}
@@ -1115,7 +1115,7 @@ export default function MyShopPage() {
                                                     <Button
                                                         size="sm"
                                                         onClick={() => setDetailsEditing(true)}
-                                                        className="gap-2 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white"
+                                                        className="gap-2 bg-[#267A4C] hover:bg-[#1C5C39] text-white"
                                                     >
                                                         {shopDetail ? (
                                                             <>
@@ -1134,7 +1134,7 @@ export default function MyShopPage() {
                                         </div>
                                     </div>
 
-                                    <div className="rounded-2xl border border-[#efe7d6] bg-white p-6 space-y-4">
+                                    <div className="rounded-2xl border border-[#DCF0E2] bg-white p-6 space-y-4">
                                         {detailsEditing ? (
                                             <>
                                                 <div className="space-y-2">
@@ -1146,7 +1146,7 @@ export default function MyShopPage() {
                                                             placeholder="https://example.com"
                                                             value={detailFormData.link1}
                                                             onChange={(e) => setDetailFormData({ ...detailFormData, link1: e.target.value })}
-                                                            className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]"
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#267A4C]"
                                                         />
                                                         {detailFormData.link1 && (
                                                             <Button
@@ -1154,7 +1154,7 @@ export default function MyShopPage() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => setDetailFormData({ ...detailFormData, link1: "" })}
-                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#267A4C] hover:bg-[#267A4C]/10"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -1170,7 +1170,7 @@ export default function MyShopPage() {
                                                             placeholder="https://example.com"
                                                             value={detailFormData.link2}
                                                             onChange={(e) => setDetailFormData({ ...detailFormData, link2: e.target.value })}
-                                                            className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]"
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#267A4C]"
                                                         />
                                                         {detailFormData.link2 && (
                                                             <Button
@@ -1178,7 +1178,7 @@ export default function MyShopPage() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => setDetailFormData({ ...detailFormData, link2: "" })}
-                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#267A4C] hover:bg-[#267A4C]/10"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -1194,7 +1194,7 @@ export default function MyShopPage() {
                                                             placeholder="https://example.com"
                                                             value={detailFormData.link3}
                                                             onChange={(e) => setDetailFormData({ ...detailFormData, link3: e.target.value })}
-                                                            className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]"
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#267A4C]"
                                                         />
                                                         {detailFormData.link3 && (
                                                             <Button
@@ -1202,7 +1202,7 @@ export default function MyShopPage() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => setDetailFormData({ ...detailFormData, link3: "" })}
-                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#267A4C] hover:bg-[#267A4C]/10"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -1218,7 +1218,7 @@ export default function MyShopPage() {
                                                             placeholder="https://example.com"
                                                             value={detailFormData.link4}
                                                             onChange={(e) => setDetailFormData({ ...detailFormData, link4: e.target.value })}
-                                                            className="border-[#e5e5e5] focus-visible:ring-[#8B6F47]"
+                                                            className="border-[#e5e5e5] focus-visible:ring-[#267A4C]"
                                                         />
                                                         {detailFormData.link4 && (
                                                             <Button
@@ -1226,7 +1226,7 @@ export default function MyShopPage() {
                                                                 variant="outline"
                                                                 size="icon"
                                                                 onClick={() => setDetailFormData({ ...detailFormData, link4: "" })}
-                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                                                                className="flex-shrink-0 border-[#e5e5e5] text-[#267A4C] hover:bg-[#267A4C]/10"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -1237,14 +1237,14 @@ export default function MyShopPage() {
                                         ) : shopDetail ? (
                                             <div className="space-y-3">
                                                 {shopDetail.link1 && (
-                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
+                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#E3F5E9] hover:bg-[#DCF0E2] transition-colors group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <LinkIcon className="h-4 w-4 text-[#8B6F47] flex-shrink-0" />
+                                                            <LinkIcon className="h-4 w-4 text-[#267A4C] flex-shrink-0" />
                                                             <a
                                                                 href={shopDetail.link1}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-[#1f1a14] hover:text-[#8B6F47] underline break-all"
+                                                                className="text-sm text-[#0F2116] hover:text-[#267A4C] underline break-all"
                                                             >
                                                                 {shopDetail.link1}
                                                             </a>
@@ -1262,14 +1262,14 @@ export default function MyShopPage() {
                                                     </div>
                                                 )}
                                                 {shopDetail.link2 && (
-                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
+                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#E3F5E9] hover:bg-[#DCF0E2] transition-colors group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <LinkIcon className="h-4 w-4 text-[#8B6F47] flex-shrink-0" />
+                                                            <LinkIcon className="h-4 w-4 text-[#267A4C] flex-shrink-0" />
                                                             <a
                                                                 href={shopDetail.link2}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-[#1f1a14] hover:text-[#8B6F47] underline break-all"
+                                                                className="text-sm text-[#0F2116] hover:text-[#267A4C] underline break-all"
                                                             >
                                                                 {shopDetail.link2}
                                                             </a>
@@ -1287,14 +1287,14 @@ export default function MyShopPage() {
                                                     </div>
                                                 )}
                                                 {shopDetail.link3 && (
-                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
+                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#E3F5E9] hover:bg-[#DCF0E2] transition-colors group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <LinkIcon className="h-4 w-4 text-[#8B6F47] flex-shrink-0" />
+                                                            <LinkIcon className="h-4 w-4 text-[#267A4C] flex-shrink-0" />
                                                             <a
                                                                 href={shopDetail.link3}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-[#1f1a14] hover:text-[#8B6F47] underline break-all"
+                                                                className="text-sm text-[#0F2116] hover:text-[#267A4C] underline break-all"
                                                             >
                                                                 {shopDetail.link3}
                                                             </a>
@@ -1312,14 +1312,14 @@ export default function MyShopPage() {
                                                     </div>
                                                 )}
                                                 {shopDetail.link4 && (
-                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#f5efe3] hover:bg-[#efe6d2] transition-colors group">
+                                                    <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-[#E3F5E9] hover:bg-[#DCF0E2] transition-colors group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <LinkIcon className="h-4 w-4 text-[#8B6F47] flex-shrink-0" />
+                                                            <LinkIcon className="h-4 w-4 text-[#267A4C] flex-shrink-0" />
                                                             <a
                                                                 href={shopDetail.link4}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-[#1f1a14] hover:text-[#8B6F47] underline break-all"
+                                                                className="text-sm text-[#0F2116] hover:text-[#267A4C] underline break-all"
                                                             >
                                                                 {shopDetail.link4}
                                                             </a>
@@ -1338,7 +1338,7 @@ export default function MyShopPage() {
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className="text-center py-8 text-sm text-[#7D5A3F]">
+                                            <div className="text-center py-8 text-sm text-[#1C5C39]">
                                                 No links added yet. Click "Add Links" to get started.
                                             </div>
                                         )}

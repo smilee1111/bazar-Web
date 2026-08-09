@@ -63,12 +63,12 @@ export default function AggregationPage() {
 
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold text-[#2D2318]">Data Import</h1>
+            <h1 className="text-3xl font-bold text-[#142A1C]">Data Import</h1>
             
             <Card className="border-gray-100 shadow-md">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Database className="w-5 h-5 text-[#8B6F47]" />
+                        <Database className="w-5 h-5 text-[#267A4C]" />
                         Aggregation Control
                     </CardTitle>
                     <CardDescription>
@@ -91,7 +91,7 @@ export default function AggregationPage() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Target Category</label>
                         <select 
-                            className="w-full md:w-1/2 rounded-lg border-gray-300 border p-2 text-sm focus:border-[#8B6F47] focus:outline-none"
+                            className="w-full md:w-1/2 rounded-lg border-gray-300 border p-2 text-sm focus:border-[#267A4C] focus:outline-none"
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
                             disabled={loading || categories.length === 0}
@@ -106,7 +106,7 @@ export default function AggregationPage() {
                     <Button 
                         onClick={onTrigger} 
                         disabled={loading || !selectedCategory}
-                        className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white"
+                        className="bg-[#267A4C] hover:bg-[#1C5C39] text-white"
                     >
                         <RefreshCcw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         {loading ? "Running..." : "Trigger Crawler"}

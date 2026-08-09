@@ -22,7 +22,7 @@ export default function Error({
         <div className="space-y-8">
             <div className="flex flex-col gap-3 animate-fade-up">
                 <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Error</p>
-                <h1 className="text-4xl font-bold text-[#2D2318]">Oops! Something went wrong</h1>
+                <h1 className="text-4xl font-bold text-[#142A1C]">Oops! Something went wrong</h1>
                 <p className="text-gray-500 text-lg">We encountered an unexpected error. Please try again.</p>
             </div>
 
@@ -33,17 +33,17 @@ export default function Error({
                             <AlertTriangle className="h-8 w-8 text-red-600" />
                         </div>
                     </div>
-                    <CardTitle className="text-[#2D2318] text-2xl">Something went wrong!</CardTitle>
+                    <CardTitle className="text-[#142A1C] text-2xl">Something went wrong!</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <p className="text-center text-[#5B3E2E]">
+                    <p className="text-center text-[#1B4A31]">
                         We apologize for the inconvenience. An unexpected error occurred while processing your request.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             onClick={reset}
-                            className="bg-[#8B6F47] hover:bg-[#7D5A3F] text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                            className="bg-[#267A4C] hover:bg-[#1C5C39] text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                         >
                             <RefreshCw className="w-4 h-4 mr-2" />
                             Try again
@@ -51,7 +51,7 @@ export default function Error({
                         <Link href="/dashboard">
                             <Button
                                 variant="outline"
-                                className="border-[#8B6F47] text-[#8B6F47] hover:bg-[#8B6F47]/10 hover:border-[#7D5A3F] transition-all duration-300"
+                                className="border-[#267A4C] text-[#267A4C] hover:bg-[#267A4C]/10 hover:border-[#1C5C39] transition-all duration-300"
                             >
                                 <Home className="w-4 h-4 mr-2" />
                                 Go to Dashboard
@@ -60,7 +60,7 @@ export default function Error({
                     </div>
 
                     <div className="text-center">
-                        <p className="text-sm text-[#8B6F47]/70">
+                        <p className="text-sm text-[#267A4C]/70">
                             If the problem persists, please contact our support team.
                         </p>
                     </div>

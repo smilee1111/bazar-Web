@@ -56,10 +56,10 @@ const poppins = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Bazar - Discover Local Shops",
-  description: "Join Bazar to discover local shops and connect with your community",
+  title: "HaatKhoj - Discover Local Shops",
+  description: "Join HaatKhoj to discover local shops and connect with your community",
   icons: {
-    icon: "/images/logo.svg",
+    icon: "/images/HaatKhoj.svg",
   },
 };
 

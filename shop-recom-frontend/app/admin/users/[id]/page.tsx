@@ -72,11 +72,11 @@ export default function ViewUserPage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Admin Panel</p>
-            <h1 className="text-4xl font-bold text-[#2D2318]">User Profile</h1>
+            <h1 className="text-4xl font-bold text-[#142A1C]">User Profile</h1>
             <p className="text-gray-500 text-lg">View detailed user information and manage account settings.</p>
           </div>
           <Link href="/admin/users">
-            <Button variant="outline" className="gap-2 border-gray-300 text-[#2D2318] hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
+            <Button variant="outline" className="gap-2 border-gray-300 text-[#142A1C] hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
               <ArrowLeft className="h-4 w-4" />
               Back to Users
             </Button>
@@ -88,32 +88,32 @@ export default function ViewUserPage() {
       <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
         <CardHeader className="space-y-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B6F47] to-[#7D5A3F] shadow-lg group-hover:shadow-xl transition-all duration-300">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#267A4C] to-[#1C5C39] shadow-lg group-hover:shadow-xl transition-all duration-300">
               <Avatar className="h-18 w-18">
                 <AvatarImage
                   src={API_CONFIG.getImageUrl(user?.profilePic) || undefined}
                   alt={user.fullName || "Profile"}
                 />
-                <AvatarFallback className="bg-[#8B6F47] text-white text-xl font-semibold">
+                <AvatarFallback className="bg-[#267A4C] text-white text-xl font-semibold">
                   {(user.fullName || user.email || "U").charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </div>
             <div>
-              <CardTitle className="text-xl text-[#2D2318]">Profile Overview</CardTitle>
-              <CardDescription className="text-[#5B3E2E]">
+              <CardTitle className="text-xl text-[#142A1C]">Profile Overview</CardTitle>
+              <CardDescription className="text-[#1B4A31]">
                 Complete user account information
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <Separator className="bg-[#F5EFE7]" />
+        <Separator className="bg-[#DCF0E2]" />
         <CardContent className="p-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {/* Personal Information */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-[#2D2318] flex items-center gap-3">
-                <User className="h-6 w-6 text-[#8B6F47]" />
+              <h3 className="text-xl font-semibold text-[#142A1C] flex items-center gap-3">
+                <User className="h-6 w-6 text-[#267A4C]" />
                 Personal Information
               </h3>
               <div className="space-y-4">
@@ -126,19 +126,19 @@ export default function ViewUserPage() {
 
             {/* Account Information */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-[#2D2318] flex items-center gap-3">
-                <Shield className="h-6 w-6 text-[#8B6F47]" />
+              <h3 className="text-xl font-semibold text-[#142A1C] flex items-center gap-3">
+                <Shield className="h-6 w-6 text-[#267A4C]" />
                 Account Information
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#5B3E2E]">Role:</span>
-                  <Badge variant="secondary" className="bg-[#8B6F47]/10 text-[#7D5A3F] capitalize">
+                  <span className="text-sm font-medium text-[#1B4A31]">Role:</span>
+                  <Badge variant="secondary" className="bg-[#267A4C]/10 text-[#1C5C39] capitalize">
                     {roleLabel}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#5B3E2E]">Status:</span>
+                  <span className="text-sm font-medium text-[#1B4A31]">Status:</span>
                   <Badge
                     variant={user.roleId?.status === "active" ? "default" : "secondary"}
                     className={user.roleId?.status === "active"
@@ -159,7 +159,7 @@ export default function ViewUserPage() {
       {/* Action Buttons */}
       <div className="flex gap-4">
         <Link href={`/admin/users/${userId}/edit`}>
-          <Button className="gap-2 bg-gradient-to-r from-[#8B6F47] to-[#7D5A3F] text-white hover:from-[#7D5A3F] hover:to-[#5B3E2E] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+          <Button className="gap-2 bg-gradient-to-r from-[#267A4C] to-[#1C5C39] text-white hover:from-[#1C5C39] hover:to-[#1B4A31] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
             <Edit className="h-4 w-4" />
             Edit User
           </Button>
@@ -171,12 +171,12 @@ export default function ViewUserPage() {
 
 function InfoItem({ label, value, icon }: { label: string; value?: string; icon?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between p-4 rounded-lg border border-[#F5EFE7] bg-white/60 hover:bg-white/80 transition-colors shadow-sm">
+    <div className="flex items-center justify-between p-4 rounded-lg border border-[#DCF0E2] bg-white/60 hover:bg-white/80 transition-colors shadow-sm">
       <div className="flex items-center gap-3">
-        {icon && <span className="text-[#8B6F47]">{icon}</span>}
-        <span className="text-sm font-semibold text-[#5B3E2E]">{label}:</span>
+        {icon && <span className="text-[#267A4C]">{icon}</span>}
+        <span className="text-sm font-semibold text-[#1B4A31]">{label}:</span>
       </div>
-      <span className="text-base text-[#2D2318] font-medium">{value || "-"}</span>
+      <span className="text-base text-[#142A1C] font-medium">{value || "-"}</span>
     </div>
   );
 }

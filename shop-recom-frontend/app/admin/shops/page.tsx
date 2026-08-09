@@ -13,17 +13,17 @@ export default function AdminShopsPage() {
         <div className="space-y-8">
             <div className="flex flex-col gap-3">
                 <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Admin</p>
-                <h1 className="text-4xl font-bold text-[#2D2318]">Shops Management</h1>
+                <h1 className="text-4xl font-bold text-[#142A1C]">Shops Management</h1>
                 <p className="text-gray-500 text-lg">Manage seller applications and approved shops</p>
             </div>
 
             <Card className="border-[1.2px] border-gray-100 bg-white shadow-sm">
                 <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8B6F47]/15">
-                            <Store className="h-5 w-5 text-[#8B6F47]" />
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#267A4C]/15">
+                            <Store className="h-5 w-5 text-[#267A4C]" />
                         </span>
-                        <CardTitle className="text-xl text-[#2D2318]">Shops Management</CardTitle>
+                        <CardTitle className="text-xl text-[#142A1C]">Shops Management</CardTitle>
                     </div>
                     <div className="w-full lg:w-auto">
                         <div className="flex justify-end">
@@ -34,24 +34,24 @@ export default function AdminShopsPage() {
                 <Separator className="bg-[#efefef]" />
                 <CardContent>
                     <Tabs defaultValue="applications" className="space-y-6">
-                        <TabsList className="grid w-full max-w-2xl grid-cols-3 border border-[#e8e1cf] bg-white shadow-sm">
+                        <TabsList className="grid w-full max-w-2xl grid-cols-3 border border-[#DCF0E2] bg-white shadow-sm">
                             <TabsTrigger
                                 value="applications"
-                                className="flex items-center gap-2 text-[#5B3E2E] data-[state=active]:bg-[#8B6F47] data-[state=active]:text-white data-[state=active]:shadow"
+                                className="flex items-center gap-2 text-[#1B4A31] data-[state=active]:bg-[#267A4C] data-[state=active]:text-white data-[state=active]:shadow"
                             >
                                 <FileCheck className="h-4 w-4" />
                                 Applications
                             </TabsTrigger>
                             <TabsTrigger
                                 value="shops"
-                                className="flex items-center gap-2 text-[#5B3E2E] data-[state=active]:bg-[#8B6F47] data-[state=active]:text-white data-[state=active]:shadow"
+                                className="flex items-center gap-2 text-[#1B4A31] data-[state=active]:bg-[#267A4C] data-[state=active]:text-white data-[state=active]:shadow"
                             >
                                 <CheckCircle className="h-4 w-4" />
                                 Approved Shops
                             </TabsTrigger>
                             <TabsTrigger
                                 value="rejected"
-                                className="flex items-center gap-2 text-[#5B3E2E] data-[state=active]:bg-[#8B6F47] data-[state=active]:text-white data-[state=active]:shadow"
+                                className="flex items-center gap-2 text-[#1B4A31] data-[state=active]:bg-[#267A4C] data-[state=active]:text-white data-[state=active]:shadow"
                             >
                                 <XCircle className="h-4 w-4" />
                                 Rejected Shops
@@ -59,10 +59,10 @@ export default function AdminShopsPage() {
                         </TabsList>
 
                         <TabsContent value="applications" className="space-y-6">
-                            <Card className="border-[#e8e1cf] bg-white shadow-sm">
+                            <Card className="border-[#DCF0E2] bg-white shadow-sm">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <FileCheck className="h-5 w-5 text-[#5B3E2E]" />
+                                        <FileCheck className="h-5 w-5 text-[#1B4A31]" />
                                         Seller Applications
                                     </CardTitle>
                                     <CardDescription>
@@ -76,10 +76,10 @@ export default function AdminShopsPage() {
                         </TabsContent>
 
                         <TabsContent value="shops" className="space-y-6">
-                            <Card className="border-[#e8e1cf] bg-white shadow-sm">
+                            <Card className="border-[#DCF0E2] bg-white shadow-sm">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <CheckCircle className="h-5 w-5 text-[#5B3E2E]" />
+                                        <CheckCircle className="h-5 w-5 text-[#1B4A31]" />
                                         Approved Shops
                                     </CardTitle>
                                     <CardDescription>
@@ -93,10 +93,10 @@ export default function AdminShopsPage() {
                         </TabsContent>
 
                         <TabsContent value="rejected" className="space-y-6">
-                            <Card className="border-[#e8e1cf] bg-white shadow-sm">
+                            <Card className="border-[#DCF0E2] bg-white shadow-sm">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <XCircle className="h-5 w-5 text-[#5B3E2E]" />
+                                        <XCircle className="h-5 w-5 text-[#1B4A31]" />
                                         Rejected Shops
                                     </CardTitle>
                                     <CardDescription>

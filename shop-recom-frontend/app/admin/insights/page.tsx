@@ -41,11 +41,11 @@ function StatTile({ icon: Icon, label, value }: { icon: LucideIcon; label: strin
             <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-gray-500 font-medium">{label}</p>
-                    <div className="p-2 bg-[#FAF4EC] rounded-xl">
-                        <Icon className="h-4 w-4 text-[#8B6F47]" />
+                    <div className="p-2 bg-[#E3F5E9] rounded-xl">
+                        <Icon className="h-4 w-4 text-[#267A4C]" />
                     </div>
                 </div>
-                <p className="mt-1 text-2xl font-bold text-[#2D2318] tabular-nums">{value}</p>
+                <p className="mt-1 text-2xl font-bold text-[#142A1C] tabular-nums">{value}</p>
             </CardContent>
         </Card>
     );
@@ -88,7 +88,7 @@ export default function InsightsPage() {
     if (loading) {
         return (
             <div className="flex h-[400px] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-[#8B6F47]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#267A4C]" />
             </div>
         );
     }
@@ -130,7 +130,7 @@ export default function InsightsPage() {
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
             <div>
-                <h1 className="text-3xl font-bold text-[#2D2318]">Data Insights</h1>
+                <h1 className="text-3xl font-bold text-[#142A1C]">Data Insights</h1>
                 <p className="text-gray-500 mt-2">
                     Descriptive statistics for the aggregated shop dataset and logged user interactions -- the evidence
                     base behind the recommendation and evaluation results.

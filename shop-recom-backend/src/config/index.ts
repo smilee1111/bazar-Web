@@ -13,7 +13,7 @@ export const PORT: number =
 //avoid exception if env is missing
 
 export const LOCAL_DATABASE_URI: string =
-    process.env.LOCAL_DATABASE_URI || 'mongodb://localhost:27017/bazar';
+    process.env.LOCAL_DATABASE_URI || 'mongodb://localhost:27017/haatkhoj';
 //local MongoDB URI
 
 
@@ -23,7 +23,7 @@ export const REMOTE_DATABASE_URI: string =
 //remote MongoDB URI
 
 export const MONGO_URI: string =
-    process.env.MONGO_URI || 'mongodb://localhost:27017/bazar';
+    process.env.MONGO_URI || 'mongodb://localhost:27017/haatkhoj';
 //fallback to local mongo db if env is missing 
 
 export const JWT_SECRET: string = 

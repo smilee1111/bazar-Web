@@ -52,27 +52,27 @@ export default function ResetPasswordForm({
             <CardContent className="p-8 lg:p-[49.2px]">
                 <div className="flex flex-col gap-8">
                     <div className="flex flex-col gap-3 animate-fade-up">
-                        <h2 className="font-light text-[#2D2318] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
+                        <h2 className="font-light text-[#142A1C] text-3xl lg:text-4xl tracking-[-0.72px] leading-tight lg:leading-[48px]">
                             New Password
                         </h2>
-                        <p className="font-normal text-[#5B3E2E] text-sm md:text-base leading-relaxed">
+                        <p className="font-normal text-[#1B4A31] text-sm md:text-base leading-relaxed">
                             Enter your new password below
                         </p>
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
                         <div className="flex flex-col gap-2">
-                            <Label htmlFor="password" className="font-normal text-[#524632] text-sm md:text-base">
-                                New Password<span className="text-[#8B6F47]">*</span>
+                            <Label htmlFor="password" className="font-normal text-[#1C5C39] text-sm md:text-base">
+                                New Password<span className="text-[#267A4C]">*</span>
                             </Label>
                             <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8B6F47] transition-colors" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#267A4C] transition-colors" />
                                 <Input
                                     id="password"
                                     type="password"
                                     placeholder="Enter new password"
                                     {...register("password")}
-                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
+                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
                                 />
                             </div>
                             {errors.password && (
@@ -81,17 +81,17 @@ export default function ResetPasswordForm({
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <Label htmlFor="confirmPassword" className="font-normal text-[#524632] text-sm md:text-base">
-                                Confirm Password<span className="text-[#8B6F47]">*</span>
+                            <Label htmlFor="confirmPassword" className="font-normal text-[#1C5C39] text-sm md:text-base">
+                                Confirm Password<span className="text-[#267A4C]">*</span>
                             </Label>
                             <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#8B6F47] transition-colors" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a191980] group-focus-within:text-[#267A4C] transition-colors" />
                                 <Input
                                     id="confirmPassword"
                                     type="password"
                                     placeholder="Confirm new password"
                                     {...register("confirmPassword")}
-                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#8B6F47] focus:ring-2 focus:ring-[#8B6F47]/20 transition-all"
+                                    className="h-11 md:h-12 pl-12 pr-4 rounded-[10px] border-[1.2px] font-normal text-sm md:text-base placeholder:text-[#1a191980] focus:border-[#267A4C] focus:ring-2 focus:ring-[#267A4C]/20 transition-all"
                                 />
                             </div>
                             {errors.confirmPassword && (
@@ -102,7 +102,7 @@ export default function ResetPasswordForm({
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full h-12 md:h-14 bg-[#8B6F47] hover:bg-[#7D5A3F] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                            className="w-full h-12 md:h-14 bg-[#267A4C] hover:bg-[#1C5C39] text-white rounded-full shadow-[0px_1px_2px_-1px_#0000001a,0px_1px_3px_#0000001a] font-normal text-sm md:text-base disabled:opacity-60 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
                         >
                             {isSubmitting ? (
                                 <>
@@ -116,11 +116,11 @@ export default function ResetPasswordForm({
                     </form>
 
                     <div className="flex flex-col gap-4 text-center">
-                        <Link href="/login" className="flex items-center justify-center gap-2 text-[#8B6F47] hover:underline hover:text-[#7D5A3F] transition-colors">
+                        <Link href="/login" className="flex items-center justify-center gap-2 text-[#267A4C] hover:underline hover:text-[#1C5C39] transition-colors">
                             <ArrowLeft className="w-4 h-4" />
                             Back to Login
                         </Link>
-                        <Link href="/forget-password" className="text-[#8B6F47] hover:underline hover:text-[#7D5A3F] transition-colors text-sm">
+                        <Link href="/forget-password" className="text-[#267A4C] hover:underline hover:text-[#1C5C39] transition-colors text-sm">
                             Request another reset email
                         </Link>
                     </div>

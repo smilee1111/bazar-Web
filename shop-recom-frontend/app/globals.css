@@ -3,66 +3,66 @@
 
 :root {
     --background: 0 0% 100%;
-    --foreground: 24 35% 12%;
+    --foreground: 145 35% 12%;
 
-    --muted: 36 25% 96%;
-    --muted-foreground: 24 15% 45%;
+    --muted: 145 25% 96%;
+    --muted-foreground: 145 15% 45%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 24 35% 12%;
+    --popover-foreground: 145 35% 12%;
 
-    --border: 30 15% 88%;
-    --input: 30 15% 88%;
+    --border: 145 15% 88%;
+    --input: 145 15% 88%;
 
     --card: 0 0% 100%;
-    --card-foreground: 24 35% 12%;
+    --card-foreground: 145 35% 12%;
 
-    --primary: 25 51% 28%;
+    --primary: 145 51% 28%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 36 25% 96%;
-    --secondary-foreground: 24 35% 12%;
+    --secondary: 145 25% 96%;
+    --secondary-foreground: 145 35% 12%;
 
-    --accent: 32 40% 94%;
-    --accent-foreground: 25 51% 28%;
+    --accent: 145 40% 94%;
+    --accent-foreground: 145 51% 28%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --ring: 25 51% 28%;
+    --ring: 145 51% 28%;
 
     --radius: 0.75rem;
 }
 
 .dark {
-    --background: 24 20% 8%;
-    --foreground: 36 25% 96%;
+    --background: 145 20% 8%;
+    --foreground: 145 25% 96%;
 
-    --muted: 24 15% 15%;
-    --muted-foreground: 30 15% 60%;
+    --muted: 145 15% 15%;
+    --muted-foreground: 145 15% 60%;
 
-    --accent: 25 30% 18%;
-    --accent-foreground: 36 25% 96%;
+    --accent: 145 30% 18%;
+    --accent-foreground: 145 25% 96%;
 
-    --popover: 24 20% 10%;
-    --popover-foreground: 36 25% 96%;
+    --popover: 145 20% 10%;
+    --popover-foreground: 145 25% 96%;
 
-    --border: 24 15% 20%;
-    --input: 24 15% 15%;
+    --border: 145 15% 20%;
+    --input: 145 15% 15%;
 
-    --card: 24 20% 10%;
-    --card-foreground: 36 25% 96%;
+    --card: 145 20% 10%;
+    --card-foreground: 145 25% 96%;
 
-    --primary: 30 45% 55%;
-    --primary-foreground: 24 20% 8%;
+    --primary: 145 45% 55%;
+    --primary-foreground: 145 20% 8%;
 
-    --secondary: 24 15% 15%;
-    --secondary-foreground: 36 25% 96%;
+    --secondary: 145 15% 15%;
+    --secondary-foreground: 145 25% 96%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 36 25% 96%;
+    --destructive-foreground: 145 25% 96%;
 
-    --ring: 30 45% 55%;
+    --ring: 145 45% 55%;
 
     --radius: 0.75rem;
 }
@@ -163,7 +163,7 @@ body {
 
 /* Leaflet map container fixes to ensure tiles load completely */
 .leaflet-container {
-    background: #FAF4EC !important;
+    background: #E3F5E9 !important;
     outline: none !important;
 }
 

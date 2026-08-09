@@ -85,7 +85,7 @@ export default function EvaluationPage() {
     if (loading) {
         return (
             <div className="flex h-[400px] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-[#8B6F47]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#267A4C]" />
             </div>
         );
     }
@@ -125,7 +125,7 @@ export default function EvaluationPage() {
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
             <div>
-                <h1 className="text-3xl font-bold text-[#2D2318]">Model Evaluation</h1>
+                <h1 className="text-3xl font-bold text-[#142A1C]">Model Evaluation</h1>
                 <p className="text-gray-500 mt-2">
                     Offline train/test comparison of the personalized recommendation engine against a non-personalized
                     geo-only baseline and a random-within-radius floor.
@@ -135,11 +135,11 @@ export default function EvaluationPage() {
             <Card className="border-gray-100 shadow-sm">
                 <CardContent className="flex flex-wrap items-center gap-6 p-5">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#FAF4EC] rounded-xl">
-                            <Users className="h-4 w-4 text-[#8B6F47]" />
+                        <div className="p-2 bg-[#E3F5E9] rounded-xl">
+                            <Users className="h-4 w-4 text-[#267A4C]" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-[#2D2318] tabular-nums">{stats.totalUsersEvaluated}</p>
+                            <p className="text-2xl font-bold text-[#142A1C] tabular-nums">{stats.totalUsersEvaluated}</p>
                             <p className="text-xs text-gray-500">users evaluated (n)</p>
                         </div>
                     </div>
@@ -216,7 +216,7 @@ export default function EvaluationPage() {
             <Card className="border-gray-100 shadow-sm">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <BarChartIcon className="w-5 h-5 text-[#8B6F47]" />
+                        <BarChartIcon className="w-5 h-5 text-[#267A4C]" />
                         How to read this
                     </CardTitle>
                 </CardHeader>

@@ -16,7 +16,7 @@ export default function GlobalError({
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '100vh',
-          backgroundColor: '#2D2318',
+          backgroundColor: '#142A1C',
           color: '#fff',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           padding: '20px'
@@ -55,7 +55,7 @@ export default function GlobalError({
               onClick={reset}
               style={{
                 padding: '12px 24px',
-                backgroundColor: '#8B6F47',
+                backgroundColor: '#267A4C',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '8px',
@@ -63,8 +63,8 @@ export default function GlobalError({
                 cursor: 'pointer',
                 transition: 'background-color 0.3s'
               }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#7D5A3F')}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#8B6F47')}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#1C5C39')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#267A4C')}
             >
               Try Again
             </button>

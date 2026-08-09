@@ -72,18 +72,18 @@ export default function ShopSearch({ categories = [], filters, onFiltersChange }
                         placeholder="Search shops by name or description..."
                         value={filters.search}
                         onChange={(e) => handleChange("search", e.target.value)}
-                        className="pl-12 pr-4 py-3 rounded-full bg-white border-2 border-transparent focus:border-[#8B6F47] text-base"
+                        className="pl-12 pr-4 py-3 rounded-full bg-white border-2 border-transparent focus:border-[#267A4C] text-base"
                     />
                 </div>
                 <Button
                     onClick={() => setShowFilters(!showFilters)}
                     variant="outline"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full border-[#8B6F47] text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full border-[#267A4C] text-[#267A4C] hover:bg-[#267A4C]/10"
                 >
                     <Filter className="h-4 w-4 mr-2" />
                     Filters
                     {activeFilterCount > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#8B6F47] text-white text-xs rounded-full">
+                        <span className="ml-2 px-2 py-0.5 bg-[#267A4C] text-white text-xs rounded-full">
                             {activeFilterCount}
                         </span>
                     )}
@@ -95,11 +95,11 @@ export default function ShopSearch({ categories = [], filters, onFiltersChange }
                 <Card className="p-6 bg-white border border-gray-100 shadow-sm">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-bold text-[#2c2416]">Filters</h3>
+                            <h3 className="text-lg font-bold text-[#0F2116]">Filters</h3>
                             <Button
                                 onClick={handleReset}
                                 variant="ghost"
-                                className="text-[#8B6F47] hover:bg-[#8B6F47]/10"
+                                className="text-[#267A4C] hover:bg-[#267A4C]/10"
                             >
                                 <X className="h-4 w-4 mr-1" />
                                 Reset All
@@ -108,11 +108,11 @@ export default function ShopSearch({ categories = [], filters, onFiltersChange }
 
                         {/* Category Filter */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#2c2416] mb-2">
+                            <label className="block text-sm font-semibold text-[#0F2116] mb-2">
                                 Category
                             </label>
                             <Select value={filters.category} onValueChange={(value) => handleChange("category", value)}>
-                                <SelectTrigger className="border-[#C99A6E] focus:border-[#8B6F47]">
+                                <SelectTrigger className="border-[#93E48B] focus:border-[#267A4C]">
                                     <SelectValue placeholder="Select category" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -134,21 +134,21 @@ export default function ShopSearch({ categories = [], filters, onFiltersChange }
 
                         {/* Location Filter */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#2c2416] mb-2">
+                            <label className="block text-sm font-semibold text-[#0F2116] mb-2">
                                 Location
                             </label>
                             <Input
                                 placeholder="Search by location..."
                                 value={filters.location}
                                 onChange={(e) => handleChange("location", e.target.value)}
-                                className="border-[#C99A6E] focus:border-[#8B6F47]"
+                                className="border-[#93E48B] focus:border-[#267A4C]"
                             />
                         </div>
 
                         {/* Price Range Filter */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-[#2c2416] mb-2">
+                                <label className="block text-sm font-semibold text-[#0F2116] mb-2">
                                     Min Price
                                 </label>
                                 <Input
@@ -156,11 +156,11 @@ export default function ShopSearch({ categories = [], filters, onFiltersChange }
                                     placeholder="0"
                                     value={filters.minPrice}
                                     onChange={(e) => handleChange("minPrice", e.target.value)}
-                                    className="border-[#C99A6E] focus:border-[#8B6F47]"
+                                    className="border-[#93E48B] focus:border-[#267A4C]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-[#2c2416] mb-2">
+                                <label className="block text-sm font-semibold text-[#0F2116] mb-2">
                                     Max Price
                                 </label>
                                 <Input
@@ -168,14 +168,14 @@ export default function ShopSearch({ categories = [], filters, onFiltersChange }
                                     placeholder="∞"
                                     value={filters.maxPrice}
                                     onChange={(e) => handleChange("maxPrice", e.target.value)}
-                                    className="border-[#C99A6E] focus:border-[#8B6F47]"
+                                    className="border-[#93E48B] focus:border-[#267A4C]"
                                 />
                             </div>
                         </div>
 
                         {/* Minimum Rating Filter */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#2c2416] mb-2">
+                            <label className="block text-sm font-semibold text-[#0F2116] mb-2">
                                 Minimum Rating
                             </label>
                             <div className="flex gap-2">
@@ -186,8 +186,8 @@ export default function ShopSearch({ categories = [], filters, onFiltersChange }
                                         variant={filters.minRating === rating.toString() ? "default" : "outline"}
                                         className={`w-12 h-12 rounded-full flex items-center justify-center ${
                                             filters.minRating === rating.toString()
-                                                ? "bg-[#8B6F47] text-white"
-                                                : "border-[#C99A6E] text-[#2c2416] hover:bg-[#8B6F47]/10"
+                                                ? "bg-[#267A4C] text-white"
+                                                : "border-[#93E48B] text-[#0F2116] hover:bg-[#267A4C]/10"
                                         }`}
                                     >
                                         <span className="text-yellow-400 text-lg">★</span>
@@ -210,7 +210,7 @@ export default function ShopSearch({ categories = [], filters, onFiltersChange }
                         <div className="flex gap-2 mt-6">
                             <Button
                                 onClick={() => setShowFilters(false)}
-                                className="flex-1 bg-[#8B6F47] text-white hover:bg-[#7D5A3F] rounded-full"
+                                className="flex-1 bg-[#267A4C] text-white hover:bg-[#1C5C39] rounded-full"
                             >
                                 Apply Filters
                             </Button>

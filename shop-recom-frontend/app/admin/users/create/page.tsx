@@ -50,7 +50,7 @@ export default function CreateUserPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
         <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Admin</p>
-        <h1 className="text-3xl font-bold text-[#2D2318]">Create User</h1>
+        <h1 className="text-3xl font-bold text-[#142A1C]">Create User</h1>
         <p className="text-gray-500">Add a new platform user.</p>
       </div>
       <UserForm
